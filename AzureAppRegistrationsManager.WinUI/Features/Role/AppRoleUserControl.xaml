@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseUserControl
+    x:Class="AzureAppRegistrationsManager.WinUI.Features.Role.AppRoleUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AzureAppRegistrationsManager.WinUI.Features.Role"
+    xmlns:base="using:AzureAppRegistrationsManager.WinUI.Features"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:converters="using:AzureAppRegistrationsManager.WinUI.Converters"
+    xmlns:graph="using:Microsoft.Graph.Models"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel Padding="12" Spacing="12">
+        <Button
+        x:Name="AddAppRoleButton"
+        IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
+        HorizontalAlignment="Left"
+        Click="AddAppRole_Click">
+            <StackPanel Orientation="Horizontal">
+                <SymbolIcon Symbol="Add"/>
+                <TextBlock Text="Add an App Role"/>
+            </StackPanel>
+        </Button>
+
+        <controls:DataGrid x:Name="AppRolesDataGrid"
+        AutoGenerateColumns="False"
+        ItemsSource="{x:Bind AppRolesSorted, Mode=OneWay}"
+        HeadersVisibility="Column"
+        IsReadOnly="True"
+        MinHeight="300">
+
+            <controls:DataGrid.Resources>
+                <converters:AllowedMemberTypesToDisplayConverter x:Key="AllowedMemberTypesToDisplayConverter" />
+            </controls:DataGrid.Resources>
+
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn Header="Display name" Binding="{Binding DisplayName}" />
+                <controls:DataGridTextColumn Header="Description" Binding="{Binding Description}" />
+                <controls:DataGridTextColumn Header="Allowed member types">
+                    <controls:DataGridTextColumn.Binding>
+                        <Binding Path="AllowedMemberTypes" Converter="{StaticResource AllowedMemberTypesToDisplayConverter}" />
+                    </controls:DataGridTextColumn.Binding>
+                </controls:DataGridTextColumn>
+
+                <controls:DataGridTextColumn Header="Value" Binding="{Binding Value}" />
+                <controls:DataGridTextColumn Header="Enabled" Binding="{Binding IsEnabled}" />
+                <controls:DataGridTemplateColumn>
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="graph:AppRole">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button x:Name="AppRoleEditButton" FontSize="10px" Content="✏️" Click="AppRoleAction_Click" Tag="{x:Bind}" />
+                                <Button x:Name="AppRoleDeleteButton" FontSize="10px" Content="🗑️" Click="AppRoleAction_Click" Tag="{x:Bind}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
+    </StackPanel>
+</base:BaseUserControl>

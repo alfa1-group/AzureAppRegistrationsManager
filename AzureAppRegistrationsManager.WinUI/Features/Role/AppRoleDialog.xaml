@@ -1,0 +1,74 @@
+﻿<ContentDialog x:Class="AzureAppRegistrationsManager.WinUI.Features.Role.AppRoleDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             PrimaryButtonText="Apply"
+             SecondaryButtonText="Cancel"
+             DefaultButton="Primary">
+
+    <ScrollViewer 
+        VerticalScrollBarVisibility="Auto" 
+        VerticalScrollMode="Auto"
+        MaxHeight="600">
+        <StackPanel Spacing="24" Margin="0,0,0,24">
+
+            <!-- Display name -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Display name 🔺" FontWeight="SemiBold"/>
+                <TextBox 
+                    x:Name="DisplayNameTextBox"
+                    PlaceholderText="e.g. Writers"
+                    Text="{x:Bind AppRole.DisplayName, Mode=TwoWay, FallbackValue=''}"/>
+            </StackPanel>
+
+            <!-- Allowed member types -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Allowed member types" FontWeight="SemiBold"/>
+                <StackPanel Spacing="8">
+                    <RadioButton 
+                        x:Name="UsersGroupsRadioButton"
+                        Content="Users/Groups"
+                        GroupName="MemberTypes"
+                        IsChecked="{x:Bind IsUsersGroupsSelected, Mode=TwoWay, FallbackValue=''}"/>
+                    <RadioButton
+                        x:Name="ApplicationsRadioButton"
+                        Content="Applications"
+                        GroupName="MemberTypes"
+                        IsChecked="{x:Bind IsApplicationsSelected, Mode=TwoWay, FallbackValue=''}"/>
+                    <RadioButton 
+                        x:Name="BothRadioButton"
+                        Content="Both (Users/Groups + Applications)"
+                        GroupName="MemberTypes"
+                        IsChecked="{x:Bind IsBothSelected, Mode=TwoWay, FallbackValue=''}"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Value -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Value" 
+                               FontWeight="SemiBold"/>
+                <TextBox x:Name="ValueTextBox"
+                             PlaceholderText="e.g. Task.Write"
+                             Text="{x:Bind AppRole.Value, Mode=TwoWay, FallbackValue=''}"/>
+            </StackPanel>
+
+            <!-- Description -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Description 🔺" FontWeight="SemiBold"/>
+                <TextBox 
+                    x:Name="DescriptionTextBox"
+                    PlaceholderText="e.g. Writers have the ability to create tasks"
+                    Text="{x:Bind AppRole.Description, Mode=TwoWay, FallbackValue=''}"
+                    AcceptsReturn="True"
+                    TextWrapping="Wrap"
+                    Height="80"/>
+            </StackPanel>
+
+            <!-- Enable checkbox -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Do you want to enable this app role?"  FontWeight="SemiBold"/>
+                <CheckBox x:Name="EnableCheckBox" IsChecked="{x:Bind AppRole.IsEnabled, Mode=TwoWay, FallbackValue=''}"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</ContentDialog>
