@@ -70,10 +70,15 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
 
         controlsToDisable.ForEach(c => c.IsEnabled = false);
 
-        await func(AppReg.Id, value);
+        try
+        {
+            await func(AppReg.Id, value);
 
-        OnSave?.Invoke(this, EventArgs.Empty);
-
-        controlsToDisable.ForEach(c => c.IsEnabled = true);
+            OnSave?.Invoke(this, EventArgs.Empty);
+        }
+        finally
+        {
+            controlsToDisable.ForEach(c => c.IsEnabled = true);
+        }
     }
 }
