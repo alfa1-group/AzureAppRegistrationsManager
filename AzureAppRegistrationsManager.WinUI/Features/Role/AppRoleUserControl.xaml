@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:BaseUserControl
     x:Class="AzureAppRegistrationsManager.WinUI.Features.Role.AppRoleUserControl"
+    x:Name="self"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:AzureAppRegistrationsManager.WinUI.Features.Role"
@@ -36,22 +37,22 @@
             </controls:DataGrid.Resources>
 
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="Display name" Binding="{Binding DisplayName}" />
-                <controls:DataGridTextColumn Header="Description" Binding="{Binding Description}" />
+                <controls:DataGridTextColumn Header="Display name" Binding="{Binding AppRole.DisplayName}" />
+                <controls:DataGridTextColumn Header="Description" Binding="{Binding AppRole.Description}" />
                 <controls:DataGridTextColumn Header="Allowed member types">
                     <controls:DataGridTextColumn.Binding>
-                        <Binding Path="AllowedMemberTypes" Converter="{StaticResource AllowedMemberTypesToDisplayConverter}" />
+                        <Binding Path="AppRole.AllowedMemberTypes" Converter="{StaticResource AllowedMemberTypesToDisplayConverter}" />
                     </controls:DataGridTextColumn.Binding>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn Header="Value" Binding="{Binding Value}" />
-                <controls:DataGridTextColumn Header="Enabled" Binding="{Binding IsEnabled}" />
+                <controls:DataGridTextColumn Header="Value" Binding="{Binding AppRole.Value}" />
+                <controls:DataGridTextColumn Header="Enabled" Binding="{Binding AppRole.IsEnabled}" />
                 <controls:DataGridTemplateColumn>
                     <controls:DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate x:DataType="graph:AppRole">
+                        <DataTemplate x:DataType="local:AppRoleViewModel">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <Button x:Name="AppRoleEditButton" FontSize="10px" Content="✏️" Click="AppRoleAction_Click" Tag="{x:Bind}" />
-                                <Button x:Name="AppRoleDeleteButton" FontSize="10px" Content="🗑️" Click="AppRoleAction_Click" Tag="{x:Bind}" />
+                                <Button IsEnabled="{Binding CanEdit, Mode=OneWay}" x:Name="AppRoleEditButton" FontSize="10px" Content="✏️" Click="AppRoleAction_Click" Tag="{x:Bind}" />
+                                <Button IsEnabled="{Binding CanEdit, Mode=OneWay}" x:Name="AppRoleDeleteButton" FontSize="10px" Content="🗑️" Click="AppRoleAction_Click" Tag="{x:Bind}" />
                             </StackPanel>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
