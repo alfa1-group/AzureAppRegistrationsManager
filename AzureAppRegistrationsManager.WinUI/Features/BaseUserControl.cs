@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using GraphApplication = Microsoft.Graph.Models.Application;
 
 namespace AzureAppRegistrationsManager.WinUI.Features;
@@ -56,13 +57,24 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
             return;
         }
 
-        var button = sender as Button;
-        button?.IsEnabled = false;
+        if (sender is not Button button)
+        {
+            return;
+        }
+
+        var controlsToDisable = new List<Control> { button };
+
+        if (button.Parent is Panel panel)
+        {
+            controlsToDisable.AddRange(panel.Children.OfType<TextBox>());
+        }
+
+        controlsToDisable.ForEach(c => c.IsEnabled = false);
 
         await func(AppReg.Id, value);
 
         OnSave?.Invoke(this, EventArgs.Empty);
 
-        button?.IsEnabled = true;
+        controlsToDisable.ForEach(c => c.IsEnabled = true);
     }
 }
