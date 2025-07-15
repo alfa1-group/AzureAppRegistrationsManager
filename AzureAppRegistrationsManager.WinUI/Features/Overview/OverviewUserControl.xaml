@@ -11,7 +11,7 @@
     <StackPanel Spacing="8" Margin="8">
         <StackPanel Orientation="Horizontal" Spacing="4">
             <TextBlock Text="Display Name: 🔺" FontWeight="Bold" Width="150"/>
-            <TextBox IsReadOnly="{x:Bind Not(CanEdit), Mode=OneWay}" x:Name="DisplayNameTextBox" MinWidth="500" Text="{x:Bind AppReg.DisplayName, Mode=TwoWay, FallbackValue=''}" />
+            <TextBox IsReadOnly="{x:Bind Not(CanEdit), Mode=OneWay}" x:Name="DisplayNameTextBox" MinWidth="500" Text="{x:Bind AppReg.DisplayName, Mode=TwoWay, FallbackValue=''}" TextChanged="TextBox_TextChanged"/>
             <Button
                 x:Name="SaveDisplayNameButton"
                 IsEnabled="{x:Bind CanEdit, Mode=OneWay }"

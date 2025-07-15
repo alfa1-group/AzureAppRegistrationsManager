@@ -1,7 +1,9 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using GraphApplication = Microsoft.Graph.Models.Application;
 
 namespace AzureAppRegistrationsManager.WinUI.Features;
@@ -79,6 +81,31 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
         finally
         {
             controlsToDisable.ForEach(c => c.IsEnabled = true);
+        }
+    }
+
+    protected void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (sender is not TextBox textBox)
+        {
+            return;
+        }
+
+        var buttons = (textBox.Parent is Panel panel) ? panel.Children.OfType<Button>().ToList() : [];
+
+        if (string.IsNullOrWhiteSpace(textBox.Text))
+        {
+            textBox.BorderBrush = new SolidColorBrush(Colors.Red);
+            textBox.BorderThickness = new Thickness(1);
+
+            buttons.ForEach(c => c.IsEnabled = false);
+        }
+        else
+        {
+            textBox.ClearValue(TextBox.BorderBrushProperty);
+            textBox.ClearValue(TextBox.BorderThicknessProperty);
+
+            buttons.ForEach(c => c.IsEnabled = true);
         }
     }
 }
