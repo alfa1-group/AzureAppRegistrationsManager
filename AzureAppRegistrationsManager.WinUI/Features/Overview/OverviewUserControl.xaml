@@ -1,0 +1,53 @@
+<base:BaseUserControl
+    x:Class="AzureAppRegistrationsManager.WinUI.Features.Overview.OverviewUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AzureAppRegistrationsManager.WinUI.Features.Overview"
+    xmlns:base="using:AzureAppRegistrationsManager.WinUI.Features"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel Spacing="8" Margin="8">
+        <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock Text="Display Name:" FontWeight="Bold" Width="150"/>
+            <TextBox IsReadOnly="{x:Bind Not(CanEdit), Mode=OneWay}" x:Name="DisplayNameTextBox" MinWidth="500" Text="{x:Bind AppReg.DisplayName, Mode=TwoWay, FallbackValue=''}" />
+            <Button
+                x:Name="SaveDisplayNameButton"
+                IsEnabled="{x:Bind CanEdit, Mode=OneWay }"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Margin="0,8,0,0"
+                Click="SaveDisplayName_Click">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <SymbolIcon Symbol="Save"/>
+                    <TextBlock Text="Save"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock Text="Application (client) ID:" FontWeight="Bold" Width="150" />
+            <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppReg.AppId, Mode=OneWay, FallbackValue=''}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock Text="Object ID:" FontWeight="Bold" Width="150" />
+            <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppReg.Id, Mode=OneWay, FallbackValue=''}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock Text="Application ID URI:" FontWeight="Bold" Width="150"/>
+            <TextBox IsReadOnly="{x:Bind Not(CanEdit), Mode=OneWay }" x:Name="ApplicationIdUriTextBox" MinWidth="500" Text="{x:Bind ApplicationIdUri, Mode=TwoWay, FallbackValue=''}" />
+            <Button
+                x:Name="SaveApplicationIdUriButton"
+                IsEnabled="{x:Bind CanEdit, Mode=OneWay }"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Margin="0,8,0,0"
+                Click="SaveApplicationIdUri_Click">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <SymbolIcon Symbol="Save"/>
+                    <TextBlock Text="Save"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</base:BaseUserControl>

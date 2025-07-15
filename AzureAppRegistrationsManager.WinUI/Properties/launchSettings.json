@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "AzureAppRegistrationsManager.WinUI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "AzureAppRegistrationsManager.WinUI (Unpackaged)": {
+      "commandName": "Project"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    }
+  }
+}

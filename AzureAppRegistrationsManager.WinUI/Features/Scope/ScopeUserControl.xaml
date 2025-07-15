@@ -1,0 +1,62 @@
+<base:BaseUserControl
+    x:Class="AzureAppRegistrationsManager.WinUI.Features.Scope.ScopeUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AzureAppRegistrationsManager.WinUI.Features.Scope"
+    xmlns:base="using:AzureAppRegistrationsManager.WinUI.Features"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:converters="using:AzureAppRegistrationsManager.WinUI.Converters"
+    xmlns:graph="using:Microsoft.Graph.Models"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel Padding="12" Spacing="12">
+        <Button
+        x:Name="AddScopeButton"
+        IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
+        HorizontalAlignment="Left"
+        Click="AddScope_Click">
+            <StackPanel Orientation="Horizontal">
+                <SymbolIcon Symbol="Add"/>
+                <TextBlock Text="Add a Scope"/>
+            </StackPanel>
+        </Button>
+
+        <controls:DataGrid 
+            x:Name="ScopesDataGrid"
+            AutoGenerateColumns="False"
+            ItemsSource="{x:Bind Oauth2PermissionScopesSorted, Mode=OneWay}"
+            HeadersVisibility="Column"
+            IsReadOnly="True"
+            MinHeight="300">
+
+            <controls:DataGrid.Resources>
+                <converters:ConsentTypeToDisplayConverter x:Key="ConsentTypeToDisplayConverter" />
+            </controls:DataGrid.Resources>
+
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn Header="Scope" Binding="{Binding Value}" />
+                <controls:DataGridTextColumn Header="Who can consent">
+                    <controls:DataGridTextColumn.Binding>
+                        <Binding Path="Type" Converter="{StaticResource ConsentTypeToDisplayConverter}" />
+                    </controls:DataGridTextColumn.Binding>
+                </controls:DataGridTextColumn>
+                <controls:DataGridTextColumn Header="Admin Consent Display Name" Binding="{Binding AdminConsentDisplayName}" />
+                <controls:DataGridTextColumn Header="User Consent Display Name" Binding="{Binding UserConsentDisplayName}" />
+                <controls:DataGridTextColumn Header="Enabled" Binding="{Binding IsEnabled}" />
+                <controls:DataGridTemplateColumn>
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="graph:PermissionScope">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button x:Name="ScopeEditButton" FontSize="10px" Content="✏️" Click="ScopeAction_Click" Tag="{x:Bind}" />
+                                <Button x:Name="ScopeDeleteButton" FontSize="10px" Content="🗑️" Click="ScopeAction_Click" Tag="{x:Bind}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
+    </StackPanel>
+
+</base:BaseUserControl>

@@ -1,0 +1,232 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>AzureAppRegistrationsManager</title>
+    <style>
+        body {
+            padding: 5%;
+            display: flex;
+            font-family: Segoe UI;
+            line-height: normal;
+            color: #333333;
+            font-size: 15px;
+        }
+
+        .t {
+            border: 1px solid red;
+        }
+
+        .left-col {
+            flex: 0 0 200px;
+        }
+
+        .right-col {
+            flex: 1 1 30px;
+            max-width: 650px;
+        }
+
+        img {
+            width: 200px;
+            height: 200px;
+            border: 1px solid #d2d2d2;
+        }
+
+        .additional-links-title {
+            margin-top: 50px;
+            margin-bottom: 20px;
+        }
+
+        .lg {
+            font-size: 20px;
+        }
+
+        .xl {
+            font-size: 34px;
+        }
+
+        button {
+            background-color: #0078d4;
+            color: #ffffff;
+            text-align: center;
+            width: 150px;
+            height: 40px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
+
+        a {
+            color: #0067b8;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .dark-blue {
+            color: #0078d4;
+        }
+
+        .mb-24 {
+            margin-bottom: 24px;
+        }
+
+        .mr-28 {
+            margin-right: 28px;
+        }
+
+        .mb-12 {
+            margin-bottom: 12px;
+        }
+
+        .mb-28 {
+            margin-bottom: 28;
+        }
+
+        .key {
+            font-weight: bold;
+            margin-right: 24px;
+        }
+
+        .value {
+            flex: 0 0;
+        }
+
+        .info-row {
+            display: flex;
+        }
+
+            .info-row > div {
+                flex: 0 0 250px;
+            }
+
+        .mr-24 {
+            margin-right: 24px;
+        }
+
+        .alinks > a {
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        @font-face {
+            font-family: "FabricMDL2Icons";
+            src: url("data:application/octet-stream;base64,d09GRgABAAAAAAikAA4AAAAAEFwAArXDAAAAAAAAAAAAAAAAAAAAAAAAAABPUy8yAAABRAAAAEgAAABgMVNt8GNtYXAAAAGMAAAAPQAAAUrn3uhoY3Z0IAAAAcwAAAAgAAAAKgnZCa9mcGdtAAAB7AAAAPAAAAFZ/J7mjmdhc3AAAALcAAAADAAAAAwACAAbZ2x5ZgAAAugAAACYAAAArMVoOlRoZWFkAAADgAAAADYAAAA2/aZ4x2hoZWEAAAO4AAAAHAAAACQQAQgGaG10eAAAA9QAAAAMAAAADA0tArxsb2NhAAAD4AAAAAoAAAAKAIAAVm1heHAAAAPsAAAAHgAAACAAdQFibmFtZQAABAwAAAP1AAAJ+pON8FRwb3N0AAAIBAAAABQAAAAg/1EAe3ByZXAAAAgYAAAAiQAAANN4vfIOeJxjYGH3YpzAwMrAwDqL1ZiBgVEaQjNfZEhjEuJgZeViZGIEAwYgEGBAAN9gBQUGh+e8z3M4wHwIyQBWxwLhKTAwAAC9CwfdeJxjYGBgZoBgGQZGBhBwAfIYwXwWBg0gzQakGRmYnvM9z/n/n4HhOS+IlvgiMR2qHggY2RhGPAAAKgkLDwAAAHicY9BiCGUoYGhgWMXIwNjA7MB4gMEBiwgQAACqHAeVeJxdj79Ow0AMxnMktIQnQDohnXUqQ5WInemGSyTUJSUM56WA1Eqk74CUhcUDz+JuGfNiCMwR/i62v8/6fL9zp/nJfHacpUcqKVacN+Gg1AsO6u2Z/fkhT+82ZWFM1XlW92XBagmia04X9U2waMjQ9ZZMbR4ftpwtYpfFjvDScNKGTuptAHaov8cd4lU8ksUjhBLfT/F9jEv6tSxWhtOLJqwD916z86gBTMVjE3j0GhB/yKQ/dWcT42w5ZdvATnOCRJ/KAvdEmoT7S49/9aCS/4b7bci/q0H1Tdz0FvSHYcGCsKGXZ9tQCRpg+Q6E/GTGAAEAAgAIAAr//wAPeJxNzDEOgkAUBNDZP7CbLQmFNQWxouYOFh5gCd7AlhNY2eIJJOEIHIfSjguYv8bFyqlmkpeBYAayWz6AcEBbVEVdFdXMVRdZ4gn58L4/sjNSDErzcpttkKdx8KY1bgxaahk42iY1bkGvyVHoou125+XojZu01z4wMgr51EvgR+X3KQRt5+Ju63TpzZ/oOXEKSmWiXwEdK5oAAQAAAAK1w+rXyPRfDzz1AAsIAAAAAAC//cGAAAAAANaItIkAAwAAB/0H/QAAAAkAAgAAAAAAAHicY2BkYOBgAAEgyczAzP6XgZEBFTABABYBAR8FKgCmCAAAEwADAgMAAAAWACoAQABWAAB4nGNgZGBgYGHgYGBiAAFGMMkFxCmMkSAmAAafANkAAHictVQ/ixw3FH97u/ZdcHyEQMClihDOxzLr2xSH7eqw48rXnM2Bm4B2pJ0Rnh0JSeNhQoqULvIx0hjyKUICKVPnE6ROlTLvvdHs3nk35hLIDqP56en9/b2nBYB7oy9gBP3vS3x7PIJPcdfjPdiHrxIeo/x5whPEXyd8Cz4Gl/Bt+AS+TXgfHsL3CR/AZ/BLwnfgGH5P+O7o59Ek4UM43vsVo4wmH+FO7f2Z8Ag+H18mvAeH428SHqP8bcITxD8mfAvujX9L+DaI8R8J74OfHCR8AMeTwc8deDn5IeG747eTvxI+hJcH3/30TswfnJyKc5N7G+wyiifWO+tlNLbOxFlViQtTlDGICx20f6NV9kwuvMnF+dPnc3EWgo7hQhdNJf32wbbkUvuAnsU8Oz3pT+mwP3uhC6uFCUKK6KXSK+lfC7sUsdRX8iu8bRyJc7tysjY6ZDuTL2N0j2aztm2z1XCeoc0sds4WXrqymy1tHcNsYx4a5yqjlaCDTLyyjVjJTjRBYxKYGIlFtCL3WkY9FcoEV8luKmSthPMGT3NU0fiVQTjtVyZGdLfouIjK5LomX3gQhPUDWFKE6XapzlvV5HEqiHm0nZLNEMDUoi1NXl7JrMWgps6rRmGb1tnbuurEkbkv9GqBuWzU0cOHsmV1ZepCeB0idopY3QQg87Wvx8zAkcEoUa+oBd5gVGXburJSXWdP9lRpT+VYDIVrE10ThdJUJumUunLXGcVhrLukTg1Bh8hPaRYGc85u3m14BwLm8ABO4BTRORjIwYOFgO8SIsqeIPJ452mVKDGIasjw5AwqfARcoKyAEs8C7zR+NWq/wVWh5jO0W+CefFOMp/jPMmf7wJpkR1YFNOhPouZNLG6ic8l5hJQzVZphnSfXbAfLq3YvOBuLq0AdqkriG5kBhdIVZ/kaZcQSnZSsu4u/gvcNMjho5/hd4V5iTobZyv4F88RzROkjmOHT8pOhv/ftsxRnhrhjLwX7ceihQ+mSvVG1s53RA+fssCOG+yjWFtT7V1yTYCY6/DbMXc9Ez9igTTLLVXvUoDo0THGvWM9xxzuWEB8Ux3Fnets8edFpL9m3475SzZHPyGrBeQydqLgishry6i0Cd8FvSZbrGqY36qrjvUKbHPdT5quf+T7udB3n/QoMT2LLPOW47uasTZWSdo7VNDx3aif3ZFMxOkL9+/ilCV0kXnZ573P4r9xuvCv2VKDM8xzHdKeGWd1VwRB9O6/HV2aAKulriRxvuAXkv69VoaTlyi3fyg/Nnrw2VZr7YtPaV9Xjhm9Ww5aU7dDNwQ9pVnyT/3lG+3/GOnVm4324ISaxTPND+S6Y6b63/8Pd/hs3FDiOAAAAeJxjYGYAg/9+DOUMmIAFACkuAcx4nNvAoM2wiZGTSZtxExeI3M7Vmhtqq8rAob2dOzXYQU8GxOKJ8LDQkASxeJ3NteWFQSw+HRUZER4Qi19OQpiPA8QS4OPhZGcBsQTBAMQS2jChIMAAyGLYzgg3mgluNDPcaBa40axwo9nkJKFGs8ON5oAbzQk3epMwI7v2BgYF19pMCRcAxAEoGgAAAA==") format("truetype");
+        }
+
+        .ms-Icon {
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-font-smoothing: antialiased;
+            font-family: "FabricMDL2Icons";
+            font-style: normal;
+            font-weight: normal;
+            speak: none;
+        }
+
+        .ms-Icon--ChevronDown:before {
+            content: "\E70D";
+        }
+
+        .ms-Icon--ChevronUp:before {
+            content: "\E70E";
+        }
+
+        .ms-Icon--ChevronRight:before {
+            content: "\E76C";
+        }
+
+        .alinks {
+            max-height: 0px;
+            transition: max-height 0.2s ease-out;
+            overflow: hidden;
+        }
+
+        input#achk:checked + .alinks {
+            height: auto;
+            max-height: 400px;
+            transition: max-height 0.5s ease-in !important;
+        }
+
+        .sm {
+            font-size: 10px;
+        }
+
+        label {
+            cursor: pointer;
+        }
+
+        .dlbuttons > a {
+            margin-right: 5px;
+        }
+
+        .app-image {
+            background-color: transparent;
+        }
+    </style>
+</head>
+<body class="body">
+    <div class="left-col mr-28">
+        <img alt="application image"
+             class="app-image"
+             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAACXBIWXMAABYlAAAWJQFJUiTwAAAUTUlEQVR4nO2de5AcxX3Hfz27e7d3uqfurdMbCT1OAiQewgTLEjaBmCAbuySbcnQhgAjlqliiHKqEy7GCQxJVOa6Qv5KShJEUh4dLFCQISTzqkO0kBGJJEJAlCqHHcdKd7rl7j929fUynZ9HjOOm693ZneqZ7fp+qvdm92d359fZ859e/7l/3BAFBkAkJum0AgngZFAiCcECBIAgHFAiCcMhLIK07+xYTCITtNsZukiE4+fz3qiIT7f/TnZHlMu2xm10PVB122wYeX26jgemd0fLL/zEC4YRZcfFVKgRGMJ0Z3flgTYcb9uVC7gKhFFp3DbxIgdzNXlVQoM5ZZRPBJFnLNnsm2s/KcEiiOU5AeDtbdw5sopQ2XH4zKWdlvlTnhJAy9iuELr5mdVtKKC2+9JqQEvb38oWQkjAQWjLmdTEBWjrGnCJ2kLJLL9vHX5sykAlcfmWYAKZhwPqd/UeYbf+x+4Hqv+aW1gVyEkjrswODsCtSnv2JnbYIsQ12TXuIiWDJ2P9dWYPki8/IuNdj308Er/OE2bSMbZYxQW9hW0so3yj4S21CKBCrGcKuOuWi9yGITayxlD1WqG7CFcj6Z/t/ZAL9W1nGyMb7jcTCULV863cOdAV39Mx79uG6YbdtEXgQ8qgcMxBkDIQ0pALBdezZL9w2hS8QAjMk2YEgX4AQ+iPwvEAQxC0oaXLbBAuuQChVtRX7OQRM7n7VyydC8fKVit/iPOhBEIQDCgRBOKBAEIQDCgRBOPCDdFlWOAQ/RFe/fLnghzI6CXoQBOGAAkEQDigQBOGAAkEQDloH6SKwfIgIX3sQCjRDgATE70T8iq8FAkAS7M8Ut61AvIuvBUIAUm7bgHgbXwuEtbHiTCVVbpuBeBe9090F05opNVN2LDrgVVj5QOfyycDXHoQSEsPTB+Hha4EQStNeWT0D8Sa+FgiTSMxtCxBv42uBUELTuBQewkPrkXRRujtTSIxqrA8M0QvH3x4E0IMgfHwtEBagYwyCcNG6iSWEQlrnJpb29ScBvgdR/RcWBiEQU76MInQvn8P4u4lFaQrHQRAegiaW2pcfUQBuEhrXWR6q158X8LUHwWxeRITWQbooBDEpxHVvYaleh27jbw9CIO22DYi34XsQk5rsLDJkGSMbVrqYzuOEis9W8ASiJpbJzh9tBQLESGMjBOEhEAhJid7jZUTOgYIZ0zlbCXOxCkd08mekWOESlJAUQQeCcBAIhKaowtcg4UC6SeNU424s1H7hiFJN1PYgojnpxGAeROPTSOOiyUJ0l9uk2r+y4B6FZiZONPYgatedN+AKxGSnkM7zJQzFm5AiUB6FwxUIE0dSliGuYJA4nkUID8G6WCwGUfgCKzLdhEAql5x4lUH9F4YoSH+fPaKSbLGdDBgDvP3UTMeJxuOglJLfEwoJt+1QGa5AXvnzunWyDHGDDKGdQZNuddsOp/j3R+q+47YNqqPsKLkd7N3Q2M02T7htB+JdfC0QBBGBAkEQDigQBOGAAkEQDigQBOHAFcg923uWyzLEEVKhk699vyoy0W7Vy/fahrrDvP26l08G/FQTkx6SZYgT0EByLdvsmWi/6uUDQbKA7uWTATaxEISDKBdLbYT3KJRjhlvoXj4ZoAdBEA5aLxwnXrRBb3QvnwxEc9LlWOEYKBGkMLCJhSActA7STcFcKNXLJ0L38skAPQiCcNA6SBeB5UNEoAdBEA5axyDCPizFyydC9/LJQOtbsJmiheMUL58I3csnA4xBNEb38skAYxAE4aB3DILJikiBoAdBEA6aB+l8VC+fCN3LJwNfB+km0AwBEnDbDqfQvf5kIFqbV22EN0onCSAwRYotbqB6/XkArT2IONmdpjww7dkxVK8/L6C1QHK4sUGclbHKeUvcQfX68wI+nzAFKfXLyEPnsslB63EQEczDxHS+DbTu9ScDf4+DUJoWjiYivkbrGCSHGekxKYa4hOr15wW0bmKZwlQTkpZjiTuoXn9eQOuRdOF90gnV3IOoXn/ugzEIxiAIB3/HIARjEISPv1NNNI9BlK8/D6C1BxFn86IHcYLS8Of3no8lcshl8DiaB+kCKE1RjUMQN+rPMAh8696GbGj3yz2dYJpqn0Nad/OKzn1Wd3GN9SG1/irKg7BuTcMX/vdn352W3b609zwMRNVszfq6F4sQvbN5ZbH8ugq4oaVswv33fb0ejn0yAu/8LirRKnvwdQzC9uvtQRz+/jV/WAcNdUXC91nNrpYFZdlHT18SXjnQ47Bl9uFvD0IhjQ5k8oSLDVi+tDwncYynrqYIVt1WDe8dHmRBfMYB6+yF70FMmmQn0OR/Ba8gGASkVPORdJvrr7mxGG67qQqqq0IFfc/8OaXZR3QozZpdEWg/m7DJQvsRNbGU7qcTDxTStM4xiJ31V8mC8Hu+VmfX1136zrtX18KLr3ZBxKNBvGjClBXEhuWY4gI0EAOdJ4QUWH/WpWPOzBK4c2WNjTZdyXfubcxuf/PuABw/MeKp3lOuQEwgooRYTyMM0g0zRTQeCCm0/tbcVQdNdcW22SNi5YpqWDRvCry0v1vaMUUIxkEU7wYV3WEqA3GViycin/ojBsCDa6dBUZHhkFV8rCD+0T+ZDqk0hfX3mEUbrzWSrhhyAa5ACAvzZBniDHzzSbYJoi+Trb/mxjDczoJwt8QxllCQQKia/t/2bvOxDfXGfrfs4HsQQpQ+gcT3B6FxndPdc62/m6+vhOUt5RAIeO23IAtY9ezb0W1avXH//HCdsUm2BYJsXnYF0vgEgoCRUn40lEcO9Td7egncfF2FJIPyhBCrq3rjM73moQdryL8SieekoJuXKH0CCbN50ywGcb814RgT1Z810Hfz9RVw3cJy+UYVAKVk9zO9sJs1u3azyn18Q6PheDQv6MUSTutWm6CRoqJ7RSvM1erPCsK/982mrEhUhXmQVmrQe39FacM6h8MA4TiIwg5EGINkIBUnOruQMfVXPiUAD3y72VVr7ISJpHqwF5I7epifzMDchxrJKSeOwxeICdsogQbuezxMhpDj/P1mZ4AaW2XZI50L9XfXl2tunz+7dAX7T2E5Ih7FNOixHT3mvzgRxHMF8sHjs562+4Be4uima6w27BNu2+EUf/HAjPvYtXal23Y4DfMm1mjmRuZNNrJA5d2H641b7fpuX2fz6sr2iFnNWuZb/CCOKyBkBQvid6Uy8JffbzIKzqtHgWgEa2asYpunIUWud9sWN7GC+KIgtDKhHAcKmzY0GK/n+10oEE3Y1ms2AyVvu22Hl2BCWQgEDmzrNOc80mSczuc7UCCKs73H/GMC5FWVx6ucxgiSU9neLkJbJzvQiAJRGNaEOMDEcZfbdqiCNdC4o5c+xJ6uyvUzXIEs/Iczyws1yk2CKTj50ROzIhPtV7F8gSAxNt4//XXDIFPdtkVF2AXlK8ybUKaW/s/qSP2ThHDn/fKzeU16yF7z5GIGyFq22TPRftXKN6MxDKtvrc4ugoAUCCFTZ/TQD7edNzc90mC8MdHbRPNB7DdMIiYRrO6uWPlKVtfD+32jcGe125bowemh2Pk327tfYk8nTErTetkfEaqVjwQIjNaH4X+6EnBro74zoWUwlEy/t+/M+VWi9+m9sqJoRqGi5eutCcPeFEAlob+5JQAtxYQ4O2lcE1h9R45FBj862NF7O3t5Sy6fwV4shYlSsvLNNO3/epCmDUKwLjmw5rS561h7OpbJ3D6ZzwnS3RW9xOaIHuUjU/dZK+awE2B1EDqnGESflF0byFCze9tHp2ppNtEfaif7ebzq6AIhxttpWtlowMGbgrn38+tMx3DsPw+cOX/DBXHkhd4xiGC/6uW7AkLKuiissuKTYkIP3RkkN7ptkhv8+mzvkaP9g8vY00k1p66G1r1YOdxAR1tGKblx/9kEfKW+CEpDOk8Ku4y1lOwnkZHDTBwFC+MiWo+D5LA2ryRD3CFTH4Y2tk31JGFJAGD+VHWXWeaRMs2PXz/TnW4fjrWADV5jLBiD+IBQVREcZ9eC+kQGKsMBt82xFWpCZMfRU/MLiTN4aN3EEsYgUqzwBpYz/W2AiYPFJ7MGRmFpvbwlRZ0glkp/tPN4+xL2tMrJ1T+1DtJFC5aoXr58OVNdDCc7R+EbTWqK5L+7+j74oCcqZVKY1h5EhO7l4xGoLc6OxqdjGfhmpRrNrn/7uL0nmkxb92CQNmNS67vcEkE/lurls4NgaQBe7hqF5SUGzKr05qInLAg/83ZHT4yJY5HsY2vdxBLd4Ev18tlFqKYYPmTb94dNqIwmYVWzNxIhzw0lPnyj4/zsWDozyy0bsBcLuUSg2IDh+jAc70vCwhp3u4S7BkbhlY5zS101AjT3IKLODeXL5xAnKorgBItPQl0JuKO5GEKSJmiZJoUj7YPw7lCflOPlAgbpyISkGsOwN5qG+6rlNDRe+PgsRNKu3i/nCrQO0sWpJmqXTwahsmC2t4uyq/sdBoUpNqetWHeS+sXx05DxqDvHGATJCcKaWW/GTajrScAfTLMniP/0fAz+q6/Xs+Kw0DsGwYFCWwmWBGCAPV5lrSDKhLImz96ugyd64VhiSIlcOIxBkEljpa2Q+jC83RGHlc0lkOud2yw9HD07BL+PDzproI1onc1LBd1YqpfPbUYaSmB/GiBpNbsqgtBQdvXTaSiWhnfODcCJ+JBkCwsHPQhSMEV1YXiXBdt3ZygUjXMnGRbcv3i6A5IZNe/kpbVAMJtXHkaQwBuWBthjyUgKygPAhPGZ22YVjOAut5KscApUiCuUVoTg4FDcbTNsQfNxEExWlIV1LfpaCOBiAn1xaQnMXDgXzEwGOk6cUfZipHUTS4Tu5ZNFJVPHEuOyOMZiBALQOKsZBs73wWg8Id22QtF6HETXlRW9whwmigUB8WhzUbgYGmZNy47GD/ZHINo7IMU+O8CRdCQvGpg4WiY5z8oaja+srYZ0Kg0jUTW6fLX2IDgfxF5CrCl1DXvMK3ACYk1TXfYxHBmESM9ANk7xKloH6SJ0L5/drGZni52zRMqqKqC0vIwF8ac9GxBikI5wKWEe446gc+uGGAEDZi6Ym31+7tP2bPPLS2gtED+vrGgHVlNqvuHkojpfpGnuDBgaiEKku1/SEcVoHYPgjML8WMGEUefCaqXW3WcrplZlH4lYArrbz8k3YhzYi4VcwgrCFxjuiGM84dIwC+TrWRDfB5m0e0G81tm8YGI2by7UsJ+phZ0JFW4bMo4plWXZRzqZgv7uPkgMx6TbgDGIz7GC8C95vB0RLApB/fRGOHfys6xYpB6bt1P3E0j38k2E5Vcb2Z8bPS6M8UxjQbxFf1cvjEQHpcSQejexRMmKypcvP25jtV6t8K3WpzbWQllVOXSdPuv4sbT2INjEuoylh7tC+vTKWPldVrawld/V8clpxy522M3rA6xeqcWGPuIYi5Xf1Th3OkR7+iE2OGL79/PvckvNdwghX7L9qB5B91STawMA85gwPNBr6yihUAhqpzUAbaLZ/C4rtd4u+AIhxlMG0NdsO5pk/NrEshzndKaKa3VXxjisgcby6kpIJ9MwFInaUsF8gfzd4n3mliNVgWRRpPBDuYDP5oOEyeeimOkzYYynuqEm+7CaXNZAYyH5XeJm6ZPLopnNR9tYU++OvI/iUXTSh7W+9KqgnnFGvpRWTIGSstKCgvjcfs+tLV/NXoyf+PA+dlW+m/my5XkdTTqEO3XNpPR3siyxiZvG/6PsgjCQq2MF8TMWzMk+7zzVAanRyS2OPbmf9u+Xvsz+vjypz3iZrUtudtuESfGDL14GF7Km1FyfN6cmQ9PsZhiODmUHGnMFrz0KstLKm1J4oM81WBBvTdKyHqlkCjpPitftQoEoRMmFbFsUR+GEikJQN70RBs7zvQkKRCFmUbgxDPRX7FJ4jdu26AAxjK7iqeXreO9BgSjE1mnkMNvMe7rbjJURUuK2PSqTSiZHD8wraRK9DwWiIJvqjVJr+1S3eaSBkBuwxZUbVhfHaCz26YH5U+bl+hkUiML8uN5Ytvmc+UfzQmSf27aowFAkuratpWrPZD6DAlGcrdOM/WxDtrSb1dPC0BsgBDt+x2Bl+w6NjjS0XVPenc/nUSCa8ORMY4B5kxVVAfpCrYFBvEUilugaGY2v+23L1LzEYYEC0QjmTazMgHmtlBbP7qbbZxpkvds2ucFwdHhfqiu27terGwrOf0eBaMhuQkbZppUF8Uv9FMRfDMLfWlR+j13fiQLRGCuIz247zZ82BmBzmJCQ2zY5QSadTo8Mx55pW1z5qN3fjQLxAU81GT957Cz9p4VFLIh32xibsbJ0k8MDM9oW13c58f0oEJ/wj83EmmaXbW3pMNCYSqVGX5tVlN+N2icBCsSHHK4j1SoH8ReDcBnHQoH4kItBvPXY3GV+d16APO+2TbkwHIk8/Nbi6mdkHhMF4nO2NhovsCB+sZeD+MtBuFxxWKBAkGwQzzY/2dxp3lJlwHNeGWi0BvqS8cT9bUurD7plAwoEucTWJuM98Ei2sBWE55Jt6zQoEOQK3MwWToxMLtvWaVAgyIRYA40/7jLvnx0gz8k43nB/ZMNbS6p3yDhWrqBAEC5PNRpWD9fzj52lNU4MNFoDfUPd/c1ty2rdv53UVUCBIDlhDTQ+3mF+tTYEO2sMMsOO72QBeN/oaLLVq+KwQIEgOfOz6UYb28zcQmkJ6aK/nB4k38rne0aiwwcj0dE1/3tr7ZDNJtoOCgSZNE8SEmebb+cTxFtB+JuLylc7ZZvdoECQvLmYLfxXnebP6w34QYlBrno+pVPpTCIWf+6tRRWtci0sHBQIUjB/02T88Ied5tYFBnSPn+9rBeGx/uhML8cZPFAgiC38vMnogcvZwnHmNYy9s4qKXTarYFAgiO30U1I7dJK7brgyoEAQ2/lpA7H/XmgugQJBEA4oEAThgAJBEA4oEATh8P8HAc/eDEdDKgAAAABJRU5ErkJggg==" />
+        <!--<div class="lg additional-links-title">
+          <label for="achk">
+            Additional Links <i class="ms-Icon--ChevronDown ms-Icon sm"></i>
+          </label>
+        </div>
+        <input type="checkbox" id="achk" style="display: none" />
+        <div class="alinks">
+          <a
+            href="https://mstackappdistribution.z6.web.core.windows.net/AzureAppRegistrationsManager/AzureAppRegistrationsManager_1.0.0.0_x64_Test/AzureAppRegistrationsManager_1.0.0.0_x64.cer"
+            >Publisher Certificate</a
+          ><a
+            href="https://mstackappdistribution.z6.web.core.windows.net/AzureAppRegistrationsManager/AzureAppRegistrationsManager_x64.appinstaller"
+            >x64.appinstaller</a
+          ><a
+            href="https://mstackappdistribution.z6.web.core.windows.net/AzureAppRegistrationsManager/AzureAppRegistrationsManager_1.0.0.0_x64_Test/AzureAppRegistrationsManager_1.0.0.0_x64.msix"
+            >x64.msix</a
+          >
+        </div>-->
+    </div>
+    <div class="right-col">
+        <div class="app-title xl mb-24 dark-blue">
+            AzureAppRegistrationsManager
+        </div>
+        <div class="app-version lg mb-24">Version 1.0.0.0</div>
+        <div class="app-description mb-24">AzureAppRegistrationsManager</div>
+        <div class="mb-12 dlbuttons">
+            <!--<a href="javascript:void(0)" id="downloadMsixLink"><button>Download msix</button></a>
+            <a href="javascript:void(0)" id="downloadInstallerLink"><button>Download installer</button></a>-->
+            <a href="https://mstackappdistribution.z6.web.core.windows.net/AzureAppRegistrationsManager/AzureAppRegistrationsManager.zip"><button>Download</button></a>
+        </div>
+        <!--<div class="mb-24">
+          <a href="https://go.microsoft.com/fwlink/?linkid=870616">
+            Troubleshoot installation
+          </a>
+        </div>-->
+        <div class="mb-28 lg">Application Information</div>
+        <div class="info-table">
+            <div class="info-row">
+                <div class="key">Version</div>
+                <div class="value">1.0.0.0</div>
+            </div>
+            <br />
+            <div class="info-row">
+                <div class="key">Required Operating System</div>
+                <div class="value">10.0.19041.0</div>
+            </div>
+            <br />
+            <div class="info-row">
+                <div class="key">Architectures</div>
+                <div class="value">x64</div>
+            </div>
+            <br />
+            <div class="info-row">
+                <div class="key">Publisher</div>
+                <div class="value">Stef Heyenrath</div>
+            </div>
+        </div>
+    </div>
+    <!--<script src="./scripts.js"></script>
+    <script src="https://mstackappdistribution.z6.web.core.windows.net/AzureAppRegistrationsManager/scripts.js"></script>-->
+</body>
+</html>

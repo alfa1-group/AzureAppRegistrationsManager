@@ -1,0 +1,93 @@
+<base:BaseUserControl
+    x:Class="AzureAppRegistrationsManager.WinUI.Features.Authentication.AuthenticationUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AzureAppRegistrationsManager.WinUI.Features.Authentication"
+    xmlns:base="using:AzureAppRegistrationsManager.WinUI.Features"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel Spacing="8" Margin="8">
+        <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock
+                TextWrapping="WrapWholeWords"
+                Text="Select the tokens you would like to be issued by the authorization endpoint:" 
+                FontWeight="Bold"
+                Width="300"/>
+            <StackPanel Orientation="Vertical" Spacing="4">
+                <CheckBox
+                    x:Name="EnableAccessTokenCheckBox"
+                    Content="Access tokens (used for implicit flows)"
+                    IsChecked="{x:Bind AppReg.Web.ImplicitGrantSettings.EnableAccessTokenIssuance, Mode=TwoWay}"
+                    IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
+                    MinWidth="500"/>
+                <CheckBox
+                    x:Name="EnableIdTokenCheckBox"
+                    Content="ID tokens (used for implicit and hybrid flows)"
+                    IsChecked="{x:Bind AppReg.Web.ImplicitGrantSettings.EnableIdTokenIssuance, Mode=TwoWay}"
+                    IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
+                    MinWidth="500"/>
+            </StackPanel>
+            <Button
+                x:Name="SaveImplicitGrantSettingsButton"
+                IsEnabled="{x:Bind CanEdit, Mode=OneWay }"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Margin="0,8,0,0"
+                Click="SaveImplicitGrantSettings_Click">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <SymbolIcon Symbol="Save"/>
+                    <TextBlock Text="Save"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock Text="Web Redirect URIs:" FontWeight="Bold" Width="300"/>
+            <TextBox
+                x:Name="WebRedirectUrisTextBox"
+                IsReadOnly="{x:Bind Not(CanEdit), Mode=OneWay }"
+                AutomationProperties.Name="multi-line TextBox"
+                Text="{x:Bind WebRedirectUrisText, Mode=TwoWay, FallbackValue=''}"
+                AcceptsReturn="True"
+                MinWidth="500"
+                Height="110"/>
+            <Button
+                x:Name="SaveWebRedirectUrisButton"
+                IsEnabled="{x:Bind CanEdit, Mode=OneWay }"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Margin="0,8,0,0"
+                Click="SaveWebRedirectUris_Click">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <SymbolIcon Symbol="Save"/>
+                    <TextBlock Text="Save"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock Text="Spa Redirect URIs:" FontWeight="Bold" Width="300"/>
+            <TextBox
+                x:Name="SpaRedirectUrisTextBox"
+                IsReadOnly="{x:Bind Not(CanEdit), Mode=OneWay }"
+                AutomationProperties.Name="multi-line TextBox"
+                Text="{x:Bind SpaRedirectUrisText, Mode=TwoWay, FallbackValue=''}"
+                AcceptsReturn="True"
+                MinWidth="500"
+                Height="110"/>
+            <Button
+                x:Name="SaveSpaRedirectUrisButton"
+                IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Margin="0,8,0,0"
+                Click="SaveSpaRedirectUris_Click">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <SymbolIcon Symbol="Save"/>
+                    <TextBlock Text="Save"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</base:BaseUserControl>
