@@ -31,15 +31,24 @@
 
         <StackPanel 
             Grid.Row="0"
-            Orientation="Vertical"
-            Spacing="4">
+            Orientation="Horizontal"
+            Spacing="20">
 
             <Button
                 x:Name="RefreshButton"
                 Click="RefreshButton_Click">
                 <StackPanel Orientation="Horizontal" Spacing="4">
                     <SymbolIcon Symbol="Refresh"/>
-                    <TextBlock Text="Refresh Applications"/>
+                    <TextBlock Text="Refresh Own Applications"/>
+                </StackPanel>
+            </Button>
+
+            <Button
+                x:Name="RefreshAllButton"
+                Click="RefreshAllButton_Click">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <SymbolIcon Symbol="Refresh"/>
+                    <TextBlock Text="Refresh All Applications"/>
                 </StackPanel>
             </Button>
         </StackPanel>
