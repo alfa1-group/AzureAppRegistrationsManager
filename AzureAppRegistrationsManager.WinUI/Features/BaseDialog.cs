@@ -38,7 +38,7 @@ internal partial class BaseDialog : ContentDialog, INotifyPropertyChanged
             return;
         }
 
-        IsValid &= ValidateTextBox(textBox);
+        var thisTextBoxIsValid = ValidateTextBox(textBox);
     }
 
     protected void ValidateTextBoxes(object sender)
