@@ -56,13 +56,29 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
             return;
         }
 
-        var button = sender as Button;
-        button?.IsEnabled = false;
+        if (sender is not Button button)
+        {
+            return;
+        }
 
-        await func(AppReg.Id, value);
+        var controlsToDisable = new List<Control> { button };
 
-        OnSave?.Invoke(this, EventArgs.Empty);
+        if (button.Parent is Panel panel)
+        {
+            controlsToDisable.AddRange(panel.Children.OfType<TextBox>());
+        }
 
-        button?.IsEnabled = true;
+        controlsToDisable.ForEach(c => c.IsEnabled = false);
+
+        try
+        {
+            await func(AppReg.Id, value);
+
+            OnSave?.Invoke(this, EventArgs.Empty);
+        }
+        finally
+        {
+            controlsToDisable.ForEach(c => c.IsEnabled = true);
+        }
     }
 }
