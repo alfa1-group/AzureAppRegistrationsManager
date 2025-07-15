@@ -5,13 +5,17 @@
     xmlns:base="using:AzureAppRegistrationsManager.WinUI.Features"
     PrimaryButtonText="Apply"
     SecondaryButtonText="Cancel"
-    DefaultButton="Primary">
+    DefaultButton="Primary"
+    IsPrimaryButtonEnabled="{x:Bind IsValid, Mode=OneWay}">
 
     <ScrollViewer 
         VerticalScrollBarVisibility="Auto" 
         VerticalScrollMode="Auto"
         MaxHeight="600">
-        <StackPanel Spacing="24" Margin="0,0,0,24">
+        <StackPanel 
+            Loaded="StackPanel_Loaded"
+            Spacing="24" 
+            Margin="0,0,0,24">
 
             <!-- Display name -->
             <StackPanel Spacing="8">
@@ -47,8 +51,7 @@
 
             <!-- Value -->
             <StackPanel Spacing="8">
-                <TextBlock Text="Value" 
-                               FontWeight="SemiBold"/>
+                <TextBlock Text="Value 🔺" FontWeight="SemiBold"/>
                 <TextBox 
                     x:Name="ValueTextBox"
                     TextChanged="TextBox_TextChanged"

@@ -1,31 +1,10 @@
 using Microsoft.Graph.Models;
+using Microsoft.UI.Xaml;
 
 namespace AzureAppRegistrationsManager.WinUI.Features.Role;
 
 internal sealed partial class AppRoleDialog : BaseDialog
 {
-    public AppRoleDialog()
-    {
-        AppRole = new AppRole
-        {
-            Id = Guid.NewGuid(),
-            DisplayName = string.Empty,
-            Value = string.Empty,
-            Description = string.Empty,
-            IsEnabled = true,
-            AllowedMemberTypes = ["User"]
-        };
-
-        Title = "Add Role";
-        InitializeComponent();
-    }
-
-    public AppRoleDialog(AppRole existingAppRole) : this()
-    {
-        AppRole = existingAppRole;
-        Title = "Edit Role";
-    }
-
     public AppRole AppRole { get; set; }
 
     public bool IsUsersGroupsSelected
@@ -60,5 +39,32 @@ internal sealed partial class AppRoleDialog : BaseDialog
         {
             AppRole.AllowedMemberTypes = ["User", "Application"];
         }
+    }
+
+    public AppRoleDialog()
+    {
+        AppRole = new AppRole
+        {
+            Id = Guid.NewGuid(),
+            DisplayName = string.Empty,
+            Value = string.Empty,
+            Description = string.Empty,
+            IsEnabled = true,
+            AllowedMemberTypes = ["User"]
+        };
+
+        Title = "Add Role";
+        InitializeComponent();
+    }
+
+    public AppRoleDialog(AppRole existingAppRole) : this()
+    {
+        AppRole = existingAppRole;
+        Title = "Edit Role";
+    }
+
+    private void StackPanel_Loaded(object sender, RoutedEventArgs e)
+    {
+        ValidateTextBoxes(sender);
     }
 }
