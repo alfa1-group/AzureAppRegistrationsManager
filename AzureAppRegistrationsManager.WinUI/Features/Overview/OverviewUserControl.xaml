@@ -1,4 +1,4 @@
-<base:BaseUserControl
+﻿<base:BaseUserControl
     x:Class="AzureAppRegistrationsManager.WinUI.Features.Overview.OverviewUserControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,7 +10,7 @@
 
     <StackPanel Spacing="8" Margin="8">
         <StackPanel Orientation="Horizontal" Spacing="4">
-            <TextBlock Text="Display Name:" FontWeight="Bold" Width="150"/>
+            <TextBlock Text="Display Name: 🔺" FontWeight="Bold" Width="150"/>
             <TextBox IsReadOnly="{x:Bind Not(CanEdit), Mode=OneWay}" x:Name="DisplayNameTextBox" MinWidth="500" Text="{x:Bind AppReg.DisplayName, Mode=TwoWay, FallbackValue=''}" />
             <Button
                 x:Name="SaveDisplayNameButton"

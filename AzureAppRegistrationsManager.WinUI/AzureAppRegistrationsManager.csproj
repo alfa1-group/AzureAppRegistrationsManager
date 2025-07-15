@@ -91,7 +91,7 @@
   </PropertyGroup>
   
   <Target Name="ZipAfterPublish" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
-    <Message Text="Zipping publish output..." Importance="high" />
+    <Message Text="Zipping build output..." Importance="high" />
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Compress-Archive -Path '$(OutDir)' -DestinationPath '$(OutDir)../AzureAppRegistrationsManager.zip' -Force&quot;" />
   </Target>
   

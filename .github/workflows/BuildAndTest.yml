@@ -17,4 +17,4 @@ jobs:
     - uses: actions/checkout@v4
   
     - name: 'Build'
-      run: dotnet build './AzureAppRegistrationsManager/AzureAppRegistrationsManager' -c Release
+      run: dotnet build './AzureAppRegistrationsManager/AzureAppRegistrationsManager.csproj' -c Release
