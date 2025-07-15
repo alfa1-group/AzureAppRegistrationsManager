@@ -39,7 +39,6 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
                 _application = value;
 
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(CanEdit));
 
                 if (value != null)
                 {
@@ -55,7 +54,7 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         get => _appRegJson;
         set
         {
-            var newValue = value ?? string.Empty;
+            var newValue = value;
             if (newValue != _appRegJson)
             {
                 _appRegJson = newValue;
@@ -74,17 +73,14 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
             {
                 _appRegInfo = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(CanEdit));
             }
         }
     }
 
-    public bool CanEdit
-    {
-        get => AppRegInfo?.CanEdit ?? false;
-    }
+    public bool CanEdit => AppRegInfo?.CanEdit ?? false;
 
     public event PropertyChangedEventHandler? PropertyChanged;
-
 
     public MainWindow()
     {
@@ -96,7 +92,9 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
 
         appWindow.SetIcon(@"Assets\icon.ico"); // Set the application icon
         appWindow.MoveInZOrderAtTop(); // Ensure window is topmost in Z-order
-        appWindow.SetPresenter(AppWindowPresenterKind.Overlapped); // Ensure window is full screen
+
+        appWindow.SetPresenter(AppWindowPresenterKind.Overlapped); // Ensure window is overlapped
+        (appWindow.Presenter as OverlappedPresenter)?.Maximize(); // Try to maximize the window
         appWindow.Show(); // Brings window to foreground if not already
     }
 
