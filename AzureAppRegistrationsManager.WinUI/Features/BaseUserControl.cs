@@ -102,8 +102,8 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
         }
         else
         {
-            textBox.ClearValue(TextBox.BorderBrushProperty);
-            textBox.ClearValue(TextBox.BorderThicknessProperty);
+            textBox.ClearValue(BorderBrushProperty);
+            textBox.ClearValue(BorderThicknessProperty);
 
             buttons.ForEach(c => c.IsEnabled = true);
         }

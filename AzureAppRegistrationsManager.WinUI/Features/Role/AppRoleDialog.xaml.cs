@@ -1,9 +1,8 @@
 using Microsoft.Graph.Models;
-using Microsoft.UI.Xaml.Controls;
 
 namespace AzureAppRegistrationsManager.WinUI.Features.Role;
 
-public sealed partial class AppRoleDialog : ContentDialog
+internal sealed partial class AppRoleDialog : BaseDialog
 {
     public AppRoleDialog()
     {
