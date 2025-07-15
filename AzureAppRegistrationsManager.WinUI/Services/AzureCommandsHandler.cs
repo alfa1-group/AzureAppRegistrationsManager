@@ -7,7 +7,7 @@ namespace AzureAppRegistrationsManager.WinUI.Services;
 
 internal static class AzureCommandsHandler
 {
-    internal static async Task<IReadOnlyList<AppRegInfo>> GetApplicationsAsync()
+    internal static async Task<IReadOnlyList<AppRegInfo>> GetAllApplicationsAsync()
     {
         var userId = await GetCurrentUserIdAsync();
 
@@ -37,8 +37,8 @@ internal static class AzureCommandsHandler
                 allApplications.Add(new AppRegInfo
                 {
                     AppId = app.AppId,
-                    DisplayName = app.DisplayName ?? string.Empty,
-                    ObjectId = app.Id ?? string.Empty,
+                    DisplayName = app.DisplayName,
+                    ObjectId = app.Id,
                     CanEdit = UserIsOwnerFromAppReg(app, userId)
                 });
                 return true;
@@ -48,7 +48,46 @@ internal static class AzureCommandsHandler
 
         return allApplications
             .OrderBy(app => app.DisplayName)
-            .ToList();
+            .ToArray();
+    }
+
+    internal static async Task<IReadOnlyList<AppRegInfo>> GetOwnApplicationsAsync()
+    {
+        var ownedObjects = await App.GraphClient.Me.OwnedObjects.GetAsync(q =>
+        {
+            q.QueryParameters.Select = ["appId", "displayName", "id"];
+        });
+
+        if (ownedObjects == null || ownedObjects.Value == null)
+        {
+            return [];
+        }
+
+        var ownApplications = new List<AppRegInfo>();
+
+        var pageIterator = PageIterator<DirectoryObject, DirectoryObjectCollectionResponse>.CreatePageIterator(
+            App.GraphClient,
+            ownedObjects,
+            obj =>
+            {
+                if (obj is Application app && app.AppId != null && app.Id != null && !string.IsNullOrWhiteSpace(app.DisplayName))
+                {
+                    ownApplications.Add(new AppRegInfo
+                    {
+                        AppId = app.AppId,
+                        DisplayName = app.DisplayName,
+                        ObjectId = app.Id,
+                        CanEdit = true
+                    });
+                }
+                return true;
+            });
+
+        await pageIterator.IterateAsync();
+
+        return ownApplications
+            .OrderBy(app => app.DisplayName)
+            .ToArray();
     }
 
     internal static Task<Application?> GetApplicationAsync(string id)

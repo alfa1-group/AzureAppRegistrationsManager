@@ -109,7 +109,7 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         if (_isFirstActivation)
         {
             _isFirstActivation = false;
-            await RefreshDataAsync();
+            await RefreshAppRegInfosAsync(false);
         }
     }
 
@@ -118,7 +118,15 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         AppRegInfo = null;
         await RefreshAppAsync();
 
-        await RefreshDataAsync();
+        await RefreshAppRegInfosAsync(false);
+    }
+
+    private async void RefreshAllButton_Click(object sender, RoutedEventArgs e)
+    {
+        AppRegInfo = null;
+        await RefreshAppAsync();
+
+        await RefreshAppRegInfosAsync(true);
     }
 
     private async void ApplicationsGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -130,9 +138,10 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
-    private async Task RefreshDataAsync()
+    private async Task RefreshAppRegInfosAsync(bool all)
     {
         RefreshButton.IsEnabled = false;
+        RefreshAllButton.IsEnabled = false;
         RefreshProgress.IsActive = true;
 
         ApplicationsGrid.ItemsSource = new[] { new AppRegInfo
@@ -142,9 +151,10 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
             DisplayName = "loading..."
         }};
 
-        AppRegInfos = await AzureCommandsHandler.GetApplicationsAsync();
+        AppRegInfos = all ? await AzureCommandsHandler.GetAllApplicationsAsync() : await AzureCommandsHandler.GetOwnApplicationsAsync();
 
         RefreshProgress.IsActive = false;
+        RefreshAllButton.IsEnabled = true;
         RefreshButton.IsEnabled = true;
     }
 
