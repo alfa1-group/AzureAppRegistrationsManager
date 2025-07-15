@@ -7,16 +7,31 @@ namespace AzureAppRegistrationsManager.WinUI.Features.Scope;
 
 public sealed partial class ScopeUserControl : BaseUserControl
 {
-    public PermissionScope[] Oauth2PermissionScopesSorted => AppReg?.Api?.Oauth2PermissionScopes?.OrderBy(s => s.Value).ToArray() ?? [];
+    public ScopeViewModel[] Oauth2PermissionScopesSorted
+    {
+        get
+        {
+            return AppReg?.Api?.Oauth2PermissionScopes?
+                .OrderBy(s => s.Value)
+                .Select(s => new ScopeViewModel { Scope = s, CanEdit = CanEdit })
+                .ToArray() ?? [];
+        }
+    }
 
     public ScopeUserControl()
     {
         InitializeComponent();
+        RegisterPropertyChangedCallback(CanEditProperty, OnCanEditChanged);
+    }
+
+    private void OnCanEditChanged(DependencyObject sender, DependencyProperty dp)
+    {
+        OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
     }
 
     protected override void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        // (d as ScopeUserControl)?.OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
+        (d as ScopeUserControl)?.OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
     }
 
     private async void AddScope_Click(object sender, RoutedEventArgs e)
@@ -34,7 +49,7 @@ public sealed partial class ScopeUserControl : BaseUserControl
 
         if (result == ContentDialogResult.Primary)
         {
-            var scopes = (AppReg.Api ?? new ApiApplication()).Oauth2PermissionScopes ??= [];
+            var scopes = (AppReg.Api ??= new ApiApplication()).Oauth2PermissionScopes ??= [];
             scopes.Add(dialog.PermissionScope);
 
             await UpdateAppRegAsync(sender, scopes, AzureCommandsHandler.UpdateScopesAsync);
@@ -49,8 +64,9 @@ public sealed partial class ScopeUserControl : BaseUserControl
             return;
         }
 
-        if (sender is Button button && button.Tag is PermissionScope scope)
+        if (sender is Button button && button.Tag is ScopeViewModel viewModel)
         {
+            var scope = viewModel.Scope;
             switch (button.Name)
             {
                 case "ScopeEditButton":

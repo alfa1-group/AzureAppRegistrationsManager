@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices.WindowsRuntime;
-using AzureAppRegistrationsManager.WinUI.Features.Scope;
 using AzureAppRegistrationsManager.WinUI.Services;
 using Microsoft.Graph.Models;
 using Microsoft.UI.Xaml;
@@ -9,20 +8,32 @@ namespace AzureAppRegistrationsManager.WinUI.Features.Role;
 
 public sealed partial class AppRoleUserControl : BaseUserControl
 {
-    public AppRole[]? AppRolesSorted
+    public AppRoleViewModel[] AppRolesSorted
     {
-        get => AppReg?.AppRoles?.OrderBy(r => r.Value).ToArray() ?? [];
+        get
+        {
+            return AppReg?.AppRoles?
+                .OrderBy(r => r.Value)
+                .Select(r => new AppRoleViewModel { AppRole = r, CanEdit = CanEdit })
+                .ToArray() ?? [];
+        }
     }
 
 
     public AppRoleUserControl()
     {
         InitializeComponent();
+        RegisterPropertyChangedCallback(CanEditProperty, OnCanEditChanged);
+    }
+
+    private void OnCanEditChanged(DependencyObject sender, DependencyProperty dp)
+    {
+        OnPropertyChanged(nameof(AppRolesSorted));
     }
 
     protected override void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        // (d as AppRoleUserControl)?.OnPropertyChanged(nameof(AppRolesSorted));
+        (d as AppRoleUserControl)?.OnPropertyChanged(nameof(AppRolesSorted));
     }
 
     private async void AddAppRole_Click(object sender, RoutedEventArgs e)
@@ -55,8 +66,9 @@ public sealed partial class AppRoleUserControl : BaseUserControl
             return;
         }
 
-        if (sender is Button button && button.Tag is AppRole appRole)
+        if (sender is Button button && button.Tag is AppRoleViewModel viewModel)
         {
+            var appRole = viewModel.AppRole;
             switch (button.Name)
             {
                 case "AppRoleEditButton":
