@@ -8,7 +8,7 @@ namespace AzureAppRegistrationsManager.WinUI.Features.Role;
 [AdaptTo(typeof(AppRole))]
 internal class AppRoleEditModel
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; } = new();
 
     [Notify]
     [Required]

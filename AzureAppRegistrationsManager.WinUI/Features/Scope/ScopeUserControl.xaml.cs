@@ -1,4 +1,5 @@
 using AzureAppRegistrationsManager.WinUI.Services;
+using Mapster;
 using Microsoft.Graph.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -50,7 +51,7 @@ public sealed partial class ScopeUserControl : BaseUserControl
         if (result == ContentDialogResult.Primary)
         {
             var scopes = (AppReg.Api ??= new ApiApplication()).Oauth2PermissionScopes ??= [];
-            scopes.Add(dialog.PermissionScope);
+            scopes.Add(dialog.PermissionScope.Adapt<PermissionScope>());
 
             await UpdateAppRegAsync(sender, scopes, AzureCommandsHandler.UpdateScopesAsync);
             OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
@@ -71,7 +72,7 @@ public sealed partial class ScopeUserControl : BaseUserControl
             {
                 case "ScopeEditButton":
                     {
-                        var dialog = new ScopeDialog(AppReg.ApplicationIdUri, scope)
+                        var dialog = new ScopeDialog(AppReg.ApplicationIdUri, scope.Adapt<ScopeEditModel>())
                         {
                             XamlRoot = Content.XamlRoot
                         };
@@ -79,6 +80,8 @@ public sealed partial class ScopeUserControl : BaseUserControl
 
                         if (result == ContentDialogResult.Primary)
                         {
+                            dialog.PermissionScope.Adapt(scope);
+
                             await UpdateAppRegAsync(sender, AppReg.Api!.Oauth2PermissionScopes!, AzureCommandsHandler.UpdateScopesAsync);
                             OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
                         }

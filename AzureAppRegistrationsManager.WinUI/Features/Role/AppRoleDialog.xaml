@@ -61,7 +61,7 @@
                         <TextBox 
                             x:Name="ValueTextBox"
                             PlaceholderText="e.g. Task.Write"
-                            Text="{x:Bind AppRole.Value, Mode=TwoWay, FallbackValue=''}"/>
+                            Text="{x:Bind AppRole.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}"/>
                     </validation:ValidationFor>
                 </StackPanel>
 
@@ -72,7 +72,7 @@
                         <TextBox 
                             x:Name="DescriptionTextBox"
                             PlaceholderText="e.g. Writers have the ability to create tasks"
-                            Text="{x:Bind AppRole.Description, Mode=TwoWay, FallbackValue=''}"
+                            Text="{x:Bind AppRole.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}"
                             AcceptsReturn="True"
                             TextWrapping="Wrap"
                             Height="80"/>
