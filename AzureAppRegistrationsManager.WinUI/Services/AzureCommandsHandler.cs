@@ -261,11 +261,15 @@ internal static class AzureCommandsHandler
         };
         await ExecuteAzRestPatchAsync(id, disableRequest);
 
+        // await Task.Delay(500); // Delay to ensure the disable operation is processed
+
         var deleteRequest = new Application
         {
             AppRoles = existingRoles.Except([roleToDelete]).ToList()
         };
         await ExecuteAzRestPatchAsync(id, deleteRequest);
+
+        //await Task.Delay(500); // Delay to ensure the delete operation is processed
     }
 
     private static async Task ExecuteAzRestPatchAsync(string id, Application request)

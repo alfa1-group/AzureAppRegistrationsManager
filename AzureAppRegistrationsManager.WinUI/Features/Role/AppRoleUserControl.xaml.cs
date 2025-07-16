@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices.WindowsRuntime;
 using AzureAppRegistrationsManager.WinUI.Services;
+using Mapster;
 using Microsoft.Graph.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -18,7 +19,6 @@ public sealed partial class AppRoleUserControl : BaseUserControl
                 .ToArray() ?? [];
         }
     }
-
 
     public AppRoleUserControl()
     {
@@ -52,7 +52,7 @@ public sealed partial class AppRoleUserControl : BaseUserControl
         if (result == ContentDialogResult.Primary)
         {
             var roles = AppReg.AppRoles ??= [];
-            roles.Add(dialog.AppRole);
+            roles.Add(dialog.AppRole.Adapt<AppRole>());
 
             await UpdateAppRegAsync(sender, roles, AzureCommandsHandler.UpdateAppRolesAsync);
             OnPropertyChanged(nameof(AppRolesSorted));
@@ -73,7 +73,7 @@ public sealed partial class AppRoleUserControl : BaseUserControl
             {
                 case "AppRoleEditButton":
                     {
-                        var dialog = new AppRoleDialog(appRole)
+                        var dialog = new AppRoleDialog(appRole.Adapt<AppRoleEditModel>())
                         {
                             XamlRoot = Content.XamlRoot
                         };
@@ -81,6 +81,8 @@ public sealed partial class AppRoleUserControl : BaseUserControl
 
                         if (result == ContentDialogResult.Primary)
                         {
+                            dialog.AppRole.Adapt(appRole);
+
                             await UpdateAppRegAsync(sender, AppReg.AppRoles, AzureCommandsHandler.UpdateAppRolesAsync);
                             OnPropertyChanged(nameof(AppRolesSorted));
                         }
@@ -98,7 +100,12 @@ public sealed partial class AppRoleUserControl : BaseUserControl
 
                         if (result == ContentDialogResult.Secondary)
                         {
-                            await UpdateAppRegAsync(sender, AppReg.AppRoles!, (id, roles) => AzureCommandsHandler.DeleteAppRoleAsync(id, roles, appRole));
+                            await UpdateAppRegAsync(sender, AppReg.AppRoles!, async (id, roles) =>
+                            {
+                                await AzureCommandsHandler.DeleteAppRoleAsync(id, roles, appRole);
+
+                                AppReg = await AzureCommandsHandler.GetApplicationAsync(id);
+                            });
                             OnPropertyChanged(nameof(AppRolesSorted));
                         }
                         break;

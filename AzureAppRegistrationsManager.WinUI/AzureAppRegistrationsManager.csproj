@@ -60,12 +60,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspects.Notify" Version="1.0.3" />
     <PackageReference Include="Azure.Identity" Version="1.14.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
+    <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="Microsoft.Graph" Version="5.85.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4188" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
     <PackageReference Include="WinUI.Monaco" Version="1.1.52.120" />
+    <PackageReference Include="WinUI.Validation" Version="0.0.1-preview-01" />
   </ItemGroup>
 
   <!--

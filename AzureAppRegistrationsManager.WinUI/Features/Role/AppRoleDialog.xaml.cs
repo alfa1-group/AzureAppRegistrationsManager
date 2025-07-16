@@ -1,49 +1,15 @@
-using Microsoft.Graph.Models;
-using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using WinUI.Validation;
 
 namespace AzureAppRegistrationsManager.WinUI.Features.Role;
 
-internal sealed partial class AppRoleDialog : BaseDialog
+internal sealed partial class AppRoleDialog : ContentDialog
 {
-    public AppRole AppRole { get; set; }
-
-    public bool IsUsersGroupsSelected
-    {
-        get => AppRole.AllowedMemberTypes != null &&
-               AppRole.AllowedMemberTypes.Contains("User") &&
-               !AppRole.AllowedMemberTypes.Contains("Application");
-        set
-        {
-            AppRole.AllowedMemberTypes = ["User"];
-        }
-    }
-
-    public bool IsApplicationsSelected
-    {
-        get => AppRole.AllowedMemberTypes != null &&
-               AppRole.AllowedMemberTypes.Contains("Application") &&
-               !AppRole.AllowedMemberTypes.Contains("User");
-
-        set
-        {
-            AppRole.AllowedMemberTypes = ["Application"];
-        }
-    }
-
-    public bool IsBothSelected
-    {
-        get => AppRole.AllowedMemberTypes != null &&
-               AppRole.AllowedMemberTypes.Contains("User") &&
-               AppRole.AllowedMemberTypes.Contains("Application");
-        set
-        {
-            AppRole.AllowedMemberTypes = ["User", "Application"];
-        }
-    }
+    public AppRoleEditModel AppRole { get; set; }
 
     public AppRoleDialog()
     {
-        AppRole = new AppRole
+        AppRole = new AppRoleEditModel
         {
             Id = Guid.NewGuid(),
             DisplayName = string.Empty,
@@ -57,14 +23,14 @@ internal sealed partial class AppRoleDialog : BaseDialog
         InitializeComponent();
     }
 
-    public AppRoleDialog(AppRole existingAppRole) : this()
+    public AppRoleDialog(AppRoleEditModel existingAppRole) : this()
     {
         AppRole = existingAppRole;
         Title = "Edit Role";
     }
 
-    private void StackPanel_Loaded(object sender, RoutedEventArgs e)
+    private void ValidationChanged(object sender, ValidationStateChangedEventArgs e)
     {
-        ValidateTextBoxes(sender);
+        IsPrimaryButtonEnabled = e.ValidationState.IsValid;
     }
 }

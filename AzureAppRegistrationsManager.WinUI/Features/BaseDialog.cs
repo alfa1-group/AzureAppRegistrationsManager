@@ -11,64 +11,64 @@ internal partial class BaseDialog : ContentDialog, INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    private bool _isValid = false;
-    protected bool IsValid
-    {
-        get => _isValid;
-        set
-        {
-            var newValue = value;
-            if (newValue != _isValid)
-            {
-                _isValid = newValue;
-                OnPropertyChanged();
-            }
-        }
-    }
+    //private bool _isValid = false;
+    //protected bool IsValid
+    //{
+    //    get => _isValid;
+    //    set
+    //    {
+    //        var newValue = value;
+    //        if (newValue != _isValid)
+    //        {
+    //            _isValid = newValue;
+    //            OnPropertyChanged();
+    //        }
+    //    }
+    //}
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        if (sender is not TextBox textBox)
-        {
-            return;
-        }
+    //protected void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+    //{
+    //    if (sender is not TextBox textBox)
+    //    {
+    //        return;
+    //    }
 
-        var thisTextBoxIsValid = ValidateTextBox(textBox);
-    }
+    //    var thisTextBoxIsValid = ValidateTextBox(textBox);
+    //}
 
-    protected void ValidateTextBoxes(object sender)
-    {
-        var valids = (sender as Panel)?
-            .Children.OfType<Panel>()
-            .SelectMany(p => p.Children.OfType<TextBox>())
-            .Select(ValidateTextBox);
+    //protected void ValidateTextBoxes(object sender)
+    //{
+    //    var valids = (sender as Panel)?
+    //        .Children.OfType<Panel>()
+    //        .SelectMany(p => p.Children.OfType<TextBox>())
+    //        .Select(ValidateTextBox);
 
-        if (valids != null)
-        {
-            IsValid = valids.All(v => v);
-        }
-        else
-        {
-            IsValid = true;
-        }
-    }
+    //    if (valids != null)
+    //    {
+    //        IsValid = valids.All(v => v);
+    //    }
+    //    else
+    //    {
+    //        IsValid = true;
+    //    }
+    //}
 
-    protected virtual bool ValidateTextBox(TextBox textBox)
-    {
-        if (string.IsNullOrWhiteSpace(textBox.Text))
-        {
-            textBox.BorderBrush = new SolidColorBrush(Colors.Red);
-            textBox.BorderThickness = new Thickness(1);
-            return false;
-        }
+    //protected virtual bool ValidateTextBox(TextBox textBox)
+    //{
+    //    if (string.IsNullOrWhiteSpace(textBox.Text))
+    //    {
+    //        textBox.BorderBrush = new SolidColorBrush(Colors.Red);
+    //        textBox.BorderThickness = new Thickness(1);
+    //        return false;
+    //    }
 
-        textBox.ClearValue(BorderBrushProperty);
-        textBox.ClearValue(BorderThicknessProperty);
-        return true;
-    }
+    //    textBox.ClearValue(BorderBrushProperty);
+    //    textBox.ClearValue(BorderThicknessProperty);
+    //    return true;
+    //}
 }
