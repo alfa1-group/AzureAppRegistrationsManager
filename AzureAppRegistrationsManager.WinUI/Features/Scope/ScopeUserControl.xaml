@@ -40,6 +40,8 @@
                 <controls:DataGridTextColumn Header="Value" Binding="{Binding Scope.Value}" />
                 <controls:DataGridTextColumn Header="Admin consent display name" Binding="{Binding Scope.AdminConsentDisplayName}" />
                 <controls:DataGridTextColumn Header="Admin consent description" Binding="{Binding Scope.AdminConsentDescription}" />
+                <controls:DataGridTextColumn Header="User consent display name" Binding="{Binding Scope.UserConsentDisplayName}" />
+                <controls:DataGridTextColumn Header="User consent description" Binding="{Binding Scope.UserConsentDescription}" />
                 <controls:DataGridTextColumn Header="Consent type" Binding="{Binding Scope.Type}" />
                 <controls:DataGridTextColumn Header="Enabled" Binding="{Binding Scope.IsEnabled}" />
                 <controls:DataGridTemplateColumn>
