@@ -1,6 +1,6 @@
 # UI
 Use this UI to manage your Azure AD app registrations in case your admin/company did disable UI access to Entra ID:
-<img src="./Resources/entra.png" width="300px">
+<img src="./Resources/entra.png" width="400px">
 
 > Use this switch to prevent users from misconfiguring the resources that they own from the Microsoft Entra admin center.
   This is not a security measure.
