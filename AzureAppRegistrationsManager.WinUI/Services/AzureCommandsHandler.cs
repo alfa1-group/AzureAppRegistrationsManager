@@ -269,17 +269,13 @@ internal static class AzureCommandsHandler
         await ExecuteAzRestPatchAsync(id, deleteRequest);
     }
 
-    internal static async Task<string> AddClientSecretAsync(string id, string description)
+    internal static async Task<string> AddClientSecretAsync(string id, PasswordCredential passwordCredential)
     {
         var addedSecret = await App.GraphClient.Applications[id]
             .AddPassword
             .PostAsync(new AddPasswordPostRequestBody
             {
-                PasswordCredential = new PasswordCredential
-                {
-                    DisplayName = description,
-                    EndDateTime = DateTimeOffset.UtcNow.AddYears(1),
-                }
+                PasswordCredential = passwordCredential
             });
 
         return addedSecret!.SecretText!;

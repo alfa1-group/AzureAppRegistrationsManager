@@ -1,5 +1,8 @@
+using AzureAppRegistrationsManager.WinUI.Services;
+using Mapster;
 using Microsoft.Graph.Models;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace AzureAppRegistrationsManager.WinUI.Features.CertificatesAndSecrets;
 
@@ -39,20 +42,28 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
             return;
         }
 
-        //var dialog = new ScopeDialog(AppReg.ApplicationIdUri)
-        //{
-        //    XamlRoot = Content.XamlRoot
-        //};
-        //var result = await dialog.ShowAsync();
+        var dialog = new ClientSecretDialog()
+        {
+            XamlRoot = Content.XamlRoot
+        };
+        var result = await dialog.ShowAsync();
 
-        //if (result == ContentDialogResult.Primary)
-        //{
-        //    var scopes = (AppReg.Api ??= new ApiApplication()).Oauth2PermissionScopes ??= [];
-        //    scopes.Add(dialog.PermissionScope.Adapt<PermissionScope>());
+        if (result == ContentDialogResult.Primary)
+        {
+            var passwordCredential = dialog.ClientSecret.Adapt<PasswordCredential>();
 
-        //    await UpdateAppRegAsync(sender, scopes, AzureCommandsHandler.UpdateScopesAsync);
-        //    OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
-        //}
+            await UpdateAppRegAsync(sender, passwordCredential, async (id, x) => 
+            {
+                var secret = await AzureCommandsHandler.AddClientSecretAsync(id, x);
+
+                var dialog = new ConfirmationDialog($"The secret value is {secret}")
+                {
+                    XamlRoot = Content.XamlRoot
+                };
+                await dialog.ShowAsync();
+            });
+            OnPropertyChanged(nameof(ClientSecretsSorted));
+        }
     }
 
     private async void ClientSecretAction_Click(object sender, RoutedEventArgs e)
