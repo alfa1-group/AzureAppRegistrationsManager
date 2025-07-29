@@ -1,10 +1,10 @@
 using Microsoft.Graph.Models;
 
-namespace AzureAppRegistrationsManager.WinUI.Features.Scope;
+namespace AzureAppRegistrationsManager.WinUI.Features.CertificatesAndSecrets;
 
 public class ClientSecretViewModel
 {
-    public PermissionScope Scope { get; set; } = null!;
+    public PasswordCredential PasswordCredential { get; set; } = null!;
 
     public bool CanEdit { get; set; }
 }

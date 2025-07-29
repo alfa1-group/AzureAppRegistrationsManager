@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using AzureAppRegistrationsManager.WinUI.Models;
 using Microsoft.Graph;
+using Microsoft.Graph.Applications.Item.AddPassword;
 using Microsoft.Graph.Models;
 
 namespace AzureAppRegistrationsManager.WinUI.Services;
@@ -266,6 +267,22 @@ internal static class AzureCommandsHandler
             AppRoles = existingRoles.Except([roleToDelete]).ToList()
         };
         await ExecuteAzRestPatchAsync(id, deleteRequest);
+    }
+
+    internal static async Task<string> AddClientSecretAsync(string id, string description)
+    {
+        var addedSecret = await App.GraphClient.Applications[id]
+            .AddPassword
+            .PostAsync(new AddPasswordPostRequestBody
+            {
+                PasswordCredential = new PasswordCredential
+                {
+                    DisplayName = description,
+                    EndDateTime = DateTimeOffset.UtcNow.AddYears(1),
+                }
+            });
+
+        return addedSecret!.SecretText!;
     }
 
     private static async Task ExecuteAzRestPatchAsync(string id, Application request)

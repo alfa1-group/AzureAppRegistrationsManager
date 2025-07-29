@@ -1,20 +1,17 @@
-using AzureAppRegistrationsManager.WinUI.Services;
-using Mapster;
 using Microsoft.Graph.Models;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace AzureAppRegistrationsManager.WinUI.Features.CertificatesAndSecrets;
 
 public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
 {
-    public ScopeViewModel[] Oauth2PermissionScopesSorted
+    public ClientSecretViewModel[] ClientSecretsSorted
     {
         get
         {
-            return AppReg?.Api?.Oauth2PermissionScopes?
-                .OrderBy(s => s.Value)
-                .Select(s => new ScopeViewModel { Scope = s, CanEdit = CanEdit })
+            return AppReg?.PasswordCredentials?
+                .OrderBy(p => p.DisplayName)
+                .Select(p => new ClientSecretViewModel { PasswordCredential = p, CanEdit = CanEdit })
                 .ToArray() ?? [];
         }
     }
@@ -27,15 +24,15 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
 
     private void OnCanEditChanged(DependencyObject sender, DependencyProperty dp)
     {
-        OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
+        OnPropertyChanged(nameof(ClientSecretsSorted));
     }
 
     protected override void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        //(d as ScopeUserControl)?.OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
+        (d as CertificatesAndSecretsUserControl)?.OnPropertyChanged(nameof(ClientSecretsSorted));
     }
 
-    private async void AddScope_Click(object sender, RoutedEventArgs e)
+    private async void AddClientSecret_Click(object sender, RoutedEventArgs e)
     {
         if (AppReg == null || string.IsNullOrWhiteSpace(AppReg.ApplicationIdUri))
         {
@@ -58,7 +55,7 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
         //}
     }
 
-    private async void ScopeAction_Click(object sender, RoutedEventArgs e)
+    private async void ClientSecretAction_Click(object sender, RoutedEventArgs e)
     {
         //if (AppReg == null || string.IsNullOrWhiteSpace(AppReg.ApplicationIdUri))
         //{
