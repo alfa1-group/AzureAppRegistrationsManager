@@ -11,8 +11,7 @@ internal sealed partial class ClientSecretDialog : ContentDialog
     {
         ClientSecret = new ClientSecretAddModel
         {
-            DisplayName = string.Empty,
-            EndDateTime = DateTimeOffset.UtcNow.AddYears(1)
+            DisplayName = string.Empty
         };
 
         Title = "Add a client secret";
@@ -22,5 +21,20 @@ internal sealed partial class ClientSecretDialog : ContentDialog
     private void ValidationChanged(object sender, ValidationStateChangedEventArgs e)
     {
         IsPrimaryButtonEnabled = e.ValidationState.IsValid;
+    }
+
+    private void ExpirationComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var selected = ExpirationComboBox.SelectedItem as ComboBoxItem;
+        if (selected == null)
+        {
+            return;
+        }
+
+        var tag = selected.Tag?.ToString();
+        if (int.TryParse(tag, out int days))
+        {
+            ClientSecret.EndDateTime = DateTimeOffset.UtcNow.AddDays(days);
+        }
     }
 }
