@@ -35,7 +35,7 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
         (d as CertificatesAndSecretsUserControl)?.OnPropertyChanged(nameof(ClientSecretsSorted));
     }
 
-    private async void AddClientSecret_Click(object sender, RoutedEventArgs e)
+    private async void NewClientSecret_Click(object sender, RoutedEventArgs e)
     {
         if (AppReg == null)
         {
@@ -52,17 +52,22 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
         {
             var passwordCredential = dialog.ClientSecret.Adapt<PasswordCredential>();
 
-            var secret = await UpdateAppRegAsync(sender, passwordCredential, AzureCommandsHandler.AddClientSecretAsync);
-            if (secret != null)
+            await UpdateAppRegAsync(sender, passwordCredential, async (id, passwordCredential) =>
             {
-                var newSecretDialog = new NewSecretDialog(secret)
+                var secret = await AzureCommandsHandler.AddClientSecretAsync(id, passwordCredential);
+                if (secret != null)
                 {
-                    XamlRoot = Content.XamlRoot
-                };
-                await newSecretDialog.ShowAsync();
+                    var newSecretDialog = new NewSecretDialog(secret)
+                    {
+                        XamlRoot = Content.XamlRoot
+                    };
+                    await newSecretDialog.ShowAsync();
 
-                OnPropertyChanged(nameof(ClientSecretsSorted));
-            }
+                    AppReg = await AzureCommandsHandler.GetApplicationAsync(id);
+                }
+            });
+
+            OnPropertyChanged(nameof(ClientSecretsSorted));
         }
     }
 
@@ -85,7 +90,13 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
 
             if (result == ContentDialogResult.Secondary)
             {
-                await UpdateAppRegAsync(sender, passwordCredential.KeyId!.Value, AzureCommandsHandler.DeleteClientSecretAsync);
+                await UpdateAppRegAsync(sender, passwordCredential.KeyId!.Value, async (id, keyId) =>
+                {
+                    await AzureCommandsHandler.DeleteClientSecretAsync(id, keyId);
+
+                    AppReg = await AzureCommandsHandler.GetApplicationAsync(id);
+                });
+
                 OnPropertyChanged(nameof(ClientSecretsSorted));
             }
         }
