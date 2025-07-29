@@ -2,6 +2,7 @@
 using AzureAppRegistrationsManager.WinUI.Models;
 using Microsoft.Graph;
 using Microsoft.Graph.Applications.Item.AddPassword;
+using Microsoft.Graph.Applications.Item.RemovePassword;
 using Microsoft.Graph.Models;
 
 namespace AzureAppRegistrationsManager.WinUI.Services;
@@ -279,6 +280,16 @@ internal static class AzureCommandsHandler
             });
 
         return addedSecret!.SecretText!;
+    }
+
+    internal static async Task DeleteClientSecretAsync(string id, Guid keyId)
+    {
+        await App.GraphClient.Applications[id]
+            .RemovePassword
+            .PostAsync(new RemovePasswordPostRequestBody
+            {
+                KeyId = keyId
+            });
     }
 
     private static async Task ExecuteAzRestPatchAsync(string id, Application request)

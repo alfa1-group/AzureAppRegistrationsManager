@@ -6,5 +6,9 @@ public class ClientSecretViewModel
 {
     public PasswordCredential PasswordCredential { get; set; } = null!;
 
+    public string KeyId => PasswordCredential.KeyId!.Value.ToString("D");
+
+    public string Hint => PasswordCredential.Hint + "******************";
+
     public bool CanEdit { get; set; }
 }

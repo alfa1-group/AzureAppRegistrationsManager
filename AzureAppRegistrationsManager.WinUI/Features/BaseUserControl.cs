@@ -84,6 +84,41 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
         }
     }
 
+    protected async Task<TResult?> UpdateAppRegAsync<T, TResult>(object sender, T? value, Func<string, T, Task<TResult>> func)
+    {
+        if (AppReg?.Id == null || value == null)
+        {
+            return default;
+        }
+
+        if (sender is not Button button)
+        {
+            return default;
+        }
+
+        var controlsToDisable = new List<Control> { button };
+
+        if (button.Parent is Panel panel)
+        {
+            controlsToDisable.AddRange(panel.Children.OfType<TextBox>());
+        }
+
+        controlsToDisable.ForEach(c => c.IsEnabled = false);
+
+        try
+        {
+            var result = await func(AppReg.Id, value);
+
+            OnSave?.Invoke(this, EventArgs.Empty);
+
+            return result;
+        }
+        finally
+        {
+            controlsToDisable.ForEach(c => c.IsEnabled = true);
+        }
+    }
+
     protected void TextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (sender is not TextBox textBox)

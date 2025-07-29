@@ -37,7 +37,7 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
 
     private async void AddClientSecret_Click(object sender, RoutedEventArgs e)
     {
-        if (AppReg == null || string.IsNullOrWhiteSpace(AppReg.ApplicationIdUri))
+        if (AppReg == null)
         {
             return;
         }
@@ -46,73 +46,48 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
         {
             XamlRoot = Content.XamlRoot
         };
-        var result = await dialog.ShowAsync();
 
+        var result = await dialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
             var passwordCredential = dialog.ClientSecret.Adapt<PasswordCredential>();
 
-            await UpdateAppRegAsync(sender, passwordCredential, async (id, x) => 
+            var secret = await UpdateAppRegAsync(sender, passwordCredential, AzureCommandsHandler.AddClientSecretAsync);
+            if (secret != null)
             {
-                var secret = await AzureCommandsHandler.AddClientSecretAsync(id, x);
-
-                var dialog = new ConfirmationDialog($"The secret value is {secret}")
+                var newSecretDialog = new NewSecretDialog(secret)
                 {
                     XamlRoot = Content.XamlRoot
                 };
-                await dialog.ShowAsync();
-            });
-            OnPropertyChanged(nameof(ClientSecretsSorted));
+                await newSecretDialog.ShowAsync();
+
+                OnPropertyChanged(nameof(ClientSecretsSorted));
+            }
         }
     }
 
-    private async void ClientSecretAction_Click(object sender, RoutedEventArgs e)
+    private async void ClientSecretDelete_Click(object sender, RoutedEventArgs e)
     {
-        //if (AppReg == null || string.IsNullOrWhiteSpace(AppReg.ApplicationIdUri))
-        //{
-        //    return;
-        //}
+        if (AppReg == null)
+        {
+            return;
+        }
 
-        //if (sender is Button button && button.Tag is ScopeViewModel viewModel)
-        //{
-        //    var scope = viewModel.Scope;
-        //    switch (button.Name)
-        //    {
-        //        case "ScopeEditButton":
-        //            {
-        //                var dialog = new ScopeDialog(AppReg.ApplicationIdUri, scope.Adapt<ScopeEditModel>())
-        //                {
-        //                    XamlRoot = Content.XamlRoot
-        //                };
-        //                var result = await dialog.ShowAsync();
+        if (sender is Button button && button.Tag is ClientSecretViewModel viewModel)
+        {
+            var passwordCredential = viewModel.PasswordCredential;
+            var dialog = new ConfirmationDialog($"Are you sure you want to delete the secret '{passwordCredential.DisplayName}'?")
+            {
+                Title = "Delete Client Secret",
+                XamlRoot = Content.XamlRoot
+            };
+            var result = await dialog.ShowAsync();
 
-        //                if (result == ContentDialogResult.Primary)
-        //                {
-        //                    dialog.PermissionScope.Adapt(scope);
-
-        //                    await UpdateAppRegAsync(sender, AppReg.Api!.Oauth2PermissionScopes!, AzureCommandsHandler.UpdateScopesAsync);
-        //                    OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
-        //                }
-        //                break;
-        //            }
-
-        //        case "ScopeDeleteButton":
-        //            {
-        //                var dialog = new ConfirmationDialog($"Are you sure you want to delete the scope '{scope.Value}'?")
-        //                {
-        //                    Title = "Delete Scope",
-        //                    XamlRoot = Content.XamlRoot
-        //                };
-        //                var result = await dialog.ShowAsync();
-
-        //                if (result == ContentDialogResult.Secondary)
-        //                {
-        //                    await UpdateAppRegAsync(sender, AppReg.Api!, (id, api) => AzureCommandsHandler.DeleteScopeAsync(id, api, scope));
-        //                    OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
-        //                }
-        //                break;
-        //            }
-        //    }
-        //}
+            if (result == ContentDialogResult.Secondary)
+            {
+                await UpdateAppRegAsync(sender, passwordCredential.KeyId!.Value, AzureCommandsHandler.DeleteClientSecretAsync);
+                OnPropertyChanged(nameof(ClientSecretsSorted));
+            }
+        }
     }
 }
