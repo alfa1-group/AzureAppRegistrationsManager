@@ -28,10 +28,20 @@
         <StackPanel Orientation="Horizontal" Spacing="4">
             <TextBlock Text="Application (client) ID:" FontWeight="Bold" Width="150" />
             <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppReg.AppId, Mode=OneWay, FallbackValue=''}" />
+            <Button HorizontalAlignment="Left" Click="Copy_Click" IsEnabled="{x:Bind CanEdit, Mode=OneWay }">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Copy"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="4">
             <TextBlock Text="Object ID:" FontWeight="Bold" Width="150" />
             <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppReg.Id, Mode=OneWay, FallbackValue=''}" />
+            <Button HorizontalAlignment="Left" Click="Copy_Click" IsEnabled="{x:Bind CanEdit, Mode=OneWay }" >
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Copy"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="4">
             <TextBlock Text="Application ID URI:" FontWeight="Bold" Width="150"/>
