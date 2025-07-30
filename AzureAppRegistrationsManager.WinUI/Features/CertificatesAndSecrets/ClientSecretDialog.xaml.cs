@@ -1,3 +1,4 @@
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using WinUI.Validation;
 
@@ -6,6 +7,17 @@ namespace AzureAppRegistrationsManager.WinUI.Features.CertificatesAndSecrets;
 internal sealed partial class ClientSecretDialog : ContentDialog
 {
     public ClientSecretAddModel ClientSecret { get; set; }
+
+    private int _customDays = 180;
+    public int CustomDays
+    {
+        get => _customDays;
+        set
+        {
+            _customDays = value;
+            ClientSecret.EndDateTime = DateTimeOffset.UtcNow.AddDays(value);
+        }
+    }
 
     public ClientSecretDialog()
     {
@@ -32,9 +44,22 @@ internal sealed partial class ClientSecretDialog : ContentDialog
         }
 
         var tag = selected.Tag?.ToString();
-        if (int.TryParse(tag, out int days))
+        if (tag == null)
         {
-            ClientSecret.EndDateTime = DateTimeOffset.UtcNow.AddDays(days);
+            return;
+        }
+
+        if (tag == "Custom")
+        {
+            CustomDaysStackPanel.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            CustomDaysStackPanel?.Visibility = Visibility.Collapsed;
+            if (int.TryParse(tag, out var days))
+            {
+                ClientSecret.EndDateTime = DateTimeOffset.UtcNow.AddDays(days);
+            }
         }
     }
 }
