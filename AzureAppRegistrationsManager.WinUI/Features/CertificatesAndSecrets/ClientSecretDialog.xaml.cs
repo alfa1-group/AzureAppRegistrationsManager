@@ -1,21 +1,30 @@
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using WinUI.Validation;
 
 namespace AzureAppRegistrationsManager.WinUI.Features.CertificatesAndSecrets;
 
-internal sealed partial class ClientSecretDialog : ContentDialog
+internal sealed partial class ClientSecretDialog : ContentDialog, INotifyPropertyChanged
 {
     public ClientSecretAddModel ClientSecret { get; set; }
 
     private int _customDays = 180;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     public int CustomDays
     {
         get => _customDays;
         set
         {
             _customDays = value;
-            ClientSecret.EndDateTime = DateTimeOffset.UtcNow.AddDays(value);
+            OnPropertyChanged(nameof(CustomDays));
+            if (_customDays > 0)
+            {
+                ClientSecret.EndDateTime = DateTimeOffset.UtcNow.AddDays(_customDays);
+            }
         }
     }
 
@@ -28,6 +37,11 @@ internal sealed partial class ClientSecretDialog : ContentDialog
 
         Title = "Add a client secret";
         InitializeComponent();
+    }
+
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     private void ValidationChanged(object sender, ValidationStateChangedEventArgs e)
