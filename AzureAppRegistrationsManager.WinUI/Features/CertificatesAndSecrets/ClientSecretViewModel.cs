@@ -10,5 +10,7 @@ public class ClientSecretViewModel
 
     public string Hint => PasswordCredential.Hint + "******************";
 
+    public string ExpiresOn => PasswordCredential.EndDateTime?.ToString("yyyy-dd-MM") ?? "Never";
+
     public bool CanEdit { get; set; }
 }
