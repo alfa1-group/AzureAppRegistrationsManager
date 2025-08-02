@@ -9,13 +9,13 @@ public sealed partial class NewSecretDialog : ContentDialog
     public NewSecretDialog(string secret)
     {
         InitializeComponent();
-        MessageTextBlock.Text = secret;
+        SecretTextBox.Text = secret;
     }
 
     private void Copy_Click(object sender, RoutedEventArgs e)
     {
         var dataPackage = new DataPackage();
-        dataPackage.SetText(MessageTextBlock.Text);
+        dataPackage.SetText(SecretTextBox.Text);
 
         Clipboard.SetContent(dataPackage);
     }
