@@ -48,9 +48,9 @@
                         <TextBlock Text="Refresh All Applications"/>
                     </StackPanel>
                 </Button>
-            </StackPanel>            
+            </StackPanel>
 
-            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,10,0,0">
                 <TextBlock Text="Currently loaded:" FontWeight="Bold" />
                 <TextBlock Text="{x:Bind CurrentLoadedType, Mode=OneWay, FallbackValue=''}" Margin="10,0,0,0" />
             </StackPanel>

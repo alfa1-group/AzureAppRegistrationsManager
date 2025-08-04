@@ -64,11 +64,7 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
         }
 
         var controlsToDisable = new List<Control> { button };
-
-        if (button.Parent is Panel panel)
-        {
-            controlsToDisable.AddRange(panel.Children.OfType<TextBox>());
-        }
+        controlsToDisable.AddRange(button.GetChildTextBoxes());
 
         controlsToDisable.ForEach(c => c.IsEnabled = false);
 
@@ -97,11 +93,7 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
         }
 
         var controlsToDisable = new List<Control> { button };
-
-        if (button.Parent is Panel panel)
-        {
-            controlsToDisable.AddRange(panel.Children.OfType<TextBox>());
-        }
+        controlsToDisable.AddRange(button.GetChildTextBoxes());
 
         controlsToDisable.ForEach(c => c.IsEnabled = false);
 
