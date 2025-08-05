@@ -1,0 +1,41 @@
+﻿<ContentDialog
+    x:Class="AzureAppRegistrationsManager.WinUI.Features.Owners.AddOwnerDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:base="using:AzureAppRegistrationsManager.WinUI.Features"
+    xmlns:validation="using:WinUI.Validation"
+    PrimaryButtonText="Apply"
+    SecondaryButtonText="Cancel"
+    DefaultButton="Primary">
+
+    <ScrollViewer 
+        VerticalScrollBarVisibility="Auto" 
+        VerticalScrollMode="Auto"
+        MaxHeight="600">
+
+        <validation:ValidationForm
+            Model="{x:Bind Owner}"
+            OnValidationChanged="ValidationChanged">
+
+            <StackPanel 
+                Spacing="24" 
+                Margin="0,0,0,24">
+
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Email 🔺" FontWeight="SemiBold"/>
+                    <validation:ValidationFor PropertyName="Email" HideValidationMessage="True">
+                        <TextBox 
+                            x:Name="EmailTextBox"
+                            PlaceholderText="Enter the email address"
+                            Text="{x:Bind Owner.Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}"
+                            AcceptsReturn="True"
+                            TextWrapping="Wrap"
+                            Height="20"/>
+                    </validation:ValidationFor>
+                </StackPanel>
+
+            </StackPanel>
+        </validation:ValidationForm>
+    </ScrollViewer>
+
+</ContentDialog>

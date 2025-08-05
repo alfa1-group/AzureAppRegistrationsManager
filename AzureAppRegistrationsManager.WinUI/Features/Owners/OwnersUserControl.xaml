@@ -1,0 +1,53 @@
+<base:BaseUserControl
+    x:Class="AzureAppRegistrationsManager.WinUI.Features.Owners.OwnersUserControl"
+    x:Name="self"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AzureAppRegistrationsManager.WinUI.Features.Owners"
+    xmlns:base="using:AzureAppRegistrationsManager.WinUI.Features"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:converters="using:AzureAppRegistrationsManager.WinUI.Converters"
+    xmlns:graph="using:Microsoft.Graph.Models"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel Padding="12" Spacing="12">
+        <Button
+            x:Name="AddOwnerButton"
+            IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
+            HorizontalAlignment="Left"
+            Click="AddOwner_Click">
+            <StackPanel Orientation="Horizontal">
+                <SymbolIcon Symbol="Add"/>
+                <TextBlock Text="Add owner"/>
+            </StackPanel>
+        </Button>
+
+        <controls:DataGrid 
+            x:Name="OwnersDataGrid"
+            AutoGenerateColumns="False"
+            ItemsSource="{x:Bind OwnersSorted, Mode=OneWay}"
+            HeadersVisibility="Column"
+            IsReadOnly="True"
+            MinHeight="300">
+
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                <controls:DataGridTextColumn Header="Email" Binding="{Binding Mail, FallbackValue=''}" />
+                <controls:DataGridTextColumn Header="Type" Binding="{Binding Type}" />
+
+                <controls:DataGridTemplateColumn>
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="local:OwnerViewModel">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button IsEnabled="{Binding CanEdit, Mode=OneWay}" FontSize="10px" Content="🗑️" Click="RemoveOwner_Click" Tag="{x:Bind}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
+    </StackPanel>
+
+</base:BaseUserControl>
