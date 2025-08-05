@@ -78,6 +78,12 @@
     <Page Update="Features\CertificatesAndSecrets\CertificatesAndSecretsUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Features\Owners\AddOwnerDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Features\Owners\OwnersUserControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 
   <!--

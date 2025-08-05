@@ -42,7 +42,7 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
             return;
         }
 
-        var dialog = new ClientSecretDialog()
+        var dialog = new ClientSecretDialog
         {
             XamlRoot = Content.XamlRoot
         };

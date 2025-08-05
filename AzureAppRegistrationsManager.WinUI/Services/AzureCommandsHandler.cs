@@ -4,6 +4,7 @@ using Microsoft.Graph;
 using Microsoft.Graph.Applications.Item.AddPassword;
 using Microsoft.Graph.Applications.Item.RemovePassword;
 using Microsoft.Graph.Models;
+//using User = Microsoft.Graph.Models.User;
 
 namespace AzureAppRegistrationsManager.WinUI.Services;
 
@@ -92,9 +93,41 @@ internal static class AzureCommandsHandler
             .ToArray();
     }
 
-    internal static Task<Application?> GetApplicationAsync(string id)
+    internal static async Task<Application?> GetApplicationAsync(string id)
     {
-        return App.GraphClient.Applications[id].GetAsync();
+        var app = await App.GraphClient.Applications[id].GetAsync();
+        app?.Owners = await GetOwnersAsync(id);
+
+        return app;
+    }
+
+    internal static async Task<List<DirectoryObject>> GetOwnersAsync(string id)
+    {
+        var owners = await App.GraphClient.Applications[id].Owners.GetAsync();
+        if (owners == null || owners.Value == null)
+        {
+            return [];
+        }
+
+        var directoryObjects = new List<DirectoryObject>();
+
+        var pageIterator = PageIterator<DirectoryObject, DirectoryObjectCollectionResponse>.CreatePageIterator(
+            App.GraphClient,
+            owners,
+            obj =>
+            {
+                if (obj is User user)
+                {
+                    directoryObjects.Add(user);
+                }
+                return true;
+            });
+
+        await pageIterator.IterateAsync();
+
+        return directoryObjects
+            .OrderBy(d => d.Id)
+            .ToList();
     }
 
     internal static async Task<string> GetCurrentUserIdAsync()
@@ -121,7 +154,7 @@ internal static class AzureCommandsHandler
                 RedirectUris = uris
             }
         };
-        await ExecuteAzRestPatchAsync(appId, request);
+        await ExecuteAzRestPatchOnApplicationAsync(appId, request);
     }
 
     internal static async Task UpdateSpaRedirectUrisAsync(string appId, List<string> uris)
@@ -133,7 +166,7 @@ internal static class AzureCommandsHandler
                 RedirectUris = uris
             }
         };
-        await ExecuteAzRestPatchAsync(appId, request);
+        await ExecuteAzRestPatchOnApplicationAsync(appId, request);
     }
 
     internal static async Task UpdateIdentifierUrisAsync(string appId, List<string> uris)
@@ -143,7 +176,7 @@ internal static class AzureCommandsHandler
             IdentifierUris = uris
         };
 
-        await ExecuteAzRestPatchAsync(appId, request);
+        await ExecuteAzRestPatchOnApplicationAsync(appId, request);
     }
 
     internal static async Task UpdateImplicitGrantSettingsAsync(string appId, ImplicitGrantSettings? settings)
@@ -161,7 +194,7 @@ internal static class AzureCommandsHandler
             }
         };
 
-        await ExecuteAzRestPatchAsync(appId, request);
+        await ExecuteAzRestPatchOnApplicationAsync(appId, request);
     }
 
     internal static async Task UpdateLogoutUrlAsync(string appId, string? logoutUrl)
@@ -179,7 +212,7 @@ internal static class AzureCommandsHandler
             }
         };
 
-        await ExecuteAzRestPatchAsync(appId, request);
+        await ExecuteAzRestPatchOnApplicationAsync(appId, request);
     }
 
     internal static async Task UpdateDisplayNameAsync(string appId, string? displayName)
@@ -193,7 +226,7 @@ internal static class AzureCommandsHandler
         {
             DisplayName = displayName
         };
-        await ExecuteAzRestPatchAsync(appId, request);
+        await ExecuteAzRestPatchOnApplicationAsync(appId, request);
     }
 
     internal static async Task UpdateScopesAsync(string id, List<PermissionScope> scopes)
@@ -210,7 +243,7 @@ internal static class AzureCommandsHandler
                 Oauth2PermissionScopes = scopes
             }
         };
-        await ExecuteAzRestPatchAsync(id, request);
+        await ExecuteAzRestPatchOnApplicationAsync(id, request);
     }
 
     internal static async Task DeleteScopeAsync(string id, ApiApplication api, PermissionScope scopeToDelete)
@@ -225,14 +258,14 @@ internal static class AzureCommandsHandler
         {
             Api = api
         };
-        await ExecuteAzRestPatchAsync(id, disableRequest);
+        await ExecuteAzRestPatchOnApplicationAsync(id, disableRequest);
 
         api.Oauth2PermissionScopes = api.Oauth2PermissionScopes.Except([scopeToDelete]).ToList();
         var deleteRequest = new Application
         {
             Api = api
         };
-        await ExecuteAzRestPatchAsync(id, deleteRequest);
+        await ExecuteAzRestPatchOnApplicationAsync(id, deleteRequest);
     }
 
     internal static async Task UpdateAppRolesAsync(string id, List<AppRole> roles)
@@ -246,7 +279,7 @@ internal static class AzureCommandsHandler
         {
             AppRoles = roles
         };
-        await ExecuteAzRestPatchAsync(id, request);
+        await ExecuteAzRestPatchOnApplicationAsync(id, request);
     }
 
     internal static async Task DeleteAppRoleAsync(string id, List<AppRole> existingRoles, AppRole roleToDelete)
@@ -261,13 +294,13 @@ internal static class AzureCommandsHandler
         {
             AppRoles = existingRoles
         };
-        await ExecuteAzRestPatchAsync(id, disableRequest);
+        await ExecuteAzRestPatchOnApplicationAsync(id, disableRequest);
 
         var deleteRequest = new Application
         {
             AppRoles = existingRoles.Except([roleToDelete]).ToList()
         };
-        await ExecuteAzRestPatchAsync(id, deleteRequest);
+        await ExecuteAzRestPatchOnApplicationAsync(id, deleteRequest);
     }
 
     internal static async Task<string> AddClientSecretAsync(string id, PasswordCredential passwordCredential)
@@ -292,7 +325,43 @@ internal static class AzureCommandsHandler
             });
     }
 
-    private static async Task ExecuteAzRestPatchAsync(string id, Application request)
+    internal static async Task<string> GetUserIdByEmailAsync(string emailAddress)
+    {
+        var users = await App.GraphClient.Users
+            .GetAsync(requestConfiguration =>
+            {
+                requestConfiguration.QueryParameters.Filter = $"userPrincipalName eq '{emailAddress}' or mail eq '{emailAddress}'";
+                requestConfiguration.QueryParameters.Select = ["id"];
+            });
+
+        var userId = users?.Value?.FirstOrDefault()?.Id;
+        if (string.IsNullOrEmpty(userId))
+        {
+            throw new Exception($"User with email {emailAddress} not found.");
+        }
+
+        return userId;
+    }
+
+    internal static async Task AddAppOwnerByEmailAsync(string applicationId, string ownerEmail)
+    {
+        var userId = await GetUserIdByEmailAsync(ownerEmail);
+        var directoryObject = new ReferenceCreate
+        {
+            OdataId = $"https://graph.microsoft.com/v1.0/users/{userId}"
+        };
+
+        await App.GraphClient.Applications[applicationId].Owners.Ref.PostAsync(directoryObject);
+    }
+
+    internal static async Task RemoveOwnerFromAppRegistrationByEmailAsync(string applicationId, string ownerEmail)
+    {
+        var userId = await GetUserIdByEmailAsync(ownerEmail);
+
+        await App.GraphClient.Applications[applicationId].Owners[userId].Ref.DeleteAsync();
+    }
+
+    private static async Task ExecuteAzRestPatchOnApplicationAsync(string id, Application request)
     {
         await App.GraphClient.Applications[id].PatchAsync(request);
     }

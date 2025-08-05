@@ -10,6 +10,7 @@
     xmlns:features_scope="using:AzureAppRegistrationsManager.WinUI.Features.Scope"
     xmlns:features_role="using:AzureAppRegistrationsManager.WinUI.Features.Role"
     xmlns:features_CertificatesAndSecrets="using:AzureAppRegistrationsManager.WinUI.Features.CertificatesAndSecrets"
+    xmlns:features_Owners="using:AzureAppRegistrationsManager.WinUI.Features.Owners"
     xmlns:features_manifest="using:AzureAppRegistrationsManager.WinUI.Features.Manifest"
     xmlns:scope="using:AzureAppRegistrationsManager.WinUI.Features.Scope"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -152,6 +153,15 @@
                         </TabViewItem.IconSource>
                         <TabViewItem.Content>
                             <features_CertificatesAndSecrets:CertificatesAndSecretsUserControl AppReg="{x:Bind AppReg, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
+                        </TabViewItem.Content>
+                    </TabViewItem>
+
+                    <TabViewItem x:Name="OwnersTab" Header="Owners" IsClosable="False">
+                        <TabViewItem.IconSource>
+                            <SymbolIconSource Symbol="People" />
+                        </TabViewItem.IconSource>
+                        <TabViewItem.Content>
+                            <features_Owners:OwnersUserControl AppReg="{x:Bind AppReg, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
                         </TabViewItem.Content>
                     </TabViewItem>
 

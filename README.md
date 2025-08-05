@@ -37,6 +37,11 @@ It provides a user-friendly interface for creating, updating, and managing app r
 ![certs](./Resources/certs.png)
 
 
+## Owners
+
+![owners](./Resources/owners.png)
+
+
 ## Manifest (json)
 
 ![manifest](./Resources/manifest.png)
@@ -48,6 +53,7 @@ It provides a user-friendly interface for creating, updating, and managing app r
 ## How to create a new release
 - The PR / PR's must be merged into the `main` branch.
 - The `main` branch must be tagged with a new version number. This will trigger the GitHub `CreateRelease` workflow.
+- Select build configuration `AzureAppRegistrationsManager.WinUI (Unpackged)` in Visual Studio.
 - Build the AzureAppRegistrationsManager project in Visual Studio in `Release`-mode. This will also create the `AzureAppRegistrationsManager.zip` file.
 - Upload the `AzureAppRegistrationsManager.zip` file to the GitHub release.
 - Example: https://github.com/alfa1-group/AzureAppRegistrationsManager/releases/tag/1.2.0
