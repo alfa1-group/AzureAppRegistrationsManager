@@ -1,6 +1,8 @@
 using AzureAppRegistrationsManager.WinUI.Services;
 using Microsoft.Graph.Models;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace AzureAppRegistrationsManager.WinUI.Features.Overview;
 
@@ -37,5 +39,22 @@ public sealed partial class OverviewUserControl : BaseUserControl
     private async void SaveApplicationIdUri_Click(object sender, RoutedEventArgs e)
     {
         await UpdateAppRegAsync(sender, AppReg?.IdentifierUris, AzureCommandsHandler.UpdateIdentifierUrisAsync);
+    }
+
+    private void Copy_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button)
+        {
+            return;
+        }
+
+        var text = button.GetChildTextBoxes().FirstOrDefault()?.Text;
+        if (text != null)
+        {
+            var dataPackage = new DataPackage();
+            dataPackage.SetText(text);
+
+            Clipboard.SetContent(dataPackage);
+        }
     }
 }

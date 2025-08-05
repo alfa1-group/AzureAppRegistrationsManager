@@ -64,11 +64,7 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
         }
 
         var controlsToDisable = new List<Control> { button };
-
-        if (button.Parent is Panel panel)
-        {
-            controlsToDisable.AddRange(panel.Children.OfType<TextBox>());
-        }
+        controlsToDisable.AddRange(button.GetChildTextBoxes());
 
         controlsToDisable.ForEach(c => c.IsEnabled = false);
 
@@ -77,6 +73,37 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
             await func(AppReg.Id, value);
 
             OnSave?.Invoke(this, EventArgs.Empty);
+        }
+        finally
+        {
+            controlsToDisable.ForEach(c => c.IsEnabled = true);
+        }
+    }
+
+    protected async Task<TResult?> UpdateAppRegAsync<T, TResult>(object sender, T? value, Func<string, T, Task<TResult>> func)
+    {
+        if (AppReg?.Id == null || value == null)
+        {
+            return default;
+        }
+
+        if (sender is not Button button)
+        {
+            return default;
+        }
+
+        var controlsToDisable = new List<Control> { button };
+        controlsToDisable.AddRange(button.GetChildTextBoxes());
+
+        controlsToDisable.ForEach(c => c.IsEnabled = false);
+
+        try
+        {
+            var result = await func(AppReg.Id, value);
+
+            OnSave?.Invoke(this, EventArgs.Empty);
+
+            return result;
         }
         finally
         {

@@ -80,6 +80,20 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
 
     public bool CanEdit => AppRegInfo?.CanEdit ?? false;
 
+    private string? _currentLoadedType;
+    public string? CurrentLoadedType
+    {
+        get => _currentLoadedType;
+        set
+        {
+            if (value != _currentLoadedType)
+            {
+                _currentLoadedType = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public MainWindow()
@@ -140,6 +154,8 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
 
     private async Task RefreshAppRegInfosAsync(bool all)
     {
+        CurrentLoadedType = all ? "All Applications" : "Own Applications";
+
         RefreshButton.IsEnabled = false;
         RefreshAllButton.IsEnabled = false;
         RefreshProgress.IsActive = true;

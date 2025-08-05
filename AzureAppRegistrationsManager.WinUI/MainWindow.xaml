@@ -9,6 +9,7 @@
     xmlns:features_authentication="using:AzureAppRegistrationsManager.WinUI.Features.Authentication"
     xmlns:features_scope="using:AzureAppRegistrationsManager.WinUI.Features.Scope"
     xmlns:features_role="using:AzureAppRegistrationsManager.WinUI.Features.Role"
+    xmlns:features_CertificatesAndSecrets="using:AzureAppRegistrationsManager.WinUI.Features.CertificatesAndSecrets"
     xmlns:features_manifest="using:AzureAppRegistrationsManager.WinUI.Features.Manifest"
     xmlns:scope="using:AzureAppRegistrationsManager.WinUI.Features.Scope"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -29,28 +30,30 @@
         Loaded="MainGrid_Loaded"
         x:Name="MainGrid">
 
-        <StackPanel 
-            Grid.Row="0"
-            Orientation="Horizontal"
-            Spacing="20">
+        <StackPanel Grid.Row="0" Orientation="Vertical">
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Spacing="20">
+                <Button
+                    x:Name="RefreshButton"
+                    Click="RefreshButton_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <SymbolIcon Symbol="Refresh"/>
+                        <TextBlock Text="Refresh Own Applications"/>
+                    </StackPanel>
+                </Button>
+                <Button
+                    x:Name="RefreshAllButton"
+                    Click="RefreshAllButton_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <SymbolIcon Symbol="Refresh"/>
+                        <TextBlock Text="Refresh All Applications"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
 
-            <Button
-                x:Name="RefreshButton"
-                Click="RefreshButton_Click">
-                <StackPanel Orientation="Horizontal" Spacing="4">
-                    <SymbolIcon Symbol="Refresh"/>
-                    <TextBlock Text="Refresh Own Applications"/>
-                </StackPanel>
-            </Button>
-
-            <Button
-                x:Name="RefreshAllButton"
-                Click="RefreshAllButton_Click">
-                <StackPanel Orientation="Horizontal" Spacing="4">
-                    <SymbolIcon Symbol="Refresh"/>
-                    <TextBlock Text="Refresh All Applications"/>
-                </StackPanel>
-            </Button>
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,10,0,0">
+                <TextBlock Text="Currently loaded:" FontWeight="Bold" />
+                <TextBlock Text="{x:Bind CurrentLoadedType, Mode=OneWay, FallbackValue=''}" Margin="10,0,0,0" />
+            </StackPanel>
         </StackPanel>
 
         <StackPanel 
@@ -136,10 +139,19 @@
 
                     <TabViewItem x:Name="AppRolesTab" Header="App Roles" IsClosable="False">
                         <TabViewItem.IconSource>
-                            <SymbolIconSource Symbol="Permissions" />
+                            <SymbolIconSource Symbol="Admin" />
                         </TabViewItem.IconSource>
                         <TabViewItem.Content>
                             <features_role:AppRoleUserControl AppReg="{x:Bind AppReg, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
+                        </TabViewItem.Content>
+                    </TabViewItem>
+
+                    <TabViewItem x:Name="CertificatesAndSecretsTab" Header="Certificates &amp; Secrets" IsClosable="False">
+                        <TabViewItem.IconSource>
+                            <SymbolIconSource Symbol="Permissions" />
+                        </TabViewItem.IconSource>
+                        <TabViewItem.Content>
+                            <features_CertificatesAndSecrets:CertificatesAndSecretsUserControl AppReg="{x:Bind AppReg, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
                         </TabViewItem.Content>
                     </TabViewItem>
 
