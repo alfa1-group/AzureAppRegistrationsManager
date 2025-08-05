@@ -34,7 +34,7 @@ It provides a user-friendly interface for creating, updating, and managing app r
 
 ## Certificates & Secrets
 
-![app-roles](./Resources/certs.png)
+![certs](./Resources/certs.png)
 
 
 ## Manifest (json)
