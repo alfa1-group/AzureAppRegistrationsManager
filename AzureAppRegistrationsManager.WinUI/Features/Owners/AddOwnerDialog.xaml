@@ -29,8 +29,7 @@
                             PlaceholderText="Enter the email address"
                             Text="{x:Bind Owner.Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}"
                             AcceptsReturn="True"
-                            TextWrapping="Wrap"
-                            Height="20"/>
+                            TextWrapping="Wrap"/>
                     </validation:ValidationFor>
                 </StackPanel>
 
