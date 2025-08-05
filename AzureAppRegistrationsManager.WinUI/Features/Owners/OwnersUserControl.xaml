@@ -41,7 +41,7 @@
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="local:OwnerViewModel">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <Button IsEnabled="{Binding CanDelete, Mode=OneWay}" FontSize="10px" Content="🗑️" Click="RemoveOwner_Click" Tag="{x:Bind}" />
+                                <Button IsEnabled="{Binding CanDelete, Mode=OneWay}" FontSize="10px" Content="🗑️" Click="RemoveOwner_Click" ToolTipService.ToolTip="Delete this owner" Tag="{x:Bind}" />
                             </StackPanel>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
