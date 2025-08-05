@@ -11,9 +11,10 @@ public sealed partial class OwnersUserControl : BaseUserControl
     {
         get
         {
+            var count = AppReg?.Owners?.Count ?? 0;
             return AppReg?.Owners?
                 .OrderBy(u => u.Id)
-                .Select(u => new OwnerViewModel { DirectoryObject = u, CanEdit = CanEdit })
+                .Select(u => new OwnerViewModel { DirectoryObject = u, CanDelete = CanEdit && count > 1 })
                 .ToArray() ?? [];
         }
     }
@@ -49,11 +50,9 @@ public sealed partial class OwnersUserControl : BaseUserControl
         var result = await dialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            var email = dialog.Owner.Email;
-
-            await UpdateAppRegAsync(sender, email, async (id, x) =>
+            await UpdateAppRegAsync(sender, dialog.Owner.Email, async (id, ownerEmail) =>
             {
-                await AzureCommandsHandler.AddAppOwnerByEmailAsync(id, x);
+                await AzureCommandsHandler.AddAppOwnerByEmailAsync(id, ownerEmail);
                 AppReg = await AzureCommandsHandler.GetApplicationAsync(id);
             });
 
@@ -75,8 +74,8 @@ public sealed partial class OwnersUserControl : BaseUserControl
                 Title = "Remove Owner",
                 XamlRoot = Content.XamlRoot
             };
-            var result = await dialog.ShowAsync();
 
+            var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Secondary)
             {
                 await UpdateAppRegAsync(sender, viewModel.Mail, async (id, ownerEmail) =>

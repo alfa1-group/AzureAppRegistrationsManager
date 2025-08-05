@@ -62,5 +62,5 @@ public class OwnerViewModel
         }
     }
 
-    public bool CanEdit { get; set; }
+    public bool CanDelete { get; set; }
 }
