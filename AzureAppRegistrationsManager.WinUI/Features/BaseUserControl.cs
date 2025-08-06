@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -53,31 +53,12 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
 
     protected async Task UpdateAppRegAsync<T>(object sender, T? value, Func<string, T, Task> func)
     {
-        if (AppReg?.Id == null || value == null)
+        await UpdateAppRegAsync(sender, value, async (id, val) =>
         {
-            return;
-        }
+            await func(id, val);
 
-        if (sender is not Button button)
-        {
-            return;
-        }
-
-        var controlsToDisable = new List<Control> { button };
-        controlsToDisable.AddRange(button.GetChildTextBoxes());
-
-        controlsToDisable.ForEach(c => c.IsEnabled = false);
-
-        try
-        {
-            await func(AppReg.Id, value);
-
-            OnSave?.Invoke(this, EventArgs.Empty);
-        }
-        finally
-        {
-            controlsToDisable.ForEach(c => c.IsEnabled = true);
-        }
+            return true;
+        });
     }
 
     protected async Task<TResult?> UpdateAppRegAsync<T, TResult>(object sender, T? value, Func<string, T, Task<TResult>> func)
@@ -104,6 +85,15 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
             OnSave?.Invoke(this, EventArgs.Empty);
 
             return result;
+        }
+        catch (Exception ex)
+        {
+            await new ErrorDialog(ex.Message)
+            {
+                XamlRoot = Content.XamlRoot
+            }.ShowAsync();
+
+            return default;
         }
         finally
         {

@@ -337,7 +337,7 @@ internal static class AzureCommandsHandler
         var userId = users?.Value?.FirstOrDefault()?.Id;
         if (string.IsNullOrEmpty(userId))
         {
-            throw new Exception($"User with email {emailAddress} not found.");
+            throw new Exception($"User with email '{emailAddress}' not found.");
         }
 
         return userId;
