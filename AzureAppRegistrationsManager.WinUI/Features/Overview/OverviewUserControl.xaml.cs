@@ -63,7 +63,7 @@ public sealed partial class OverviewUserControl : BaseUserControl
 
     private async void SaveEnterpriseApplication_Click(object sender, RoutedEventArgs e)
     {
-        if (IsEnterpriseApplication)
+        if (string.IsNullOrEmpty(AppRegInfo?.EnterpriseApplicationObjectId) && IsEnterpriseApplication)
         {
             var request = new ServicePrincipal
             {
@@ -72,7 +72,8 @@ public sealed partial class OverviewUserControl : BaseUserControl
             };
             AppRegInfo?.EnterpriseApplicationObjectId = await UpdateAppRegAsync(sender, request, AzureCommandsHandler.ConvertToEnterpriseApplication);
         }
-        else
+
+        if (!IsEnterpriseApplication && !string.IsNullOrEmpty(AppRegInfo?.EnterpriseApplicationObjectId))
         {
             await UpdateAppRegAsync(sender, AppRegInfo?.EnterpriseApplicationObjectId, AzureCommandsHandler.RemoveEnterpriseApplication);
             AppRegInfo?.EnterpriseApplicationObjectId = null;

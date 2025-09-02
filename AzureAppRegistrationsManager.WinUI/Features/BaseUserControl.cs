@@ -74,7 +74,7 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
         }
 
         var controlsToDisable = new List<Control> { button };
-        controlsToDisable.AddRange(button.GetChildTextBoxes());
+        controlsToDisable.AddRange(button.GetChildControls());
 
         controlsToDisable.ForEach(c => c.IsEnabled = false);
 

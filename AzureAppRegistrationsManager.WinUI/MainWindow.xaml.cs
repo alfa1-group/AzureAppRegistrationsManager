@@ -13,6 +13,8 @@ namespace AzureAppRegistrationsManager.WinUI;
 
 public sealed partial class MainWindow : Window, INotifyPropertyChanged
 {
+    private const string Loading = "loading...";
+
     private IReadOnlyList<AppRegInfo>? _appRegInfos;
     public IReadOnlyList<AppRegInfo>? AppRegInfos
     {
@@ -123,9 +125,10 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
 
         ApplicationsGrid.ItemsSource = new[] { new AppRegInfo
         {
-            AppId = "loading...",
-            ObjectId = "loading...",
-            DisplayName = "loading..."
+            AppId = Loading,
+            ObjectId = Loading,
+            DisplayName = Loading,
+            EnterpriseApplicationObjectId = Loading
         }};
 
         AppRegInfos = all ? await AzureCommandsHandler.GetAllApplicationsAsync() : await AzureCommandsHandler.GetOwnApplicationsAsync();
