@@ -8,26 +8,26 @@ public sealed partial class AuthenticationUserControl : BaseUserControl
 {
     public string WebRedirectUrisText
     {
-        get => AppReg?.WebRedirectUrisText ?? string.Empty;
+        get => AppRegInfo?.Application?.WebRedirectUrisText ?? string.Empty;
         set
         {
-            if (AppReg != null)
+            if (AppRegInfo != null)
             {
-                AppReg.WebRedirectUrisText = value;
-                OnPropertyChanged(nameof(AppReg));
+                AppRegInfo?.Application?.WebRedirectUrisText = value;
+                OnPropertyChanged(nameof(AppRegInfo));
             }
         }
     }
 
     public string SpaRedirectUrisText
     {
-        get => AppReg?.SpaRedirectUrisText ?? string.Empty;
+        get => AppRegInfo?.Application?.SpaRedirectUrisText ?? string.Empty;
         set
         {
-            if (AppReg != null)
+            if (AppRegInfo != null)
             {
-                AppReg.SpaRedirectUrisText = value;
-                OnPropertyChanged(nameof(AppReg));
+                AppRegInfo?.Application?.SpaRedirectUrisText = value;
+                OnPropertyChanged(nameof(AppRegInfo));
             }
         }
     }
@@ -48,16 +48,16 @@ public sealed partial class AuthenticationUserControl : BaseUserControl
 
     private async void SaveImplicitGrantSettings_Click(object sender, RoutedEventArgs e)
     {
-        await UpdateAppRegAsync(sender, AppReg?.Web?.ImplicitGrantSettings, AzureCommandsHandler.UpdateImplicitGrantSettingsAsync);
+        await UpdateAppRegAsync(sender, AppRegInfo?.Application?.Web?.ImplicitGrantSettings, AzureCommandsHandler.UpdateImplicitGrantSettingsAsync);
     }
 
     private async void SaveWebRedirectUris_Click(object sender, RoutedEventArgs e)
     {
-        await UpdateAppRegAsync(sender, AppReg?.Web?.RedirectUris, AzureCommandsHandler.UpdateWebRedirectUrisAsync);
+        await UpdateAppRegAsync(sender, AppRegInfo?.Application?.Web?.RedirectUris, AzureCommandsHandler.UpdateWebRedirectUrisAsync);
     }
 
     private async void SaveSpaRedirectUris_Click(object sender, RoutedEventArgs e)
     {
-        await UpdateAppRegAsync(sender, AppReg?.Spa?.RedirectUris, AzureCommandsHandler.UpdateSpaRedirectUrisAsync);
+        await UpdateAppRegAsync(sender, AppRegInfo?.Application?.Spa?.RedirectUris, AzureCommandsHandler.UpdateSpaRedirectUrisAsync);
     }
 }

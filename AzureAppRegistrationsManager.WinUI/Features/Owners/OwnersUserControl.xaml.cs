@@ -11,8 +11,8 @@ public sealed partial class OwnersUserControl : BaseUserControl
     {
         get
         {
-            var count = AppReg?.Owners?.Count ?? 0;
-            return AppReg?.Owners?
+            var count = AppRegInfo?.Application?.Owners?.Count ?? 0;
+            return AppRegInfo?.Application?.Owners?
                 .OrderBy(u => u.Id)
                 .Select(u => new OwnerViewModel { DirectoryObject = u, CanDelete = CanEdit && count > 1 })
                 .ToArray() ?? [];
@@ -37,7 +37,7 @@ public sealed partial class OwnersUserControl : BaseUserControl
 
     private async void AddOwner_Click(object sender, RoutedEventArgs e)
     {
-        if (AppReg == null)
+        if (AppRegInfo == null)
         {
             return;
         }
@@ -53,7 +53,7 @@ public sealed partial class OwnersUserControl : BaseUserControl
             await UpdateAppRegAsync(sender, dialog.Owner.Email, async (id, ownerEmail) =>
             {
                 await AzureCommandsHandler.AddAppOwnerByEmailAsync(id, ownerEmail);
-                AppReg = await AzureCommandsHandler.GetApplicationAsync(id);
+                AppRegInfo.Application = await AzureCommandsHandler.GetApplicationAsync(id);
             });
 
             OnPropertyChanged(nameof(OwnersSorted));
@@ -62,7 +62,7 @@ public sealed partial class OwnersUserControl : BaseUserControl
 
     private async void RemoveOwner_Click(object sender, RoutedEventArgs e)
     {
-        if (AppReg == null)
+        if (AppRegInfo == null)
         {
             return;
         }
@@ -82,7 +82,7 @@ public sealed partial class OwnersUserControl : BaseUserControl
                 {
                     await AzureCommandsHandler.RemoveOwnerFromAppRegistrationByEmailAsync(id, ownerEmail);
 
-                    AppReg = await AzureCommandsHandler.GetApplicationAsync(id);
+                    AppRegInfo.Application = await AzureCommandsHandler.GetApplicationAsync(id);
                 });
 
                 OnPropertyChanged(nameof(OwnersSorted));

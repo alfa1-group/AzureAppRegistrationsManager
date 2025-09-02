@@ -13,7 +13,7 @@ public sealed partial class AppRoleUserControl : BaseUserControl
     {
         get
         {
-            return AppReg?.AppRoles?
+            return AppRegInfo?.Application?.AppRoles?
                 .OrderBy(r => r.Value)
                 .Select(r => new AppRoleViewModel { AppRole = r, CanEdit = CanEdit })
                 .ToArray() ?? [];
@@ -38,7 +38,7 @@ public sealed partial class AppRoleUserControl : BaseUserControl
 
     private async void AddAppRole_Click(object sender, RoutedEventArgs e)
     {
-        if (AppReg == null)
+        if (AppRegInfo == null)
         {
             return;
         }
@@ -51,7 +51,7 @@ public sealed partial class AppRoleUserControl : BaseUserControl
 
         if (result == ContentDialogResult.Primary)
         {
-            var roles = AppReg.AppRoles ??= [];
+            var roles = AppRegInfo?.Application?.AppRoles ?? [];
             roles.Add(dialog.AppRole.Adapt<AppRole>());
 
             await UpdateAppRegAsync(sender, roles, AzureCommandsHandler.UpdateAppRolesAsync);
@@ -61,7 +61,7 @@ public sealed partial class AppRoleUserControl : BaseUserControl
 
     private async void AppRoleAction_Click(object sender, RoutedEventArgs e)
     {
-        if (AppReg == null)
+        if (AppRegInfo == null)
         {
             return;
         }
@@ -83,7 +83,7 @@ public sealed partial class AppRoleUserControl : BaseUserControl
                         {
                             dialog.AppRole.Adapt(appRole);
 
-                            await UpdateAppRegAsync(sender, AppReg.AppRoles, AzureCommandsHandler.UpdateAppRolesAsync);
+                            await UpdateAppRegAsync(sender, AppRegInfo.Application!.AppRoles!, AzureCommandsHandler.UpdateAppRolesAsync);
                             OnPropertyChanged(nameof(AppRolesSorted));
                         }
                         break;
@@ -100,11 +100,11 @@ public sealed partial class AppRoleUserControl : BaseUserControl
 
                         if (result == ContentDialogResult.Secondary)
                         {
-                            await UpdateAppRegAsync(sender, AppReg.AppRoles!, async (id, roles) =>
+                            await UpdateAppRegAsync(sender, AppRegInfo.Application!.AppRoles!, async (id, roles) =>
                             {
                                 await AzureCommandsHandler.DeleteAppRoleAsync(id, roles, appRole);
 
-                                AppReg = await AzureCommandsHandler.GetApplicationAsync(id);
+                                AppRegInfo.Application = await AzureCommandsHandler.GetApplicationAsync(id);
                             });
                             OnPropertyChanged(nameof(AppRolesSorted));
                         }

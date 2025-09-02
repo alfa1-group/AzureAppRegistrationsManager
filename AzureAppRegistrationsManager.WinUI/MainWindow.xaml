@@ -86,6 +86,7 @@
                         <controls:DataGridTextColumn Header="Application (client) ID" Binding="{Binding AppId}" Width="SizeToCells"/>
                         <controls:DataGridTextColumn Header="Display Name" Binding="{Binding DisplayName}" Width="SizeToCells"/>
                         <controls:DataGridTextColumn Header="Object ID" Binding="{Binding ObjectId}" Width="SizeToCells"/>
+                        <controls:DataGridTextColumn Header="Enterprise Application Object ID" Binding="{Binding EnterpriseApplicationObjectId}" Width="SizeToCells"/>
                         <controls:DataGridTextColumn Header="Editable?" Binding="{Binding CanEdit}" Width="90"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid >
@@ -116,7 +117,7 @@
                             <SymbolIconSource Symbol="View" />
                         </TabViewItem.IconSource>
                         <TabViewItem.Content>
-                            <features_overview:OverviewUserControl AppReg="{x:Bind AppReg, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
+                            <features_overview:OverviewUserControl AppRegInfo="{x:Bind AppRegInfo, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
                         </TabViewItem.Content>
                     </TabViewItem>
 
@@ -125,7 +126,7 @@
                             <SymbolIconSource Symbol="ProtectedDocument" />
                         </TabViewItem.IconSource>
                         <TabViewItem.Content>
-                            <features_authentication:AuthenticationUserControl AppReg="{x:Bind AppReg, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
+                            <features_authentication:AuthenticationUserControl AppRegInfo="{x:Bind AppRegInfo, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
                         </TabViewItem.Content>
                     </TabViewItem>
 
@@ -134,7 +135,7 @@
                             <SymbolIconSource Symbol="Share" />
                         </TabViewItem.IconSource>
                         <TabViewItem.Content>
-                            <features_scope:ScopeUserControl AppReg="{x:Bind AppReg, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
+                            <features_scope:ScopeUserControl AppRegInfo="{x:Bind AppRegInfo, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
                         </TabViewItem.Content>
                     </TabViewItem>
 
@@ -143,7 +144,7 @@
                             <SymbolIconSource Symbol="Admin" />
                         </TabViewItem.IconSource>
                         <TabViewItem.Content>
-                            <features_role:AppRoleUserControl AppReg="{x:Bind AppReg, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
+                            <features_role:AppRoleUserControl AppRegInfo="{x:Bind AppRegInfo, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
                         </TabViewItem.Content>
                     </TabViewItem>
 
@@ -152,7 +153,7 @@
                             <SymbolIconSource Symbol="Permissions" />
                         </TabViewItem.IconSource>
                         <TabViewItem.Content>
-                            <features_CertificatesAndSecrets:CertificatesAndSecretsUserControl AppReg="{x:Bind AppReg, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
+                            <features_CertificatesAndSecrets:CertificatesAndSecretsUserControl AppRegInfo="{x:Bind AppRegInfo, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
                         </TabViewItem.Content>
                     </TabViewItem>
 
@@ -161,7 +162,7 @@
                             <SymbolIconSource Symbol="People" />
                         </TabViewItem.IconSource>
                         <TabViewItem.Content>
-                            <features_Owners:OwnersUserControl AppReg="{x:Bind AppReg, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
+                            <features_Owners:OwnersUserControl AppRegInfo="{x:Bind AppRegInfo, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
                         </TabViewItem.Content>
                     </TabViewItem>
 
@@ -170,7 +171,7 @@
                             <SymbolIconSource Symbol="Document" />
                         </TabViewItem.IconSource>
                         <TabViewItem.Content>
-                            <features_manifest:ManifestUserControl AppReg="{x:Bind AppReg, Mode=TwoWay}" CanEdit="False" />
+                            <features_manifest:ManifestUserControl AppRegInfo="{x:Bind AppRegInfo, Mode=TwoWay}" CanEdit="False" />
                         </TabViewItem.Content>
                     </TabViewItem>
                 </TabView>

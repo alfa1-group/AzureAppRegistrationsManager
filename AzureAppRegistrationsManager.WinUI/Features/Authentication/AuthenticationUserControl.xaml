@@ -19,13 +19,13 @@
                 <CheckBox
                     x:Name="EnableAccessTokenCheckBox"
                     Content="Access tokens (used for implicit flows)"
-                    IsChecked="{x:Bind AppReg.Web.ImplicitGrantSettings.EnableAccessTokenIssuance, Mode=TwoWay}"
+                    IsChecked="{x:Bind AppRegInfo.Application.Web.ImplicitGrantSettings.EnableAccessTokenIssuance, Mode=TwoWay}"
                     IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
                     MinWidth="500"/>
                 <CheckBox
                     x:Name="EnableIdTokenCheckBox"
                     Content="ID tokens (used for implicit and hybrid flows)"
-                    IsChecked="{x:Bind AppReg.Web.ImplicitGrantSettings.EnableIdTokenIssuance, Mode=TwoWay}"
+                    IsChecked="{x:Bind AppRegInfo.Application.Web.ImplicitGrantSettings.EnableIdTokenIssuance, Mode=TwoWay}"
                     IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
                     MinWidth="500"/>
             </StackPanel>

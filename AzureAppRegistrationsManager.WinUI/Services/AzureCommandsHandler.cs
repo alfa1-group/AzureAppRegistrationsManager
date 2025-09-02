@@ -4,7 +4,6 @@ using Microsoft.Graph;
 using Microsoft.Graph.Applications.Item.AddPassword;
 using Microsoft.Graph.Applications.Item.RemovePassword;
 using Microsoft.Graph.Models;
-//using User = Microsoft.Graph.Models.User;
 
 namespace AzureAppRegistrationsManager.WinUI.Services;
 
@@ -25,9 +24,9 @@ internal static class AzureCommandsHandler
             return [];
         }
 
-        var allApplications = new List<AppRegInfo>();
+        var appRegInfoList = new List<AppRegInfo>();
 
-        var pageIterator = PageIterator<Application, ApplicationCollectionResponse>.CreatePageIterator(
+        var applicationsPageIterator = PageIterator<Application, ApplicationCollectionResponse>.CreatePageIterator(
             App.GraphClient,
             applications,
             app =>
@@ -37,7 +36,7 @@ internal static class AzureCommandsHandler
                     return false;
                 }
 
-                allApplications.Add(new AppRegInfo
+                appRegInfoList.Add(new AppRegInfo
                 {
                     AppId = app.AppId,
                     DisplayName = app.DisplayName,
@@ -47,9 +46,11 @@ internal static class AzureCommandsHandler
                 return true;
             });
 
-        await pageIterator.IterateAsync();
+        await applicationsPageIterator.IterateAsync();
 
-        return allApplications
+        await UpdateAppRegInfoListWithServicePrincipalsAsync(appRegInfoList);
+
+        return appRegInfoList
             .OrderBy(app => app.DisplayName)
             .ToArray();
     }
@@ -66,7 +67,7 @@ internal static class AzureCommandsHandler
             return [];
         }
 
-        var ownApplications = new List<AppRegInfo>();
+        var appRegInfoList = new List<AppRegInfo>();
 
         var pageIterator = PageIterator<DirectoryObject, DirectoryObjectCollectionResponse>.CreatePageIterator(
             App.GraphClient,
@@ -75,7 +76,7 @@ internal static class AzureCommandsHandler
             {
                 if (obj is Application app && app.AppId != null && app.Id != null && !string.IsNullOrWhiteSpace(app.DisplayName))
                 {
-                    ownApplications.Add(new AppRegInfo
+                    appRegInfoList.Add(new AppRegInfo
                     {
                         AppId = app.AppId,
                         DisplayName = app.DisplayName,
@@ -83,12 +84,15 @@ internal static class AzureCommandsHandler
                         CanEdit = true
                     });
                 }
+
                 return true;
             });
 
         await pageIterator.IterateAsync();
 
-        return ownApplications
+        await UpdateAppRegInfoListWithServicePrincipalsAsync(appRegInfoList);
+
+        return appRegInfoList
             .OrderBy(app => app.DisplayName)
             .ToArray();
     }
@@ -359,6 +363,40 @@ internal static class AzureCommandsHandler
         var userId = await GetUserIdByEmailAsync(ownerEmail);
 
         await App.GraphClient.Applications[applicationId].Owners[userId].Ref.DeleteAsync();
+    }
+
+    private static async Task UpdateAppRegInfoListWithServicePrincipalsAsync(List<AppRegInfo> appRegInfoList)
+    {
+        var enterpriseApplications = await App.GraphClient.ServicePrincipals.GetAsync(q =>
+        {
+            q.QueryParameters.Select = ["appId", "id"];
+        });
+
+        if (enterpriseApplications == null || enterpriseApplications.Value == null)
+        {
+            return;
+        }
+
+        var enterpriseApplicationsPageIterator = PageIterator<ServicePrincipal, ServicePrincipalCollectionResponse>.CreatePageIterator(
+            App.GraphClient,
+            enterpriseApplications,
+            sp =>
+            {
+                if (sp == null || sp.AppId == null || sp.Id == null)
+                {
+                    return false;
+                }
+
+                var application = appRegInfoList.FirstOrDefault(a => a.AppId == sp.AppId);
+                if (application != null)
+                {
+                    application.EnterpriseApplicationObjectId = sp.Id;
+                }
+
+                return true;
+            });
+
+        await enterpriseApplicationsPageIterator.IterateAsync();
     }
 
     private static async Task ExecuteAzRestPatchOnApplicationAsync(string id, Application request)

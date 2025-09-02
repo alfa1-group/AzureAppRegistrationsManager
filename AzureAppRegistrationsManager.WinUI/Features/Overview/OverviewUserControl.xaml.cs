@@ -1,3 +1,4 @@
+using AzureAppRegistrationsManager.WinUI.Models;
 using AzureAppRegistrationsManager.WinUI.Services;
 using Microsoft.Graph.Models;
 using Microsoft.UI.Xaml;
@@ -10,19 +11,38 @@ public sealed partial class OverviewUserControl : BaseUserControl
 {
     protected override void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as OverviewUserControl)?.OnPropertyChanged(nameof(ApplicationIdUri));
+        if (d is OverviewUserControl overviewUserControl)
+        {
+            overviewUserControl.OnPropertyChanged(nameof(ApplicationIdUri));
+            overviewUserControl.OnPropertyChanged(nameof(IsEnterpriseApplication));
+        }
     }
 
     public string ApplicationIdUri
     {
-        get => AppReg?.ApplicationIdUri ?? string.Empty;
+        get => AppRegInfo?.Application?.ApplicationIdUri ?? string.Empty;
         set
         {
-            if (AppReg != null)
+            if (AppRegInfo != null)
             {
-                AppReg.ApplicationIdUri = value;
-                OnPropertyChanged(nameof(AppReg));
+                AppRegInfo?.Application?.ApplicationIdUri = value;
+                OnPropertyChanged(nameof(AppRegInfo));
             }
+        }
+    }
+
+    private bool _isEnterpriseApplication;
+    public bool IsEnterpriseApplication
+    {
+        get => _isEnterpriseApplication; //string.IsNullOrEmpty(AppRegInfo?.EnterpriseApplicationObjectId);
+        set
+        {
+            _isEnterpriseApplication = value;
+            //if (AppRegInfo != null)
+            //{
+            //    AppRegInfo.WebRedirectUrisText = value;
+                OnPropertyChanged(nameof(AppRegInfo));
+            //}
         }
     }
 
@@ -33,12 +53,17 @@ public sealed partial class OverviewUserControl : BaseUserControl
 
     private async void SaveDisplayName_Click(object sender, RoutedEventArgs e)
     {
-        await UpdateAppRegAsync(sender, AppReg?.DisplayName, AzureCommandsHandler.UpdateDisplayNameAsync);
+        await UpdateAppRegAsync(sender, AppRegInfo?.Application?.DisplayName, AzureCommandsHandler.UpdateDisplayNameAsync);
     }
 
     private async void SaveApplicationIdUri_Click(object sender, RoutedEventArgs e)
     {
-        await UpdateAppRegAsync(sender, AppReg?.IdentifierUris, AzureCommandsHandler.UpdateIdentifierUrisAsync);
+        await UpdateAppRegAsync(sender, AppRegInfo?.Application?.IdentifierUris, AzureCommandsHandler.UpdateIdentifierUrisAsync);
+    }
+
+    private async void SaveEnterpriseApplication_Click(object sender, RoutedEventArgs e)
+    {
+        
     }
 
     private void Copy_Click(object sender, RoutedEventArgs e)

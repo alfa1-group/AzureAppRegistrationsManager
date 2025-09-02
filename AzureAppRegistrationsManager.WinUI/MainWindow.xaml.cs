@@ -8,7 +8,7 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using WinRT.Interop;
-using GraphApplication = Microsoft.Graph.Models.Application;
+// using GraphApplication = Microsoft.Graph.Models.Application;
 
 namespace AzureAppRegistrationsManager.WinUI;
 
@@ -28,40 +28,40 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
-    private GraphApplication? _application;
-    public GraphApplication? AppReg
-    {
-        get => _application;
-        set
-        {
-            if (value != _application)
-            {
-                _application = value;
+    //private GraphApplication? _application;
+    //public GraphApplication? AppReg
+    //{
+    //    get => _application;
+    //    set
+    //    {
+    //        if (value != _application)
+    //        {
+    //            _application = value;
 
-                OnPropertyChanged();
+    //            OnPropertyChanged();
 
-                if (value != null)
-                {
-                    AppRegJson = JsonSerializer.Serialize(value, MyJsonContext.Default.Application);
-                }
-            }
-        }
-    }
+    //            if (value != null)
+    //            {
+    //                AppRegJson = JsonSerializer.Serialize(value, MyJsonContext.Default.Application);
+    //            }
+    //        }
+    //    }
+    //}
 
-    private string _appRegJson = string.Empty;
-    public string AppRegJson
-    {
-        get => _appRegJson;
-        set
-        {
-            var newValue = value;
-            if (newValue != _appRegJson)
-            {
-                _appRegJson = newValue;
-                OnPropertyChanged();
-            }
-        }
-    }
+    //private string _appRegJson = string.Empty;
+    //public string AppRegJson
+    //{
+    //    get => _appRegJson;
+    //    set
+    //    {
+    //        var newValue = value;
+    //        if (newValue != _appRegJson)
+    //        {
+    //            _appRegJson = newValue;
+    //            OnPropertyChanged();
+    //        }
+    //    }
+    //}
 
     private AppRegInfo? _appRegInfo;
     public AppRegInfo? AppRegInfo
@@ -129,16 +129,14 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
 
     private async void RefreshButton_Click(object sender, RoutedEventArgs e)
     {
-        AppRegInfo = null;
-        await RefreshAppAsync();
+        await RefreshAppAsync(null);
 
         await RefreshAppRegInfosAsync(false);
     }
 
     private async void RefreshAllButton_Click(object sender, RoutedEventArgs e)
     {
-        AppRegInfo = null;
-        await RefreshAppAsync();
+        await RefreshAppAsync(null);
 
         await RefreshAppRegInfosAsync(true);
     }
@@ -147,8 +145,7 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
     {
         if (ApplicationsGrid.SelectedItem is AppRegInfo selectedAppRegInfo)
         {
-            AppRegInfo = selectedAppRegInfo;
-            await RefreshAppAsync();
+            await RefreshAppAsync(selectedAppRegInfo);
         }
     }
 
@@ -174,20 +171,28 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         RefreshButton.IsEnabled = true;
     }
 
-    private async Task RefreshAppAsync()
+    private async Task RefreshAppAsync(AppRegInfo? selectedAppRegInfo)
     {
-        if (AppRegInfo == null)
+        if (selectedAppRegInfo == null)
         {
-            AppReg = null;
+            // AppReg = null;
+            AppRegInfo = null;
             return;
         }
 
         RefreshAppProgress.IsActive = true;
 
-        AppRegJson = string.Empty;
-        AppReg = await AzureCommandsHandler.GetApplicationAsync(AppRegInfo.ObjectId);
+        selectedAppRegInfo.Application = null;
+        selectedAppRegInfo.ApplicationAsJson = string.Empty;
+        selectedAppRegInfo.Application = await AzureCommandsHandler.GetApplicationAsync(selectedAppRegInfo.ObjectId);
+        if (selectedAppRegInfo.Application != null)
+        {
+            selectedAppRegInfo.ApplicationAsJson = JsonSerializer.Serialize(selectedAppRegInfo.Application, MyJsonContext.Default.Application);
+        }
 
         RefreshAppProgress.IsActive = false;
+
+        AppRegInfo = selectedAppRegInfo;
     }
 
     private void OnSave(object? sender, EventArgs e)
