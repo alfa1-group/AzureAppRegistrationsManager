@@ -8,7 +8,6 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using WinRT.Interop;
-// using GraphApplication = Microsoft.Graph.Models.Application;
 
 namespace AzureAppRegistrationsManager.WinUI;
 
@@ -27,41 +26,6 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
             }
         }
     }
-
-    //private GraphApplication? _application;
-    //public GraphApplication? AppReg
-    //{
-    //    get => _application;
-    //    set
-    //    {
-    //        if (value != _application)
-    //        {
-    //            _application = value;
-
-    //            OnPropertyChanged();
-
-    //            if (value != null)
-    //            {
-    //                AppRegJson = JsonSerializer.Serialize(value, MyJsonContext.Default.Application);
-    //            }
-    //        }
-    //    }
-    //}
-
-    //private string _appRegJson = string.Empty;
-    //public string AppRegJson
-    //{
-    //    get => _appRegJson;
-    //    set
-    //    {
-    //        var newValue = value;
-    //        if (newValue != _appRegJson)
-    //        {
-    //            _appRegJson = newValue;
-    //            OnPropertyChanged();
-    //        }
-    //    }
-    //}
 
     private AppRegInfo? _appRegInfo;
     public AppRegInfo? AppRegInfo
@@ -175,7 +139,6 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
     {
         if (selectedAppRegInfo == null)
         {
-            // AppReg = null;
             AppRegInfo = null;
             return;
         }

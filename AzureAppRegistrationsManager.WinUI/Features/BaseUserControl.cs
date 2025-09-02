@@ -5,7 +5,6 @@ using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-// using GraphApplication = Microsoft.Graph.Models.Application;
 
 namespace AzureAppRegistrationsManager.WinUI.Features;
 
@@ -19,7 +18,7 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
             nameof(AppRegInfo),
             typeof(AppRegInfo),
             typeof(BaseUserControl),
-            new PropertyMetadata(null, (d, e) => (d as BaseUserControl)?.OnAppRegChanged(d, e)));
+            new PropertyMetadata(null, (d, e) => (d as BaseUserControl)?.OnAppRegInfoChanged(d, e)));
 
     public AppRegInfo? AppRegInfo
     {
@@ -47,7 +46,7 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected virtual void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected virtual void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         // This method can be overridden by derived classes
     }

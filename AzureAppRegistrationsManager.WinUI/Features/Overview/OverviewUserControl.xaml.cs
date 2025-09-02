@@ -1,3 +1,4 @@
+using Azure.Core;
 using AzureAppRegistrationsManager.WinUI.Models;
 using AzureAppRegistrationsManager.WinUI.Services;
 using Microsoft.Graph.Models;
@@ -9,11 +10,14 @@ namespace AzureAppRegistrationsManager.WinUI.Features.Overview;
 
 public sealed partial class OverviewUserControl : BaseUserControl
 {
-    protected override void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected override void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is OverviewUserControl overviewUserControl)
         {
             overviewUserControl.OnPropertyChanged(nameof(ApplicationIdUri));
+
+            _isEnterpriseApplication = !string.IsNullOrEmpty(AppRegInfo?.EnterpriseApplicationObjectId);
+
             overviewUserControl.OnPropertyChanged(nameof(IsEnterpriseApplication));
         }
     }
@@ -34,15 +38,11 @@ public sealed partial class OverviewUserControl : BaseUserControl
     private bool _isEnterpriseApplication;
     public bool IsEnterpriseApplication
     {
-        get => _isEnterpriseApplication; //string.IsNullOrEmpty(AppRegInfo?.EnterpriseApplicationObjectId);
+        get => _isEnterpriseApplication;
         set
         {
             _isEnterpriseApplication = value;
-            //if (AppRegInfo != null)
-            //{
-            //    AppRegInfo.WebRedirectUrisText = value;
-                OnPropertyChanged(nameof(AppRegInfo));
-            //}
+            OnPropertyChanged(nameof(AppRegInfo));
         }
     }
 
@@ -63,7 +63,23 @@ public sealed partial class OverviewUserControl : BaseUserControl
 
     private async void SaveEnterpriseApplication_Click(object sender, RoutedEventArgs e)
     {
-        
+        if (IsEnterpriseApplication)
+        {
+            var request = new ServicePrincipal
+            {
+                AppId = AppRegInfo!.AppId,
+                DisplayName = AppRegInfo.DisplayName
+            };
+            AppRegInfo?.EnterpriseApplicationObjectId = await UpdateAppRegAsync(sender, request, AzureCommandsHandler.ConvertToEnterpriseApplication);
+        }
+        else
+        {
+            await UpdateAppRegAsync(sender, AppRegInfo?.EnterpriseApplicationObjectId, AzureCommandsHandler.RemoveEnterpriseApplication);
+            AppRegInfo?.EnterpriseApplicationObjectId = null;
+        }
+
+        _isEnterpriseApplication = !string.IsNullOrEmpty(AppRegInfo?.EnterpriseApplicationObjectId);
+        OnPropertyChanged(nameof(IsEnterpriseApplication));
     }
 
     private void Copy_Click(object sender, RoutedEventArgs e)

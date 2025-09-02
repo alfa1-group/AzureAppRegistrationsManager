@@ -37,7 +37,7 @@ public sealed partial class AuthenticationUserControl : BaseUserControl
         InitializeComponent();
     }
 
-    protected override void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected override void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is AuthenticationUserControl control)
         {

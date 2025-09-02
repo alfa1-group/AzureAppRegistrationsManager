@@ -30,7 +30,7 @@ public sealed partial class ScopeUserControl : BaseUserControl
         OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
     }
 
-    protected override void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected override void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as ScopeUserControl)?.OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
     }

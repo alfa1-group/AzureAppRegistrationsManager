@@ -365,6 +365,29 @@ internal static class AzureCommandsHandler
         await App.GraphClient.Applications[applicationId].Owners[userId].Ref.DeleteAsync();
     }
 
+    internal static async Task<string?> ConvertToEnterpriseApplication(string _, ServicePrincipal value)
+    {
+        var servicePrincipal = new ServicePrincipal
+        {
+            AppId = value.AppId,
+            DisplayName = value.DisplayName,
+            AccountEnabled = true
+        };
+
+        var createdServicePrincipal = await App.GraphClient.ServicePrincipals.PostAsync(servicePrincipal);
+        return createdServicePrincipal?.Id;
+    }
+
+    internal static async Task RemoveEnterpriseApplication(string _, string? servicePrincipalId)
+    {
+        if (string.IsNullOrWhiteSpace(servicePrincipalId))
+        {
+            return;
+        }
+
+        await App.GraphClient.ServicePrincipals[servicePrincipalId].DeleteAsync();
+    }
+
     private static async Task UpdateAppRegInfoListWithServicePrincipalsAsync(List<AppRegInfo> appRegInfoList)
     {
         var enterpriseApplications = await App.GraphClient.ServicePrincipals.GetAsync(q =>

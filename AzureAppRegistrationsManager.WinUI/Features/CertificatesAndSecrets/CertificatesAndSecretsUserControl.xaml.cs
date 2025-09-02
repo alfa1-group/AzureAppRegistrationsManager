@@ -30,7 +30,7 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
         OnPropertyChanged(nameof(ClientSecretsSorted));
     }
 
-    protected override void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected override void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as CertificatesAndSecretsUserControl)?.OnPropertyChanged(nameof(ClientSecretsSorted));
     }

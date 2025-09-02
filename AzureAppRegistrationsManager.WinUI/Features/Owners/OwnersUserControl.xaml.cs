@@ -30,7 +30,7 @@ public sealed partial class OwnersUserControl : BaseUserControl
         OnPropertyChanged(nameof(OwnersSorted));
     }
 
-    protected override void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected override void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as OwnersUserControl)?.OnPropertyChanged(nameof(OwnersSorted));
     }

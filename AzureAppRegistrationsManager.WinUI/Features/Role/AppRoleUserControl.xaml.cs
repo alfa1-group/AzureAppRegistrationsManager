@@ -31,7 +31,7 @@ public sealed partial class AppRoleUserControl : BaseUserControl
         OnPropertyChanged(nameof(AppRolesSorted));
     }
 
-    protected override void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected override void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as AppRoleUserControl)?.OnPropertyChanged(nameof(AppRolesSorted));
     }
