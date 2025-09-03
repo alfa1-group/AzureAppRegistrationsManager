@@ -14,7 +14,7 @@ It provides a user-friendly interface for creating, updating, and managing app r
 
 ## Overview
 
-![overview](./Resources/screen-01.png)
+![overview](./Resources/screen-01.jpg)
 
 
 ## Authentication
