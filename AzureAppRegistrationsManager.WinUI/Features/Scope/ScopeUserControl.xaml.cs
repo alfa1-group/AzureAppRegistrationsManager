@@ -50,11 +50,19 @@ public sealed partial class ScopeUserControl : BaseUserControl
 
         if (result == ContentDialogResult.Primary)
         {
-            var api = AppRegInfo?.Application?.Api ?? new ApiApplication();
-            var scopes = api.Oauth2PermissionScopes ?? [];
-            scopes.Add(dialog.PermissionScope.Adapt<PermissionScope>());
+            var api = AppRegInfo?.Application?.Api;
+            if (api == null)
+            {
+                api = new ApiApplication();
+                AppRegInfo.Application.Api = api;
+            }
+            if (api.Oauth2PermissionScopes == null)
+            {
+                api.Oauth2PermissionScopes = new List<PermissionScope>();
+            }
+            api.Oauth2PermissionScopes.Add(dialog.PermissionScope.Adapt<PermissionScope>());
 
-            await UpdateAppRegAsync(sender, scopes, AzureCommandsHandler.UpdateScopesAsync);
+            await UpdateAppRegAsync(sender, api.Oauth2PermissionScopes, AzureCommandsHandler.UpdateScopesAsync);
             OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
         }
     }
