@@ -20,7 +20,7 @@ internal sealed partial class ClientSecretDialog : ContentDialog, INotifyPropert
         set
         {
             _customDays = value;
-            OnPropertyChanged(nameof(CustomDays));
+            OnPropertyChanged();
             if (_customDays > 0)
             {
                 ClientSecret.EndDateTime = DateTimeOffset.UtcNow.AddDays(_customDays);

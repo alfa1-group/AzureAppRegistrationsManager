@@ -12,7 +12,7 @@ public sealed partial class ScopeUserControl : BaseUserControl
     {
         get
         {
-            return AppReg?.Api?.Oauth2PermissionScopes?
+            return AppRegInfo?.Application?.Api?.Oauth2PermissionScopes?
                 .OrderBy(s => s.Value)
                 .Select(s => new ScopeViewModel { Scope = s, CanEdit = CanEdit })
                 .ToArray() ?? [];
@@ -30,19 +30,19 @@ public sealed partial class ScopeUserControl : BaseUserControl
         OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
     }
 
-    protected override void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected override void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as ScopeUserControl)?.OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
     }
 
     private async void AddScope_Click(object sender, RoutedEventArgs e)
     {
-        if (AppReg == null || string.IsNullOrWhiteSpace(AppReg.ApplicationIdUri))
+        if (AppRegInfo?.Application == null || string.IsNullOrWhiteSpace(AppRegInfo?.Application?.ApplicationIdUri))
         {
             return;
         }
 
-        var dialog = new ScopeDialog(AppReg.ApplicationIdUri)
+        var dialog = new ScopeDialog(AppRegInfo.Application.ApplicationIdUri)
         {
             XamlRoot = Content.XamlRoot
         };
@@ -50,17 +50,24 @@ public sealed partial class ScopeUserControl : BaseUserControl
 
         if (result == ContentDialogResult.Primary)
         {
-            var scopes = (AppReg.Api ??= new ApiApplication()).Oauth2PermissionScopes ??= [];
-            scopes.Add(dialog.PermissionScope.Adapt<PermissionScope>());
+            var api = AppRegInfo.Application.Api;
+            if (api == null)
+            {
+                api = new ApiApplication();
+                AppRegInfo.Application.Api = api;
+            }
 
-            await UpdateAppRegAsync(sender, scopes, AzureCommandsHandler.UpdateScopesAsync);
+            api.Oauth2PermissionScopes ??= [];
+            api.Oauth2PermissionScopes.Add(dialog.PermissionScope.Adapt<PermissionScope>());
+
+            await UpdateAppRegAsync(sender, api.Oauth2PermissionScopes, AzureCommandsHandler.UpdateScopesAsync);
             OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
         }
     }
 
     private async void ScopeAction_Click(object sender, RoutedEventArgs e)
     {
-        if (AppReg == null || string.IsNullOrWhiteSpace(AppReg.ApplicationIdUri))
+        if (AppRegInfo == null || string.IsNullOrWhiteSpace(AppRegInfo?.Application?.ApplicationIdUri))
         {
             return;
         }
@@ -72,7 +79,7 @@ public sealed partial class ScopeUserControl : BaseUserControl
             {
                 case "ScopeEditButton":
                     {
-                        var dialog = new ScopeDialog(AppReg.ApplicationIdUri, scope.Adapt<ScopeEditModel>())
+                        var dialog = new ScopeDialog(AppRegInfo.Application.ApplicationIdUri, scope.Adapt<ScopeEditModel>())
                         {
                             XamlRoot = Content.XamlRoot
                         };
@@ -82,7 +89,7 @@ public sealed partial class ScopeUserControl : BaseUserControl
                         {
                             dialog.PermissionScope.Adapt(scope);
 
-                            await UpdateAppRegAsync(sender, AppReg.Api!.Oauth2PermissionScopes!, AzureCommandsHandler.UpdateScopesAsync);
+                            await UpdateAppRegAsync(sender, AppRegInfo.Application.Api!.Oauth2PermissionScopes!, AzureCommandsHandler.UpdateScopesAsync);
                             OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
                         }
                         break;
@@ -99,7 +106,7 @@ public sealed partial class ScopeUserControl : BaseUserControl
 
                         if (result == ContentDialogResult.Secondary)
                         {
-                            await UpdateAppRegAsync(sender, AppReg.Api!, (id, api) => AzureCommandsHandler.DeleteScopeAsync(id, api, scope));
+                            await UpdateAppRegAsync(sender, AppRegInfo.Application.Api!, (id, api) => AzureCommandsHandler.DeleteScopeAsync(id, api, scope));
                             OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
                         }
                         break;

@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using AzureAppRegistrationsManager.WinUI.Models;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using GraphApplication = Microsoft.Graph.Models.Application;
 
 namespace AzureAppRegistrationsManager.WinUI.Features;
 
@@ -13,17 +13,17 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
     public event EventHandler? OnSave;
 
-    public static readonly DependencyProperty AppRegProperty =
+    public static readonly DependencyProperty AppRegInfoProperty =
         DependencyProperty.Register(
-            nameof(AppReg),
-            typeof(GraphApplication),
+            nameof(AppRegInfo),
+            typeof(AppRegInfo),
             typeof(BaseUserControl),
-            new PropertyMetadata(null, (d, e) => (d as BaseUserControl)?.OnAppRegChanged(d, e)));
+            new PropertyMetadata(null, (d, e) => (d as BaseUserControl)?.OnAppRegInfoChanged(d, e)));
 
-    public GraphApplication? AppReg
+    public AppRegInfo? AppRegInfo
     {
-        get => (GraphApplication?)GetValue(AppRegProperty);
-        set => SetValue(AppRegProperty, value);
+        get => (AppRegInfo?)GetValue(AppRegInfoProperty);
+        set => SetValue(AppRegInfoProperty, value);
     }
 
     public static readonly DependencyProperty CanEditProperty =
@@ -46,7 +46,7 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected virtual void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected virtual void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         // This method can be overridden by derived classes
     }
@@ -63,7 +63,7 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
 
     protected async Task<TResult?> UpdateAppRegAsync<T, TResult>(object sender, T? value, Func<string, T, Task<TResult>> func)
     {
-        if (AppReg?.Id == null || value == null)
+        if (AppRegInfo?.Application?.Id == null || value == null)
         {
             return default;
         }
@@ -74,13 +74,13 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
         }
 
         var controlsToDisable = new List<Control> { button };
-        controlsToDisable.AddRange(button.GetChildTextBoxes());
+        controlsToDisable.AddRange(button.GetChildControls());
 
         controlsToDisable.ForEach(c => c.IsEnabled = false);
 
         try
         {
-            var result = await func(AppReg.Id, value);
+            var result = await func(AppRegInfo.Application.Id, value);
 
             OnSave?.Invoke(this, EventArgs.Empty);
 

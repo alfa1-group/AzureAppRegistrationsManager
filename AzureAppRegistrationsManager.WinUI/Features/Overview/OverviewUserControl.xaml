@@ -10,8 +10,8 @@
 
     <StackPanel Spacing="8" Margin="8">
         <StackPanel Orientation="Horizontal" Spacing="4">
-            <TextBlock Text="Display Name: 🔺" FontWeight="Bold" Width="150"/>
-            <TextBox IsReadOnly="{x:Bind Not(CanEdit), Mode=OneWay}" x:Name="DisplayNameTextBox" MinWidth="500" Text="{x:Bind AppReg.DisplayName, Mode=TwoWay, FallbackValue=''}" TextChanged="TextBox_TextChanged"/>
+            <TextBlock Text="Display Name: 🔺" FontWeight="Bold" Width="200"/>
+            <TextBox IsReadOnly="{x:Bind Not(CanEdit), Mode=OneWay}" x:Name="DisplayNameTextBox" MinWidth="500" Text="{x:Bind AppRegInfo.Application.DisplayName, Mode=TwoWay, FallbackValue=''}" TextChanged="TextBox_TextChanged"/>
             <Button
                 x:Name="SaveDisplayNameButton"
                 IsEnabled="{x:Bind CanEdit, Mode=OneWay }"
@@ -26,8 +26,8 @@
             </Button>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="4">
-            <TextBlock Text="Application (client) ID:" FontWeight="Bold" Width="150" />
-            <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppReg.AppId, Mode=OneWay, FallbackValue=''}" />
+            <TextBlock Text="Application (client) ID:" FontWeight="Bold" Width="200" />
+            <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppRegInfo.Application.AppId, Mode=OneWay, FallbackValue=''}" />
             <Button HorizontalAlignment="Left" Click="Copy_Click" IsEnabled="{x:Bind CanEdit, Mode=OneWay }">
                 <StackPanel Orientation="Horizontal">
                     <SymbolIcon Symbol="Copy"/>
@@ -35,8 +35,8 @@
             </Button>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="4">
-            <TextBlock Text="Object ID:" FontWeight="Bold" Width="150" />
-            <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppReg.Id, Mode=OneWay, FallbackValue=''}" />
+            <TextBlock Text="Object ID:" FontWeight="Bold" Width="200" />
+            <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppRegInfo.Application.Id, Mode=OneWay, FallbackValue=''}" />
             <Button HorizontalAlignment="Left" Click="Copy_Click" IsEnabled="{x:Bind CanEdit, Mode=OneWay }" >
                 <StackPanel Orientation="Horizontal">
                     <SymbolIcon Symbol="Copy"/>
@@ -44,7 +44,7 @@
             </Button>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="4">
-            <TextBlock Text="Application ID URI:" FontWeight="Bold" Width="150"/>
+            <TextBlock Text="Application ID URI:" FontWeight="Bold" Width="200"/>
             <TextBox IsReadOnly="{x:Bind Not(CanEdit), Mode=OneWay }" x:Name="ApplicationIdUriTextBox" MinWidth="500" Text="{x:Bind ApplicationIdUri, Mode=TwoWay, FallbackValue=''}" />
             <Button
                 x:Name="SaveApplicationIdUriButton"
@@ -53,6 +53,26 @@
                 VerticalAlignment="Bottom"
                 Margin="0,8,0,0"
                 Click="SaveApplicationIdUri_Click">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <SymbolIcon Symbol="Save"/>
+                    <TextBlock Text="Save"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock Text="Is Enterprise Application?" FontWeight="Bold" Width="200"/>
+            <CheckBox
+                 x:Name="EnterpriseApplicationCheckBox"
+                 IsChecked="{x:Bind IsEnterpriseApplication, Mode=TwoWay}"
+                 IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
+                 MinWidth="500"/>
+            <Button
+                x:Name="SaveEnterpriseApplicationButton"
+                IsEnabled="{x:Bind CanEdit, Mode=OneWay }"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Margin="0,8,0,0"
+                Click="SaveEnterpriseApplication_Click">
                 <StackPanel Orientation="Horizontal" Spacing="4">
                     <SymbolIcon Symbol="Save"/>
                     <TextBlock Text="Save"/>

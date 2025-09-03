@@ -12,7 +12,7 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
     {
         get
         {
-            return AppReg?.PasswordCredentials?
+            return AppRegInfo?.Application?.PasswordCredentials?
                 .OrderBy(p => p.DisplayName)
                 .Select(p => new ClientSecretViewModel { PasswordCredential = p, CanEdit = CanEdit })
                 .ToArray() ?? [];
@@ -30,14 +30,14 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
         OnPropertyChanged(nameof(ClientSecretsSorted));
     }
 
-    protected override void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected override void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         (d as CertificatesAndSecretsUserControl)?.OnPropertyChanged(nameof(ClientSecretsSorted));
     }
 
     private async void NewClientSecret_Click(object sender, RoutedEventArgs e)
     {
-        if (AppReg == null)
+        if (AppRegInfo == null)
         {
             return;
         }
@@ -52,9 +52,9 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
         {
             var passwordCredential = dialog.ClientSecret.Adapt<PasswordCredential>();
 
-            await UpdateAppRegAsync(sender, passwordCredential, async (id, passwordCredential) =>
+            await UpdateAppRegAsync(sender, passwordCredential, async (id, pc) =>
             {
-                var secret = await AzureCommandsHandler.AddClientSecretAsync(id, passwordCredential);
+                var secret = await AzureCommandsHandler.AddClientSecretAsync(id, pc);
                 if (secret != null)
                 {
                     var newSecretDialog = new NewSecretDialog(secret)
@@ -63,7 +63,7 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
                     };
                     await newSecretDialog.ShowAsync();
 
-                    AppReg = await AzureCommandsHandler.GetApplicationAsync(id);
+                    AppRegInfo.Application = await AzureCommandsHandler.GetApplicationAsync(id);
                 }
             });
 
@@ -73,7 +73,7 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
 
     private async void ClientSecretDelete_Click(object sender, RoutedEventArgs e)
     {
-        if (AppReg == null)
+        if (AppRegInfo == null)
         {
             return;
         }
@@ -94,7 +94,7 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
                 {
                     await AzureCommandsHandler.DeleteClientSecretAsync(id, keyId);
 
-                    AppReg = await AzureCommandsHandler.GetApplicationAsync(id);
+                    AppRegInfo.Application = await AzureCommandsHandler.GetApplicationAsync(id);
                 });
 
                 OnPropertyChanged(nameof(ClientSecretsSorted));

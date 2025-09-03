@@ -1,7 +1,7 @@
 using System.Text.Json;
+using AzureAppRegistrationsManager.WinUI.Models;
 using AzureAppRegistrationsManager.WinUI.Services;
 using Microsoft.UI.Xaml;
-using GraphApplication = Microsoft.Graph.Models.Application;
 
 namespace AzureAppRegistrationsManager.WinUI.Features.Manifest;
 
@@ -27,13 +27,13 @@ public sealed partial class ManifestUserControl : BaseUserControl
         InitializeComponent();
     }
 
-    protected override async void OnAppRegChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected override async void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is ManifestUserControl control)
+        if (d is ManifestUserControl)
         {
-            if (e.NewValue is GraphApplication appReg)
+            if (e.NewValue is AppRegInfo appRegInfo && appRegInfo.Application != null)
             {
-                AppRegJson = JsonSerializer.Serialize(appReg, MyJsonContext.Default.Application);
+                AppRegJson = JsonSerializer.Serialize(appRegInfo.Application, MyJsonContext.Default.Application);
             }
             else
             {
