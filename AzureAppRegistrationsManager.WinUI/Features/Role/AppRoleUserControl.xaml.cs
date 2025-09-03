@@ -51,10 +51,18 @@ public sealed partial class AppRoleUserControl : BaseUserControl
 
         if (result == ContentDialogResult.Primary)
         {
-            var roles = AppRegInfo?.Application?.AppRoles ?? [];
-            roles.Add(dialog.AppRole.Adapt<AppRole>());
+            var app = AppRegInfo?.Application;
+            if (app == null)
+            {
+                return;
+            }
+            if (app.AppRoles == null)
+            {
+                app.AppRoles = new List<AppRole>();
+            }
+            app.AppRoles.Add(dialog.AppRole.Adapt<AppRole>());
 
-            await UpdateAppRegAsync(sender, roles, AzureCommandsHandler.UpdateAppRolesAsync);
+            await UpdateAppRegAsync(sender, app.AppRoles, AzureCommandsHandler.UpdateAppRolesAsync);
             OnPropertyChanged(nameof(AppRolesSorted));
         }
     }
