@@ -52,9 +52,9 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
         {
             var passwordCredential = dialog.ClientSecret.Adapt<PasswordCredential>();
 
-            await UpdateAppRegAsync(sender, passwordCredential, async (id, passwordCredential) =>
+            await UpdateAppRegAsync(sender, passwordCredential, async (id, pc) =>
             {
-                var secret = await AzureCommandsHandler.AddClientSecretAsync(id, passwordCredential);
+                var secret = await AzureCommandsHandler.AddClientSecretAsync(id, pc);
                 if (secret != null)
                 {
                     var newSecretDialog = new NewSecretDialog(secret)

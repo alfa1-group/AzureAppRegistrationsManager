@@ -37,7 +37,7 @@ public sealed partial class ScopeUserControl : BaseUserControl
 
     private async void AddScope_Click(object sender, RoutedEventArgs e)
     {
-        if (AppRegInfo == null || string.IsNullOrWhiteSpace(AppRegInfo?.Application?.ApplicationIdUri))
+        if (AppRegInfo?.Application == null || string.IsNullOrWhiteSpace(AppRegInfo?.Application?.ApplicationIdUri))
         {
             return;
         }
@@ -50,16 +50,14 @@ public sealed partial class ScopeUserControl : BaseUserControl
 
         if (result == ContentDialogResult.Primary)
         {
-            var api = AppRegInfo?.Application?.Api;
+            var api = AppRegInfo.Application.Api;
             if (api == null)
             {
                 api = new ApiApplication();
                 AppRegInfo.Application.Api = api;
             }
-            if (api.Oauth2PermissionScopes == null)
-            {
-                api.Oauth2PermissionScopes = new List<PermissionScope>();
-            }
+
+            api.Oauth2PermissionScopes ??= [];
             api.Oauth2PermissionScopes.Add(dialog.PermissionScope.Adapt<PermissionScope>());
 
             await UpdateAppRegAsync(sender, api.Oauth2PermissionScopes, AzureCommandsHandler.UpdateScopesAsync);

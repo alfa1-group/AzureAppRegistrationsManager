@@ -1,5 +1,4 @@
 using AzureAppRegistrationsManager.WinUI.Services;
-using Microsoft.Graph.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 

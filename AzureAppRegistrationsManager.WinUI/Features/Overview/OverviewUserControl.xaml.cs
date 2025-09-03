@@ -1,5 +1,3 @@
-using Azure.Core;
-using AzureAppRegistrationsManager.WinUI.Models;
 using AzureAppRegistrationsManager.WinUI.Services;
 using Microsoft.Graph.Models;
 using Microsoft.UI.Xaml;

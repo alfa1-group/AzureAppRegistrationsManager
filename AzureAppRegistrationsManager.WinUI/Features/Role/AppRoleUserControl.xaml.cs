@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices.WindowsRuntime;
 using AzureAppRegistrationsManager.WinUI.Services;
 using Mapster;
 using Microsoft.Graph.Models;
@@ -56,10 +55,8 @@ public sealed partial class AppRoleUserControl : BaseUserControl
             {
                 return;
             }
-            if (app.AppRoles == null)
-            {
-                app.AppRoles = new List<AppRole>();
-            }
+
+            app.AppRoles ??= [];
             app.AppRoles.Add(dialog.AppRole.Adapt<AppRole>());
 
             await UpdateAppRegAsync(sender, app.AppRoles, AzureCommandsHandler.UpdateAppRolesAsync);
