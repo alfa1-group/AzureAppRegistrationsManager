@@ -1,4 +1,5 @@
-﻿using AzureAppRegistrationsManager.WinUI.Models;
+﻿using AzureAppRegistrationsManager.WinUI.Features.ApiPermissions;
+using AzureAppRegistrationsManager.WinUI.Models;
 using Microsoft.Graph;
 using Microsoft.Graph.Applications.Item.AddPassword;
 using Microsoft.Graph.Applications.Item.RemovePassword;
@@ -100,8 +101,6 @@ internal static class AzureCommandsHandler
     {
         var app = await App.GraphClient.Applications[id].GetAsync();
         app?.Owners = await GetOwnersAsync(id);
-
-        var x = await GetConfiguredPermissionsAsync(id);
 
         return app;
     }
@@ -388,7 +387,38 @@ internal static class AzureCommandsHandler
         await App.GraphClient.ServicePrincipals[servicePrincipalId].DeleteAsync();
     }
 
-    internal static async Task<IReadOnlyList<ApiPermissionModel>> GetConfiguredPermissionsAsync(string id)
+    internal static async Task<(IReadOnlyList<OAuth2PermissionGrant> OAuth2PermissionGrants, IReadOnlyList<AppRoleAssignment> AppRoleAssignments)> GetPermissionsAsync(string servicePrincipalId)
+    {
+        // Get OAuth2 permission grants (delegated permissions)
+        var oauth2Grants = await App.GraphClient.ServicePrincipals[servicePrincipalId]
+            .Oauth2PermissionGrants
+            .GetAsync();
+
+        // Get app role assignments (application permissions)
+        var appRoleAssignments = await App.GraphClient.ServicePrincipals[servicePrincipalId]
+            .AppRoleAssignments
+            .GetAsync();
+
+        return (oauth2Grants?.Value ?? [], appRoleAssignments?.Value ?? []);
+
+        /*
+        Console.WriteLine("Delegated Permissions (OAuth2 Grants):");
+    foreach (var grant in oauth2Grants)
+    {
+        Console.WriteLine($"  Resource: {grant.ResourceId}");
+        Console.WriteLine($"  Scopes: {grant.Scope}");
+        Console.WriteLine($"  Consent Type: {grant.ConsentType}");
+    }
+    
+    Console.WriteLine("\nApplication Permissions (App Role Assignments):");
+    foreach (var assignment in appRoleAssignments)
+    {
+        Console.WriteLine($"  Resource: {assignment.ResourceId}");
+        Console.WriteLine($"  App Role ID: {assignment.AppRoleId}");
+    }*/
+    }
+
+    internal static async Task<IReadOnlyList<ApiPermissionModel>> GetConfiguredPermissionsAsync2(string id)
     {
         var owners = await App.GraphClient.Applications[id].Owners.GetAsync();
         var app = await App.GraphClient.Applications[id]

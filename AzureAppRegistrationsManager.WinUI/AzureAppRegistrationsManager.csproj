@@ -72,6 +72,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Features\ApiPermissions\ApiPermissionsUserControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Features\CertificatesAndSecrets\ClientSecretDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -84,10 +87,6 @@
     <Page Update="Features\Owners\OwnersUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\ApiPermissions\" />
   </ItemGroup>
 
   <!--

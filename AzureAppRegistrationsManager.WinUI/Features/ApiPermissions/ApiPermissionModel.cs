@@ -1,6 +1,6 @@
-﻿namespace AzureAppRegistrationsManager.WinUI.Models;
+﻿namespace AzureAppRegistrationsManager.WinUI.Features.ApiPermissions;
 
-internal class ApiPermissionModel
+public class ApiPermissionModel
 {
     public required string ApplicationName { get; set; }
 
