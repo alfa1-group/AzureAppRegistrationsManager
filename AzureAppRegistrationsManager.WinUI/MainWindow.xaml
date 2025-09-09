@@ -86,7 +86,7 @@
                         <controls:DataGridTextColumn Header="Application (client) ID" Binding="{Binding AppId}" Width="SizeToCells"/>
                         <controls:DataGridTextColumn Header="Display Name" Binding="{Binding DisplayName}" Width="SizeToCells"/>
                         <controls:DataGridTextColumn Header="Object ID" Binding="{Binding ObjectId}" Width="SizeToCells"/>
-                        <controls:DataGridTextColumn Header="Enterprise Application Object ID" Binding="{Binding EnterpriseApplicationObjectId}" Width="SizeToCells"/>
+                        <controls:DataGridTextColumn Header="Enterprise Application Object ID" Binding="{Binding EnterpriseApplication.Id, FallbackValue=''}" Width="SizeToCells"/>
                         <controls:DataGridTextColumn Header="Editable?" Binding="{Binding CanEdit}" Width="90"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid >

@@ -14,7 +14,7 @@ public sealed partial class OverviewUserControl : BaseUserControl
         {
             overviewUserControl.OnPropertyChanged(nameof(ApplicationIdUri));
 
-            _isEnterpriseApplication = !string.IsNullOrEmpty(AppRegInfo?.EnterpriseApplicationObjectId);
+            _isEnterpriseApplication = AppRegInfo?.EnterpriseApplication != null;
 
             overviewUserControl.OnPropertyChanged(nameof(IsEnterpriseApplication));
         }
@@ -61,23 +61,23 @@ public sealed partial class OverviewUserControl : BaseUserControl
 
     private async void SaveEnterpriseApplication_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrEmpty(AppRegInfo?.EnterpriseApplicationObjectId) && IsEnterpriseApplication)
+        if (AppRegInfo?.EnterpriseApplication == null && IsEnterpriseApplication)
         {
             var request = new ServicePrincipal
             {
                 AppId = AppRegInfo!.AppId,
                 DisplayName = AppRegInfo.DisplayName
             };
-            AppRegInfo?.EnterpriseApplicationObjectId = await UpdateAppRegAsync(sender, request, AzureCommandsHandler.ConvertToEnterpriseApplication);
+            AppRegInfo?.EnterpriseApplication = await UpdateAppRegAsync(sender, request, AzureCommandsHandler.ConvertToEnterpriseApplication);
         }
 
-        if (!IsEnterpriseApplication && !string.IsNullOrEmpty(AppRegInfo?.EnterpriseApplicationObjectId))
+        if (AppRegInfo?.EnterpriseApplication != null && !IsEnterpriseApplication)
         {
-            await UpdateAppRegAsync(sender, AppRegInfo?.EnterpriseApplicationObjectId, AzureCommandsHandler.RemoveEnterpriseApplication);
-            AppRegInfo?.EnterpriseApplicationObjectId = null;
+            await UpdateAppRegAsync(sender, AppRegInfo?.EnterpriseApplication?.Id, AzureCommandsHandler.RemoveEnterpriseApplication);
+            AppRegInfo?.EnterpriseApplication = null;
         }
 
-        _isEnterpriseApplication = !string.IsNullOrEmpty(AppRegInfo?.EnterpriseApplicationObjectId);
+        _isEnterpriseApplication = AppRegInfo?.EnterpriseApplication != null;
         OnPropertyChanged(nameof(IsEnterpriseApplication));
     }
 

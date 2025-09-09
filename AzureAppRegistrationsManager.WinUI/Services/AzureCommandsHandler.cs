@@ -18,7 +18,7 @@ internal static class AzureCommandsHandler
             q.QueryParameters.Expand = ["owners($select=id)"];
         });
 
-        if (applications == null || applications.Value == null)
+        if (applications?.Value == null)
         {
             return [];
         }
@@ -30,7 +30,7 @@ internal static class AzureCommandsHandler
             applications,
             app =>
             {
-                if (app == null || app.AppId == null || app.Id == null || string.IsNullOrWhiteSpace(app.DisplayName))
+                if (app?.AppId == null || app.Id == null || string.IsNullOrWhiteSpace(app.DisplayName))
                 {
                     return false;
                 }
@@ -61,7 +61,7 @@ internal static class AzureCommandsHandler
             q.QueryParameters.Select = ["appId", "displayName", "id"];
         });
 
-        if (ownedObjects == null || ownedObjects.Value == null)
+        if (ownedObjects?.Value == null)
         {
             return [];
         }
@@ -73,13 +73,13 @@ internal static class AzureCommandsHandler
             ownedObjects,
             obj =>
             {
-                if (obj is Application app && app.AppId != null && app.Id != null && !string.IsNullOrWhiteSpace(app.DisplayName))
+                if (obj is Application { AppId: not null, Id: not null } app && !string.IsNullOrWhiteSpace(app.DisplayName))
                 {
                     appRegInfoList.Add(new AppRegInfo
                     {
                         AppId = app.AppId,
                         DisplayName = app.DisplayName,
-                        ObjectId = app.Id,
+                        ObjectId = app.Id!,
                         CanEdit = true
                     });
                 }
@@ -101,13 +101,15 @@ internal static class AzureCommandsHandler
         var app = await App.GraphClient.Applications[id].GetAsync();
         app?.Owners = await GetOwnersAsync(id);
 
+        var x = await GetConfiguredPermissionsAsync(id);
+
         return app;
     }
 
     internal static async Task<List<DirectoryObject>> GetOwnersAsync(string id)
     {
         var owners = await App.GraphClient.Applications[id].Owners.GetAsync();
-        if (owners == null || owners.Value == null)
+        if (owners?.Value == null)
         {
             return [];
         }
@@ -364,7 +366,7 @@ internal static class AzureCommandsHandler
         await App.GraphClient.Applications[applicationId].Owners[userId].Ref.DeleteAsync();
     }
 
-    internal static async Task<string?> ConvertToEnterpriseApplication(string _, ServicePrincipal value)
+    internal static async Task<ServicePrincipal?> ConvertToEnterpriseApplication(string _, ServicePrincipal value)
     {
         var servicePrincipal = new ServicePrincipal
         {
@@ -373,8 +375,7 @@ internal static class AzureCommandsHandler
             AccountEnabled = true
         };
 
-        var createdServicePrincipal = await App.GraphClient.ServicePrincipals.PostAsync(servicePrincipal);
-        return createdServicePrincipal?.Id;
+        return await App.GraphClient.ServicePrincipals.PostAsync(servicePrincipal);
     }
 
     internal static async Task RemoveEnterpriseApplication(string _, string? servicePrincipalId)
@@ -387,6 +388,53 @@ internal static class AzureCommandsHandler
         await App.GraphClient.ServicePrincipals[servicePrincipalId].DeleteAsync();
     }
 
+    internal static async Task<IReadOnlyList<ApiPermissionModel>> GetConfiguredPermissionsAsync(string id)
+    {
+        var owners = await App.GraphClient.Applications[id].Owners.GetAsync();
+        var app = await App.GraphClient.Applications[id]
+            .GetAsync(rb =>
+            {
+                rb.QueryParameters.Select = ["displayName", "requiredResourceAccess"];
+            });
+
+        if (app?.RequiredResourceAccess == null)
+        {
+            return [];
+        }
+
+        var list = new List<ApiPermissionModel>();
+        foreach (var requiredResourceAccess in app.RequiredResourceAccess)
+        {
+            // Get resource details (e.g., Microsoft Graph, custom APIs)
+            var resourceApp = await App.GraphClient.Applications
+                .GetAsync(rb =>
+                {
+                    rb.QueryParameters.Filter = $"appId eq '{requiredResourceAccess.ResourceAppId}'";
+                    rb.QueryParameters.Select = ["displayName", "oauth2PermissionScopes", "appRoles"];
+                });
+
+            var application = resourceApp?.Value?.FirstOrDefault();
+            if (application == null)
+            {
+                continue;
+            }
+
+            list.Add(new ApiPermissionModel
+            {
+                ApplicationName = application.DisplayName ?? application.AppId ?? "!Unknown Resource!",
+                ResourceAccesses = (requiredResourceAccess.ResourceAccess ?? [])
+                    .Select(permission => new ResourceAccessModel
+                    {
+                        Type = permission.Type == "Scope" ? "Delegated" : "Application",
+                        Id = permission.Id!.Value
+                    })
+                    .ToArray()
+            });
+        }
+
+        return list;
+    }
+
     private static async Task UpdateAppRegInfoListWithServicePrincipalsAsync(List<AppRegInfo> appRegInfoList)
     {
         var enterpriseApplications = await App.GraphClient.ServicePrincipals.GetAsync(q =>
@@ -394,7 +442,7 @@ internal static class AzureCommandsHandler
             q.QueryParameters.Select = ["appId", "id"];
         });
 
-        if (enterpriseApplications == null || enterpriseApplications.Value == null)
+        if (enterpriseApplications?.Value == null)
         {
             return;
         }
@@ -404,16 +452,13 @@ internal static class AzureCommandsHandler
             enterpriseApplications,
             sp =>
             {
-                if (sp == null || sp.AppId == null || sp.Id == null)
+                if (sp?.AppId == null || sp.Id == null)
                 {
                     return false;
                 }
 
                 var application = appRegInfoList.FirstOrDefault(a => a.AppId == sp.AppId);
-                if (application != null)
-                {
-                    application.EnterpriseApplicationObjectId = sp.Id;
-                }
+                application?.EnterpriseApplication = sp;
 
                 return true;
             });

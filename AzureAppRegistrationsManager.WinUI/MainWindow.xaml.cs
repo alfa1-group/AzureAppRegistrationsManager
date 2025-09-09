@@ -127,8 +127,7 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         {
             AppId = Loading,
             ObjectId = Loading,
-            DisplayName = Loading,
-            EnterpriseApplicationObjectId = Loading
+            DisplayName = Loading
         }};
 
         AppRegInfos = all ? await AzureCommandsHandler.GetAllApplicationsAsync() : await AzureCommandsHandler.GetOwnApplicationsAsync();

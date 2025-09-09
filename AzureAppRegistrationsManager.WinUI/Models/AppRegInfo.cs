@@ -10,7 +10,7 @@ public class AppRegInfo
 
     public string ObjectId { get; set; } = null!;
 
-    public string? EnterpriseApplicationObjectId { get; set; }
+    public ServicePrincipal? EnterpriseApplication { get; set; }
 
     public bool CanEdit { get; set; }
 
