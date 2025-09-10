@@ -6,7 +6,7 @@ using Windows.ApplicationModel.DataTransfer;
 
 namespace AzureAppRegistrationsManager.WinUI.Features.Overview;
 
-public sealed partial class OverviewUserControl : BaseUserControl
+public sealed partial class OverviewUserControl
 {
     protected override void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -73,8 +73,17 @@ public sealed partial class OverviewUserControl : BaseUserControl
 
         if (!IsEnterpriseApplication && !string.IsNullOrEmpty(AppRegInfo?.EnterpriseApplicationObjectId))
         {
-            await UpdateAppRegAsync(sender, AppRegInfo?.EnterpriseApplicationObjectId, AzureCommandsHandler.RemoveEnterpriseApplication);
-            AppRegInfo?.EnterpriseApplicationObjectId = null;
+            var dialog = new ConfirmationDialog("Are you sure you want to remove the Service Principal for this App Registration?")
+            {
+                Title = "Remove Service Principal",
+                XamlRoot = Content.XamlRoot
+            };
+
+            if (await dialog.ShowAsync() == ContentDialogResult.Secondary)
+            {
+                await UpdateAppRegAsync(sender, AppRegInfo?.EnterpriseApplicationObjectId, AzureCommandsHandler.RemoveEnterpriseApplication);
+                AppRegInfo?.EnterpriseApplicationObjectId = null;
+            }
         }
 
         _isEnterpriseApplication = !string.IsNullOrEmpty(AppRegInfo?.EnterpriseApplicationObjectId);
