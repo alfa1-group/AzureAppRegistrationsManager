@@ -48,7 +48,7 @@ internal static class RequestResourceAccessHandler
                 .Build();
 
             _ = await pca.AcquireTokenInteractive(scopes)
-                .WithPrompt(Prompt.SelectAccount)
+                //.WithPrompt(Prompt.SelectAccount)
                 .ExecuteAsync();
         }
         catch (Exception ex)
