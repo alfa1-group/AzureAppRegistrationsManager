@@ -12,10 +12,9 @@
 
     <StackPanel Padding="12" Spacing="12">
         <Button
-        x:Name="AddPermissionButton"
-        IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
-        HorizontalAlignment="Left"
-        Click="AddPermission_Click">
+            IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
+            HorizontalAlignment="Left"
+            Click="AddPermission_Click">
             <StackPanel Orientation="Horizontal">
                 <SymbolIcon Symbol="Add"/>
                 <TextBlock Text="Add a Permission"/>
@@ -23,7 +22,6 @@
         </Button>
 
         <controls:DataGrid 
-            x:Name="PermissionsDataGrid"
             AutoGenerateColumns="False"
             ItemsSource="{x:Bind ApiPermissionsSorted, Mode=OneWay}"
             HeadersVisibility="Column"

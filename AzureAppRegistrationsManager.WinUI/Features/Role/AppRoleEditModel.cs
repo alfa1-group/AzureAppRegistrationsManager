@@ -8,7 +8,7 @@ namespace AzureAppRegistrationsManager.WinUI.Features.Role;
 [AdaptTo(typeof(AppRole))]
 internal class AppRoleEditModel
 {
-    public Guid Id { get; set; } = new();
+    public Guid Id { get; set; } = Guid.Empty;
 
     [Notify]
     [Required]
@@ -21,29 +21,19 @@ internal class AppRoleEditModel
     public bool IsUsersGroupsSelected
     {
         get => AllowedMemberTypes.Contains("User") && !AllowedMemberTypes.Contains("Application");
-        set
-        {
-            AllowedMemberTypes = ["User"];
-        }
+        set => AllowedMemberTypes = ["User"];
     }
 
     public bool IsApplicationsSelected
     {
         get => AllowedMemberTypes.Contains("Application") && !AllowedMemberTypes.Contains("User");
-
-        set
-        {
-            AllowedMemberTypes = ["Application"];
-        }
+        set => AllowedMemberTypes = ["Application"];
     }
 
     public bool IsBothSelected
     {
         get => AllowedMemberTypes.Contains("User") && AllowedMemberTypes.Contains("Application");
-        set
-        {
-            AllowedMemberTypes = ["User", "Application"];
-        }
+        set => AllowedMemberTypes = ["User", "Application"];
     }
 
     [Notify]

@@ -45,7 +45,7 @@ public class ScopeEditModel
         }
     }
 
-    private bool _isAdminsOnly = false;
+    private bool _isAdminsOnly;
     public bool IsAdminsOnly
     {
         get => _isAdminsOnly;
@@ -75,7 +75,7 @@ public class ScopeEditModel
         }
     }
 
-    private bool _isDisabled = false;
+    private bool _isDisabled;
     public bool IsDisabled
     {
         get => _isDisabled;

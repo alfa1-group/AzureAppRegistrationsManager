@@ -1,0 +1,54 @@
+﻿<base:BaseDialog 
+    x:Class="AzureAppRegistrationsManager.WinUI.Features.ApiPermissions.OAuth2PermissionGrantDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:base="using:AzureAppRegistrationsManager.WinUI.Features"
+    xmlns:validation="using:WinUI.Validation"
+    PrimaryButtonText="OK"
+    SecondaryButtonText="Cancel"
+    DefaultButton="Primary">
+
+    <base:BaseDialog.Resources>
+        <Style TargetType="TextBlock" x:Key="LabelStyle">
+            <Setter Property="Margin" Value="0,2,0,4"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style TargetType="RadioButton">
+            <Setter Property="Margin" Value="0,4,8,4"/>
+        </Style>
+    </base:BaseDialog.Resources>
+
+    <ScrollViewer>
+        <validation:ValidationForm
+            Model="{x:Bind OAuth2PermissionGrant}"
+            OnValidationChanged="ValidationChanged">
+
+            <StackPanel Spacing="8" Margin="8">
+
+                <TextBlock Text="ResourceId 🔺" Style="{StaticResource LabelStyle}"/>
+                <validation:ValidationFor PropertyName="ResourceId" HideValidationMessage="True">
+                    <TextBox 
+                        Text="{x:Bind OAuth2PermissionGrant.ResourceId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}"
+                        PlaceholderText="The GUID from the API"/>
+                </validation:ValidationFor>
+
+                <TextBlock Text="Scope 🔺" Style="{StaticResource LabelStyle}"/>
+                <validation:ValidationFor PropertyName="Scope" HideValidationMessage="True">
+                    <TextBox 
+                        Text="{x:Bind OAuth2PermissionGrant.Scope, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, FallbackValue=''}"
+                        PlaceholderText="e.g. User.Read"/>
+                </validation:ValidationFor>
+
+                <TextBlock Text="Consent Type 🔺" Style="{StaticResource LabelStyle}"/>
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <RadioButton Content="Impersonate All Users" 
+                                 IsChecked="{x:Bind OAuth2PermissionGrant.IsAllPrincipals, Mode=TwoWay}" />
+                    <RadioButton Content="Impersonate Specific User"
+                                 IsChecked="{x:Bind OAuth2PermissionGrant.IsPrincipal, Mode=TwoWay}"/>
+                </StackPanel>
+
+            </StackPanel>
+        </validation:ValidationForm>
+    </ScrollViewer>
+</base:BaseDialog>

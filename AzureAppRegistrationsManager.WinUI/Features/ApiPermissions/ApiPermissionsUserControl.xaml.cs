@@ -1,4 +1,8 @@
+using AzureAppRegistrationsManager.WinUI.Services;
+using Mapster;
+using Microsoft.Graph.Models;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace AzureAppRegistrationsManager.WinUI.Features.ApiPermissions;
 
@@ -6,7 +10,8 @@ public sealed partial class ApiPermissionsUserControl
 {
     public ApiPermissionModel[] ApiPermissionsSorted =>
         AppRegInfo?.ApiPermissionModels?
-            .OrderBy(p => p.ApplicationName)
+            .OrderBy(p => p.ConsentType)
+            .ThenBy(p => p.ApplicationName)
             .ThenBy(p => p.Scope)
             .ToArray() ?? [];
 
@@ -21,7 +26,7 @@ public sealed partial class ApiPermissionsUserControl
         OnPropertyChanged(nameof(ApiPermissionsSorted));
     }
 
-    protected override async void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected override void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is ApiPermissionsUserControl apiPermissionsUserControl)
         {
@@ -31,38 +36,24 @@ public sealed partial class ApiPermissionsUserControl
 
     private async void AddPermission_Click(object sender, RoutedEventArgs e)
     {
+        if (AppRegInfo?.Application == null || string.IsNullOrEmpty(AppRegInfo?.EnterpriseApplication?.Id))
+        {
+            return;
+        }
 
+        var dialog = new OAuth2PermissionGrantDialog(AppRegInfo.EnterpriseApplication.Id)
+        {
+            XamlRoot = Content.XamlRoot
+        };
+
+        if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+        {
+            var permissionGrant = dialog.OAuth2PermissionGrant.Adapt<OAuth2PermissionGrant>();
+
+            await UpdateAppRegAsync(sender, permissionGrant, AzureCommandsHandler.AddDelegatedApiPermissionGrantAsync);
+            OnPropertyChanged(nameof(ApiPermissionsSorted));
+        }
     }
-
-    //private async void AddScope_Click(object sender, RoutedEventArgs e)
-    //{
-    //    if (AppRegInfo?.Application == null || string.IsNullOrWhiteSpace(AppRegInfo?.Application?.ApplicationIdUri))
-    //    {
-    //        return;
-    //    }
-
-    //    var dialog = new ScopeDialog(AppRegInfo.Application.ApplicationIdUri)
-    //    {
-    //        XamlRoot = Content.XamlRoot
-    //    };
-    //    var result = await dialog.ShowAsync();
-
-    //    if (result == ContentDialogResult.Primary)
-    //    {
-    //        var api = AppRegInfo.Application.Api;
-    //        if (api == null)
-    //        {
-    //            api = new ApiApplication();
-    //            AppRegInfo.Application.Api = api;
-    //        }
-
-    //        api.Oauth2PermissionScopes ??= [];
-    //        api.Oauth2PermissionScopes.Add(dialog.PermissionScope.Adapt<PermissionScope>());
-
-    //        await UpdateAppRegAsync(sender, api.Oauth2PermissionScopes, AzureCommandsHandler.UpdateScopesAsync);
-    //        OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
-    //    }
-    //}
 
     //private async void ApiPermissionAction_Click(object sender, RoutedEventArgs e)
     //{

@@ -377,7 +377,7 @@ internal static class AzureCommandsHandler
         await App.GraphClient.Applications[applicationId].Owners[userId].Ref.DeleteAsync();
     }
 
-    internal static async Task<ServicePrincipal?> ConvertToEnterpriseApplication(string _, ServicePrincipal value)
+    internal static async Task<ServicePrincipal?> ConvertToEnterpriseApplication(object? _, ServicePrincipal value)
     {
         var servicePrincipal = new ServicePrincipal
         {
@@ -389,7 +389,7 @@ internal static class AzureCommandsHandler
         return await App.GraphClient.ServicePrincipals.PostAsync(servicePrincipal);
     }
 
-    internal static async Task RemoveEnterpriseApplication(string _, string? servicePrincipalId)
+    internal static async Task RemoveEnterpriseApplication(object? _, string? servicePrincipalId)
     {
         if (string.IsNullOrWhiteSpace(servicePrincipalId))
         {
@@ -397,6 +397,14 @@ internal static class AzureCommandsHandler
         }
 
         await App.GraphClient.ServicePrincipals[servicePrincipalId].DeleteAsync();
+    }
+
+    /// <summary>
+    /// Only possible to use this when you have admin privileges.
+    /// </summary>
+    internal static async Task<OAuth2PermissionGrant?> AddDelegatedApiPermissionGrantAsync(string? _, OAuth2PermissionGrant permissionGrant)
+    {
+        return await App.GraphClient.Oauth2PermissionGrants.PostAsync(permissionGrant);
     }
 
     internal static async Task<IReadOnlyList<ApiPermissionModel>> GetPermissionsAsync(string? servicePrincipalId)
@@ -449,16 +457,20 @@ internal static class AzureCommandsHandler
         var list = new List<ApiPermissionModel>();
         foreach (var oauth2Grant in oauth2Grants)
         {
-            list.Add(new ApiPermissionModel
-            {
-                ApplicationName = referencedEnterpriseApplications.FirstOrDefault(e => e.Id == oauth2Grant.ResourceId)?.DisplayName ?? oauth2Grant.ResourceId!,
-                Scope = oauth2Grant.Scope!.Trim(),
+            var applicationName = referencedEnterpriseApplications.FirstOrDefault(e => e.Id == oauth2Grant.ResourceId)?.DisplayName ?? oauth2Grant.ResourceId!;
 
-                // Note: ConsentType is "AllPrincipals" or "Principal"
-                // - AllPrincipals indicates authorization to impersonate all users.
-                // - Principal indicates authorization to impersonate a specific user.
-                ConsentType = oauth2Grant.ConsentType!
-            });
+            // Note: ConsentType is "AllPrincipals" or "Principal"
+            // - AllPrincipals indicates authorization to impersonate all users.
+            // - Principal indicates authorization to impersonate a specific user.
+            var consentType = oauth2Grant.ConsentType!;
+
+            var scopes = oauth2Grant.Scope!.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            list.AddRange(scopes.Select(scope => new ApiPermissionModel
+            {
+                ApplicationName = applicationName,
+                Scope = scope,
+                ConsentType = consentType
+            }));
         }
 
         return list;
