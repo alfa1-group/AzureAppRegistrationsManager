@@ -66,7 +66,7 @@ public sealed partial class ScopeUserControl
             return;
         }
 
-        await UpdateAppRegAsync(sender, RequestedAccessTokenVersion, AzureCommandsHandler.UpdateRequestedAccessTokenVersionAsync);
+        await CallMethodOnAppRegAsync(sender, RequestedAccessTokenVersion, AzureCommandsHandler.UpdateRequestedAccessTokenVersionAsync);
         OnPropertyChanged(nameof(RequestedAccessTokenVersion));
     }
 
@@ -95,7 +95,7 @@ public sealed partial class ScopeUserControl
             api.Oauth2PermissionScopes ??= [];
             api.Oauth2PermissionScopes.Add(dialog.PermissionScope.Adapt<PermissionScope>());
 
-            await UpdateAppRegAsync(sender, api.Oauth2PermissionScopes, AzureCommandsHandler.UpdateScopesAsync);
+            await CallMethodOnAppRegAsync(sender, api.Oauth2PermissionScopes, AzureCommandsHandler.UpdateScopesAsync);
             OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
         }
     }
@@ -124,7 +124,7 @@ public sealed partial class ScopeUserControl
                         {
                             dialog.PermissionScope.Adapt(scope);
 
-                            await UpdateAppRegAsync(sender, AppRegInfo.Application.Api!.Oauth2PermissionScopes!, AzureCommandsHandler.UpdateScopesAsync);
+                            await CallMethodOnAppRegAsync(sender, AppRegInfo.Application.Api!.Oauth2PermissionScopes!, AzureCommandsHandler.UpdateScopesAsync);
                             OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
                         }
                         break;
@@ -141,7 +141,7 @@ public sealed partial class ScopeUserControl
 
                         if (result == ContentDialogResult.Secondary)
                         {
-                            await UpdateAppRegAsync(sender, AppRegInfo.Application.Api!, (id, api) => AzureCommandsHandler.DeleteScopeAsync(id, api, scope));
+                            await CallMethodOnAppRegAsync(sender, AppRegInfo.Application.Api!, (id, api) => AzureCommandsHandler.DeleteScopeAsync(id, api, scope));
                             OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
                         }
                         break;

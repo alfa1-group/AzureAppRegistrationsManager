@@ -399,7 +399,7 @@ internal static class AzureCommandsHandler
         await App.GraphClient.ServicePrincipals[servicePrincipalId].DeleteAsync();
     }
 
-    internal static async Task<(IReadOnlyList<OAuth2PermissionGrant> OAuth2PermissionGrants, IReadOnlyList<AppRoleAssignment> AppRoleAssignments)> GetPermissionsAsync(string servicePrincipalId)
+    internal static async Task<(IReadOnlyList<OAuth2PermissionGrant> OAuth2PermissionGrants, IReadOnlyList<AppRoleAssignment> AppRoleAssignments)> GetPermissionsAsync(string _, string servicePrincipalId)
     {
         // Get OAuth2 permission grants (delegated permissions)
         var oauth2Grants = await App.GraphClient.ServicePrincipals[servicePrincipalId]
@@ -412,22 +412,6 @@ internal static class AzureCommandsHandler
             .GetAsync();
 
         return (oauth2Grants?.Value ?? [], appRoleAssignments?.Value ?? []);
-
-        /*
-        Console.WriteLine("Delegated Permissions (OAuth2 Grants):");
-    foreach (var grant in oauth2Grants)
-    {
-        Console.WriteLine($"  Resource: {grant.ResourceId}");
-        Console.WriteLine($"  Scopes: {grant.Scope}");
-        Console.WriteLine($"  Consent Type: {grant.ConsentType}");
-    }
-    
-    Console.WriteLine("\nApplication Permissions (App Role Assignments):");
-    foreach (var assignment in appRoleAssignments)
-    {
-        Console.WriteLine($"  Resource: {assignment.ResourceId}");
-        Console.WriteLine($"  App Role ID: {assignment.AppRoleId}");
-    }*/
     }
 
     internal static async Task<IReadOnlyList<ApiPermissionModel>> GetConfiguredPermissionsAsync2(string id)
@@ -464,13 +448,13 @@ internal static class AzureCommandsHandler
             list.Add(new ApiPermissionModel
             {
                 ApplicationName = application.DisplayName ?? application.AppId ?? "!Unknown Resource!",
-                ResourceAccesses = (requiredResourceAccess.ResourceAccess ?? [])
-                    .Select(permission => new ResourceAccessModel
-                    {
-                        Type = permission.Type == "Scope" ? "Delegated" : "Application",
-                        Id = permission.Id!.Value
-                    })
-                    .ToArray()
+                //ResourceAccesses = (requiredResourceAccess.ResourceAccess ?? [])
+                //    .Select(permission => new ResourceAccessModel
+                //    {
+                //        Type = permission.Type == "Scope" ? "Delegated" : "Application",
+                //        Id = permission.Id!.Value
+                //    })
+                //    .ToArray()
             });
         }
 

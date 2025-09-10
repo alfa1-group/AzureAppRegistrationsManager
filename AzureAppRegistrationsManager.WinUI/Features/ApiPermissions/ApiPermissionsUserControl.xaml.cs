@@ -1,21 +1,11 @@
-using AzureAppRegistrationsManager.WinUI.Features.Scope;
 using AzureAppRegistrationsManager.WinUI.Services;
-using Mapster;
-using Microsoft.Graph.Models;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace AzureAppRegistrationsManager.WinUI.Features.ApiPermissions;
 
-public sealed partial class ApiPermissionsUserControl  : BaseUserControl
+public sealed partial class ApiPermissionsUserControl
 {
-    public ApiPermissionModel[] ApiPermissionsSorted
-    {
-        get
-        {
-            return [];
-        }
-    }
+    public ApiPermissionModel[] ApiPermissionsSorted { get; private set; } = [];
 
     public ApiPermissionsUserControl()
     {
@@ -28,9 +18,35 @@ public sealed partial class ApiPermissionsUserControl  : BaseUserControl
         OnPropertyChanged(nameof(ApiPermissionsSorted));
     }
 
-    protected override void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    protected override async void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as ApiPermissionsUserControl)?.OnPropertyChanged(nameof(ApiPermissionsSorted));
+        if (d is ApiPermissionsUserControl apiPermissionsUserControl)
+        {
+            var servicePrincipalId = apiPermissionsUserControl.AppRegInfo?.EnterpriseApplication?.Id;
+            if (!string.IsNullOrEmpty(servicePrincipalId))
+            {
+                var (permissionGrants, appRoleAssignments) = await CallMethodOnAppRegAsync(apiPermissionsUserControl, servicePrincipalId, AzureCommandsHandler.GetPermissionsAsync);
+                foreach (var grant in permissionGrants)
+                {
+                    Console.WriteLine($"  Resource: {grant.ResourceId}");
+                    Console.WriteLine($"  Scopes: {grant.Scope}");
+                    Console.WriteLine($"  Consent Type: {grant.ConsentType}");
+                }
+
+                foreach (var assignment in appRoleAssignments)
+                {
+                    Console.WriteLine($"  Resource: {assignment.ResourceId}");
+                    Console.WriteLine($"  App Role ID: {assignment.AppRoleId}");
+                }
+            }
+
+            apiPermissionsUserControl.OnPropertyChanged(nameof(ApiPermissionsSorted));
+        }
+    }
+
+    private async void AddPermission_Click(object sender, RoutedEventArgs e)
+    {
+
     }
 
     //private async void AddScope_Click(object sender, RoutedEventArgs e)

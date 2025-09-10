@@ -59,7 +59,7 @@ public sealed partial class AppRoleUserControl : BaseUserControl
             app.AppRoles ??= [];
             app.AppRoles.Add(dialog.AppRole.Adapt<AppRole>());
 
-            await UpdateAppRegAsync(sender, app.AppRoles, AzureCommandsHandler.UpdateAppRolesAsync);
+            await CallMethodOnAppRegAsync(sender, app.AppRoles, AzureCommandsHandler.UpdateAppRolesAsync);
             OnPropertyChanged(nameof(AppRolesSorted));
         }
     }
@@ -88,7 +88,7 @@ public sealed partial class AppRoleUserControl : BaseUserControl
                         {
                             dialog.AppRole.Adapt(appRole);
 
-                            await UpdateAppRegAsync(sender, AppRegInfo.Application!.AppRoles!, AzureCommandsHandler.UpdateAppRolesAsync);
+                            await CallMethodOnAppRegAsync(sender, AppRegInfo.Application!.AppRoles!, AzureCommandsHandler.UpdateAppRolesAsync);
                             OnPropertyChanged(nameof(AppRolesSorted));
                         }
                         break;
@@ -105,7 +105,7 @@ public sealed partial class AppRoleUserControl : BaseUserControl
 
                         if (result == ContentDialogResult.Secondary)
                         {
-                            await UpdateAppRegAsync(sender, AppRegInfo.Application!.AppRoles!, async (id, roles) =>
+                            await CallMethodOnAppRegAsync(sender, AppRegInfo.Application!.AppRoles!, async (id, roles) =>
                             {
                                 await AzureCommandsHandler.DeleteAppRoleAsync(id, roles, appRole);
 

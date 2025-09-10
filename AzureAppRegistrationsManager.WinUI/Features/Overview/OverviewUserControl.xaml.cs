@@ -51,12 +51,12 @@ public sealed partial class OverviewUserControl
 
     private async void SaveDisplayName_Click(object sender, RoutedEventArgs e)
     {
-        await UpdateAppRegAsync(sender, AppRegInfo?.Application?.DisplayName, AzureCommandsHandler.UpdateDisplayNameAsync);
+        await CallMethodOnAppRegAsync(sender, AppRegInfo?.Application?.DisplayName, AzureCommandsHandler.UpdateDisplayNameAsync);
     }
 
     private async void SaveApplicationIdUri_Click(object sender, RoutedEventArgs e)
     {
-        await UpdateAppRegAsync(sender, AppRegInfo?.Application?.IdentifierUris, AzureCommandsHandler.UpdateIdentifierUrisAsync);
+        await CallMethodOnAppRegAsync(sender, AppRegInfo?.Application?.IdentifierUris, AzureCommandsHandler.UpdateIdentifierUrisAsync);
     }
 
     private async void SaveEnterpriseApplication_Click(object sender, RoutedEventArgs e)
@@ -68,7 +68,7 @@ public sealed partial class OverviewUserControl
                 AppId = AppRegInfo!.AppId,
                 DisplayName = AppRegInfo.DisplayName
             };
-            AppRegInfo?.EnterpriseApplication = await UpdateAppRegAsync(sender, request, AzureCommandsHandler.ConvertToEnterpriseApplication);
+            AppRegInfo?.EnterpriseApplication = await CallMethodOnAppRegAsync(sender, request, AzureCommandsHandler.ConvertToEnterpriseApplication);
         }
 
         if (AppRegInfo?.EnterpriseApplication != null && !IsEnterpriseApplication)
@@ -81,8 +81,8 @@ public sealed partial class OverviewUserControl
 
             if (await dialog.ShowAsync() == ContentDialogResult.Secondary)
             {
-                await UpdateAppRegAsync(sender, AppRegInfo?.EnterpriseApplicationObjectId, AzureCommandsHandler.RemoveEnterpriseApplication);
-                AppRegInfo?.EnterpriseApplicationObjectId = null;
+                await CallMethodOnAppRegAsync(sender, AppRegInfo?.EnterpriseApplication?.Id, AzureCommandsHandler.RemoveEnterpriseApplication);
+                AppRegInfo?.EnterpriseApplication = null;
             }
         }
 
