@@ -6,7 +6,6 @@
     xmlns:local="using:AzureAppRegistrationsManager.WinUI.Features.ApiPermissions"
     xmlns:base="using:AzureAppRegistrationsManager.WinUI.Features"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
-    xmlns:converters="using:AzureAppRegistrationsManager.WinUI.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -31,28 +30,24 @@
             IsReadOnly="True"
             MinHeight="300">
 
-            <!--<controls:DataGrid.Resources>
-                <converters:ConsentTypeToDisplayConverter x:Key="ConsentTypeToDisplayConverter" />
-            </controls:DataGrid.Resources>-->
-
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="ApplicationName" Binding="{Binding Scope.ApplicationName}" />
-                <!--<controls:DataGridTextColumn Header="Admin consent display name" Binding="{Binding Scope.AdminConsentDisplayName}" />
-                <controls:DataGridTextColumn Header="Admin consent description" Binding="{Binding Scope.AdminConsentDescription}" />
-                <controls:DataGridTextColumn Header="User consent display name" Binding="{Binding Scope.UserConsentDisplayName}" />
-                <controls:DataGridTextColumn Header="User consent description" Binding="{Binding Scope.UserConsentDescription}" />
-                <controls:DataGridTextColumn Header="Consent type" Binding="{Binding Scope.Type}" />
-                <controls:DataGridTextColumn Header="Enabled" Binding="{Binding Scope.IsEnabled}" />
+                <controls:DataGridTextColumn Header="ApplicationName" Binding="{Binding ApplicationName}" />
+                <controls:DataGridTextColumn Header="Scope" Binding="{Binding Scope}" />
+                <controls:DataGridTextColumn Header="ConsentType" Binding="{Binding ConsentType}" />
                 <controls:DataGridTemplateColumn>
                     <controls:DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate x:DataType="local:ScopeViewModel">
+                        <DataTemplate x:DataType="local:ApiPermissionModel">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <Button IsEnabled="{Binding CanEdit, Mode=OneWay}" x:Name="ScopeEditButton" FontSize="10px" Content="✏️" Click="ScopeAction_Click" ToolTipService.ToolTip="Edit this scope" Tag="{x:Bind}" />
-                                <Button IsEnabled="{Binding CanEdit, Mode=OneWay}" x:Name="ScopeDeleteButton" FontSize="10px" Content="🗑️" Click="ScopeAction_Click" ToolTipService.ToolTip="Delete this scope" Tag="{x:Bind}" />
+                                <Button IsEnabled="false" x:Name="PermissionEditButton" FontSize="10px" Content="✏️" Tag="{x:Bind}" />
+                                <Button IsEnabled="false" x:Name="PermissionDeleteButton" FontSize="10px" Content="🗑️" Tag="{x:Bind}" />
                             </StackPanel>
+                            <!--<StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button IsEnabled="{Binding CanEdit, Mode=OneWay}" x:Name="PermissionEditButton" FontSize="10px" Content="✏️" Click="PermissionAction_Click" ToolTipService.ToolTip="Edit this permission" Tag="{x:Bind}" />
+                                <Button IsEnabled="{Binding CanEdit, Mode=OneWay}" x:Name="PermissionDeleteButton" FontSize="10px" Content="🗑️" Click="PermissionAction_Click" ToolTipService.ToolTip="Delete this permission" Tag="{x:Bind}" />
+                            </StackPanel>-->
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
-                </controls:DataGridTemplateColumn>-->
+                </controls:DataGridTemplateColumn>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
     </StackPanel>

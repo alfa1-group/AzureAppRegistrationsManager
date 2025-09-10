@@ -12,7 +12,6 @@ namespace AzureAppRegistrationsManager.WinUI;
 public partial class App : Application
 {
     public static readonly GraphServiceClient GraphClient = new(new DefaultAzureCredential());
-    // public static readonly GraphServiceClient GraphClient = Create();
 
     private Window? _window;
 

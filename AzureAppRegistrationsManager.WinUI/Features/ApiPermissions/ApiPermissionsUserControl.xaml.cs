@@ -1,11 +1,14 @@
-using AzureAppRegistrationsManager.WinUI.Services;
 using Microsoft.UI.Xaml;
 
 namespace AzureAppRegistrationsManager.WinUI.Features.ApiPermissions;
 
 public sealed partial class ApiPermissionsUserControl
 {
-    public ApiPermissionModel[] ApiPermissionsSorted { get; private set; } = [];
+    public ApiPermissionModel[] ApiPermissionsSorted =>
+        AppRegInfo?.ApiPermissionModels?
+            .OrderBy(p => p.ApplicationName)
+            .ThenBy(p => p.Scope)
+            .ToArray() ?? [];
 
     public ApiPermissionsUserControl()
     {
@@ -22,24 +25,6 @@ public sealed partial class ApiPermissionsUserControl
     {
         if (d is ApiPermissionsUserControl apiPermissionsUserControl)
         {
-            var servicePrincipalId = apiPermissionsUserControl.AppRegInfo?.EnterpriseApplication?.Id;
-            if (!string.IsNullOrEmpty(servicePrincipalId))
-            {
-                var (permissionGrants, appRoleAssignments) = await CallMethodOnAppRegAsync(apiPermissionsUserControl, servicePrincipalId, AzureCommandsHandler.GetPermissionsAsync);
-                foreach (var grant in permissionGrants)
-                {
-                    Console.WriteLine($"  Resource: {grant.ResourceId}");
-                    Console.WriteLine($"  Scopes: {grant.Scope}");
-                    Console.WriteLine($"  Consent Type: {grant.ConsentType}");
-                }
-
-                foreach (var assignment in appRoleAssignments)
-                {
-                    Console.WriteLine($"  Resource: {assignment.ResourceId}");
-                    Console.WriteLine($"  App Role ID: {assignment.AppRoleId}");
-                }
-            }
-
             apiPermissionsUserControl.OnPropertyChanged(nameof(ApiPermissionsSorted));
         }
     }
@@ -79,7 +64,7 @@ public sealed partial class ApiPermissionsUserControl
     //    }
     //}
 
-    //private async void ScopeAction_Click(object sender, RoutedEventArgs e)
+    //private async void ApiPermissionAction_Click(object sender, RoutedEventArgs e)
     //{
     //    if (AppRegInfo == null || string.IsNullOrWhiteSpace(AppRegInfo?.Application?.ApplicationIdUri))
     //    {

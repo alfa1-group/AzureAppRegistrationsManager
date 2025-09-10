@@ -2,7 +2,9 @@
 
 public class ApiPermissionModel
 {
-    public  string ApplicationName { get; set; }
+    public string ApplicationName { get; set; } = null!;
 
-    // public required IReadOnlyList<ResourceAccessModel> ResourceAccesses { get; set; }
+    public string Scope { get; set; } = null!;
+
+    public string ConsentType { get; set; } = null!;
 }

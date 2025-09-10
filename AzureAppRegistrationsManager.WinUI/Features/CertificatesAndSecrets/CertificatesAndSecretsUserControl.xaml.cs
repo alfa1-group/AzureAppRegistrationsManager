@@ -52,7 +52,7 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
         {
             var passwordCredential = dialog.ClientSecret.Adapt<PasswordCredential>();
 
-            await CallMethodOnAppRegAsync(sender, passwordCredential, async (id, pc) =>
+            await UpdateAppRegAsync(sender, passwordCredential, async (id, pc) =>
             {
                 var secret = await AzureCommandsHandler.AddClientSecretAsync(id, pc);
                 if (secret != null)
@@ -90,7 +90,7 @@ public sealed partial class CertificatesAndSecretsUserControl : BaseUserControl
 
             if (result == ContentDialogResult.Secondary)
             {
-                await CallMethodOnAppRegAsync(sender, passwordCredential.KeyId!.Value, async (id, keyId) =>
+                await UpdateAppRegAsync(sender, passwordCredential.KeyId!.Value, async (id, keyId) =>
                 {
                     await AzureCommandsHandler.DeleteClientSecretAsync(id, keyId);
 

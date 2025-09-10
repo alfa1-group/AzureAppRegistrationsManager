@@ -147,12 +147,14 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
 
         RefreshAppProgress.IsActive = true;
 
+        selectedAppRegInfo.ApiPermissionModels = null;
         selectedAppRegInfo.Application = null;
         selectedAppRegInfo.ApplicationAsJson = string.Empty;
         selectedAppRegInfo.Application = await AzureCommandsHandler.GetApplicationAsync(selectedAppRegInfo.ObjectId);
         if (selectedAppRegInfo.Application != null)
         {
             selectedAppRegInfo.ApplicationAsJson = JsonSerializer.Serialize(selectedAppRegInfo.Application, MyJsonContext.Default.Application);
+            selectedAppRegInfo.ApiPermissionModels = await AzureCommandsHandler.GetPermissionsAsync(selectedAppRegInfo.EnterpriseApplication?.Id);
         }
 
         RefreshAppProgress.IsActive = false;

@@ -399,62 +399,44 @@ internal static class AzureCommandsHandler
         await App.GraphClient.ServicePrincipals[servicePrincipalId].DeleteAsync();
     }
 
-    internal static async Task<(IReadOnlyList<OAuth2PermissionGrant> OAuth2PermissionGrants, IReadOnlyList<AppRoleAssignment> AppRoleAssignments)> GetPermissionsAsync(string _, string servicePrincipalId)
+    internal static async Task<IReadOnlyList<ApiPermissionModel>> GetPermissionsAsync(string? servicePrincipalId)
     {
-        // Get OAuth2 permission grants (delegated permissions)
-        var oauth2Grants = await App.GraphClient.ServicePrincipals[servicePrincipalId]
-            .Oauth2PermissionGrants
-            .GetAsync();
-
-        // Get app role assignments (application permissions)
-        var appRoleAssignments = await App.GraphClient.ServicePrincipals[servicePrincipalId]
-            .AppRoleAssignments
-            .GetAsync();
-
-        return (oauth2Grants?.Value ?? [], appRoleAssignments?.Value ?? []);
-    }
-
-    internal static async Task<IReadOnlyList<ApiPermissionModel>> GetConfiguredPermissionsAsync2(string id)
-    {
-        var owners = await App.GraphClient.Applications[id].Owners.GetAsync();
-        var app = await App.GraphClient.Applications[id]
-            .GetAsync(rb =>
-            {
-                rb.QueryParameters.Select = ["displayName", "requiredResourceAccess"];
-            });
-
-        if (app?.RequiredResourceAccess == null)
+        if (string.IsNullOrEmpty(servicePrincipalId))
         {
             return [];
         }
 
-        var list = new List<ApiPermissionModel>();
-        foreach (var requiredResourceAccess in app.RequiredResourceAccess)
+        // Get OAuth2 permission grants (delegated permissions)
+        var oauth2GrantsResponse = await App.GraphClient.ServicePrincipals[servicePrincipalId]
+            .Oauth2PermissionGrants
+            .GetAsync();
+        var oauth2Grants = oauth2GrantsResponse?.Value ?? [];
+
+        // Get app role assignments (application permissions)
+        var appRoleAssignmentsResponse = await App.GraphClient.ServicePrincipals[servicePrincipalId]
+            .AppRoleAssignments
+            .GetAsync();
+        var appRoleAssignments = appRoleAssignmentsResponse?.Value ?? [];
+
+        var referencedServicePrincipalIds = oauth2Grants.Select(g => g.ResourceId).OfType<string>().Distinct();
+        var enterpriseApplications = (await App.GraphClient.ServicePrincipals.GetAsync(q =>
         {
-            // Get resource details (e.g., Microsoft Graph, custom APIs)
-            var resourceApp = await App.GraphClient.Applications
-                .GetAsync(rb =>
-                {
-                    rb.QueryParameters.Filter = $"appId eq '{requiredResourceAccess.ResourceAppId}'";
-                    rb.QueryParameters.Select = ["displayName", "oauth2PermissionScopes", "appRoles"];
-                });
+            q.QueryParameters.Filter = string.Join(" or ", referencedServicePrincipalIds.Select(id => $"id eq '{id}'"));
+            q.QueryParameters.Select = ["appId", "id", "displayName"];
+        }))?.Value ?? [];
 
-            var application = resourceApp?.Value?.FirstOrDefault();
-            if (application == null)
-            {
-                continue;
-            }
-
+        var list = new List<ApiPermissionModel>();
+        foreach (var oauth2Grant in oauth2Grants)
+        {
             list.Add(new ApiPermissionModel
             {
-                ApplicationName = application.DisplayName ?? application.AppId ?? "!Unknown Resource!",
-                //ResourceAccesses = (requiredResourceAccess.ResourceAccess ?? [])
-                //    .Select(permission => new ResourceAccessModel
-                //    {
-                //        Type = permission.Type == "Scope" ? "Delegated" : "Application",
-                //        Id = permission.Id!.Value
-                //    })
-                //    .ToArray()
+                ApplicationName = enterpriseApplications.FirstOrDefault(e => e.Id == oauth2Grant.ResourceId)?.DisplayName ?? oauth2Grant.ResourceId!,
+                Scope = oauth2Grant.Scope!.Trim(),
+
+                // Note: ConsentType is "AllPrincipals" or "Principal"
+                // - AllPrincipals indicates authorization to impersonate all users.
+                // - Principal indicates authorization to impersonate a specific user.
+                ConsentType = oauth2Grant.ConsentType!
             });
         }
 

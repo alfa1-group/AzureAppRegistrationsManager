@@ -1,4 +1,5 @@
-﻿using Microsoft.Graph.Models;
+﻿using AzureAppRegistrationsManager.WinUI.Features.ApiPermissions;
+using Microsoft.Graph.Models;
 
 namespace AzureAppRegistrationsManager.WinUI.Models;
 
@@ -15,6 +16,8 @@ public class AppRegInfo
     public bool CanEdit { get; set; }
 
     public Application? Application { get; set; }
+
+    public IReadOnlyList<ApiPermissionModel>? ApiPermissionModels { get; set; } = [];
 
     public string ApplicationAsJson { get; set; } = string.Empty;
 }

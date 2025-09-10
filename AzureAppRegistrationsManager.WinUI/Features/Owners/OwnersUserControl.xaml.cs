@@ -49,7 +49,7 @@ public sealed partial class OwnersUserControl : BaseUserControl
         var result = await dialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            await CallMethodOnAppRegAsync(sender, dialog.Owner.Email, async (id, ownerEmail) =>
+            await UpdateAppRegAsync(sender, dialog.Owner.Email, async (id, ownerEmail) =>
             {
                 await AzureCommandsHandler.AddAppOwnerByEmailAsync(id, ownerEmail);
                 AppRegInfo.Application = await AzureCommandsHandler.GetApplicationAsync(id);
@@ -77,7 +77,7 @@ public sealed partial class OwnersUserControl : BaseUserControl
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Secondary)
             {
-                await CallMethodOnAppRegAsync(sender, viewModel.Mail, async (id, ownerEmail) =>
+                await UpdateAppRegAsync(sender, viewModel.Mail, async (id, ownerEmail) =>
                 {
                     await AzureCommandsHandler.RemoveOwnerFromAppRegistrationByEmailAsync(id, ownerEmail);
 

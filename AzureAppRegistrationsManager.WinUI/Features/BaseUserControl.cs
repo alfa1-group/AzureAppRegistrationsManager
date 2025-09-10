@@ -51,9 +51,9 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
         // This method can be overridden by derived classes
     }
 
-    protected async Task CallMethodOnAppRegAsync<T>(object sender, T? value, Func<string, T, Task> func)
+    protected async Task UpdateAppRegAsync<T>(object sender, T? value, Func<string, T, Task> func)
     {
-        await CallMethodOnAppRegAsync(sender, value, async (id, val) =>
+        await UpdateAppRegAsync(sender, value, async (id, val) =>
         {
             await func(id, val);
 
@@ -61,7 +61,7 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
         });
     }
 
-    protected async Task<TResult?> CallMethodOnAppRegAsync<T, TResult>(object sender, T? value, Func<string, T, Task<TResult>> func)
+    protected async Task<TResult?> UpdateAppRegAsync<T, TResult>(object sender, T? value, Func<string, T, Task<TResult>> func)
     {
         if (AppRegInfo?.Application?.Id == null || value == null)
         {
@@ -108,7 +108,7 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
             return;
         }
 
-        var buttons = (textBox.Parent is Panel panel) ? panel.Children.OfType<Button>().ToList() : [];
+        var buttons = textBox.Parent is Panel panel ? panel.Children.OfType<Button>().ToList() : [];
 
         if (string.IsNullOrWhiteSpace(textBox.Text))
         {
