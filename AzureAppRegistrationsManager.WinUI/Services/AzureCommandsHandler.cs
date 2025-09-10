@@ -233,6 +233,18 @@ internal static class AzureCommandsHandler
         await ExecuteAzRestPatchOnApplicationAsync(appId, request);
     }
 
+    internal static async Task UpdateRequestedAccessTokenVersionAsync(string id, int requestedAccessTokenVersion)
+    {
+        var request = new Application
+        {
+            Api = new ApiApplication
+            {
+                RequestedAccessTokenVersion = requestedAccessTokenVersion
+            }
+        };
+        await ExecuteAzRestPatchOnApplicationAsync(id, request);
+    }
+
     internal static async Task UpdateScopesAsync(string id, List<PermissionScope> scopes)
     {
         if (scopes.Any(s => string.IsNullOrWhiteSpace(s.Value)))
