@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace AzureAppRegistrationsManager.WinUI.Features.Scope;
 
-public sealed partial class ScopeUserControl : BaseUserControl
+public sealed partial class ScopeUserControl
 {
     public ScopeViewModel[] Oauth2PermissionScopesSorted
     {
@@ -19,6 +19,25 @@ public sealed partial class ScopeUserControl : BaseUserControl
         }
     }
 
+    public int RequestedAccessTokenVersion
+    {
+        get => AppRegInfo?.Application?.Api?.RequestedAccessTokenVersion ?? 1;
+        set
+        {
+            if (AppRegInfo != null)
+            {
+                var requestedAccessTokenVersion = Math.Clamp(value, 1, 2);
+                if (AppRegInfo.Application!.Api == null)
+                {
+                    AppRegInfo.Application.Api = new ApiApplication();
+                }
+
+                AppRegInfo.Application.Api.RequestedAccessTokenVersion = requestedAccessTokenVersion;
+                OnPropertyChanged(nameof(AppRegInfo));
+            }
+        }
+    }
+
     public ScopeUserControl()
     {
         InitializeComponent();
@@ -28,11 +47,27 @@ public sealed partial class ScopeUserControl : BaseUserControl
     private void OnCanEditChanged(DependencyObject sender, DependencyProperty dp)
     {
         OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
+        OnPropertyChanged(nameof(RequestedAccessTokenVersion));
     }
 
     protected override void OnAppRegInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        (d as ScopeUserControl)?.OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
+        if (d is ScopeUserControl scopeUserControl)
+        {
+            scopeUserControl.OnPropertyChanged(nameof(Oauth2PermissionScopesSorted));
+            scopeUserControl.OnPropertyChanged(nameof(RequestedAccessTokenVersion));
+        }
+    }
+
+    private async void SaveAccessTokenAcceptedVersion_Click(object sender, RoutedEventArgs e)
+    {
+        if (AppRegInfo == null)
+        {
+            return;
+        }
+
+        await UpdateAppRegAsync(sender, RequestedAccessTokenVersion, AzureCommandsHandler.UpdateRequestedAccessTokenVersionAsync);
+        OnPropertyChanged(nameof(RequestedAccessTokenVersion));
     }
 
     private async void AddScope_Click(object sender, RoutedEventArgs e)
