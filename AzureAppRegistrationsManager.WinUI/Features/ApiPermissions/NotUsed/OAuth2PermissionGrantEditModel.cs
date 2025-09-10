@@ -3,7 +3,7 @@ using Aspects.Notify;
 using Mapster;
 using Microsoft.Graph.Models;
 
-namespace AzureAppRegistrationsManager.WinUI.Features.ApiPermissions;
+namespace AzureAppRegistrationsManager.WinUI.Features.ApiPermissions.NotUsed;
 
 [AdaptTo(typeof(OAuth2PermissionGrant))]
 public class OAuth2PermissionGrantEditModel

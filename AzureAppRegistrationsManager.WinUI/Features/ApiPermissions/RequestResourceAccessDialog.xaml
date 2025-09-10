@@ -1,0 +1,46 @@
+﻿<base:BaseDialog 
+    x:Class="AzureAppRegistrationsManager.WinUI.Features.ApiPermissions.RequestResourceAccessDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:base="using:AzureAppRegistrationsManager.WinUI.Features"
+    xmlns:validation="using:WinUI.Validation"
+    PrimaryButtonText="OK"
+    SecondaryButtonText="Cancel"
+    DefaultButton="Primary">
+
+    <base:BaseDialog.Resources>
+        <Style TargetType="TextBlock" x:Key="LabelStyle">
+            <Setter Property="Margin" Value="0,2,0,4"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style TargetType="RadioButton">
+            <Setter Property="Margin" Value="0,4,8,4"/>
+        </Style>
+    </base:BaseDialog.Resources>
+
+    <ScrollViewer>
+        <validation:ValidationForm
+            Model="{x:Bind RequestResourceAccess}"
+            OnValidationChanged="ValidationChanged">
+
+            <StackPanel Spacing="8" Margin="8">
+
+                <TextBlock Text="Scope(s) 🔺" Style="{StaticResource LabelStyle}"/>
+                <validation:ValidationFor PropertyName="Scopes" HideValidationMessage="True">
+                    <TextBox
+                        AutomationProperties.Name="multi-line TextBox"
+                        Text="{x:Bind RequestResourceAccess.Scopes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}"
+                        AcceptsReturn="True"
+                        MinWidth="500"
+                        Height="110"/>
+
+                    <!--<TextBox 
+                        Text="{x:Bind RequestResourceAccess.Scopes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, FallbackValue=''}"
+                        PlaceholderText="e.g. User.Read (space separated)"/>-->
+                </validation:ValidationFor>
+
+            </StackPanel>
+        </validation:ValidationForm>
+    </ScrollViewer>
+</base:BaseDialog>

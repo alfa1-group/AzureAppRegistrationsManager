@@ -35,7 +35,20 @@
 
     <!-- Release crashes, so trimming is disabled. -->
     <PublishTrimmed>False</PublishTrimmed>
+
+    <!-- Fix CsWinRT1030 -->
+    <CsWinRTAotOptimizerEnabled>false</CsWinRTAotOptimizerEnabled>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Features\ApiPermissions\NotUsed\OAuth2PermissionGrantDialog.xaml.cs" />
+    <Compile Remove="Features\ApiPermissions\NotUsed\OAuth2PermissionGrantEditModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Features\ApiPermissions\NotUsed\OAuth2PermissionGrantDialog.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Remove="Features\ApiPermissions\NotUsed\OAuth2PermissionGrantDialog.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -61,14 +74,15 @@
 
   <ItemGroup>
     <PackageReference Include="Aspects.Notify" Version="1.0.3" />
-    <PackageReference Include="Azure.Identity" Version="1.14.2" />
+    <PackageReference Include="Azure.Identity" Version="1.16.0" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
     <PackageReference Include="Mapster" Version="7.4.0" />
-    <PackageReference Include="Microsoft.Graph" Version="5.85.0" />
+    <PackageReference Include="Microsoft.Graph" Version="5.91.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4188" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
     <PackageReference Include="WinUI.Monaco" Version="1.1.52.120" />
     <PackageReference Include="WinUI.Validation" Version="0.0.1-preview-01" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.76.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -87,6 +101,10 @@
     <Page Update="Features\Owners\OwnersUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\ApiPermissions\NotUsed\" />
   </ItemGroup>
 
   <!--

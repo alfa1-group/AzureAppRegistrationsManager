@@ -1,6 +1,6 @@
 using WinUI.Validation;
 
-namespace AzureAppRegistrationsManager.WinUI.Features.ApiPermissions;
+namespace AzureAppRegistrationsManager.WinUI.Features.ApiPermissions.NotUsed;
 
 public sealed partial class OAuth2PermissionGrantDialog
 {
@@ -17,17 +17,6 @@ public sealed partial class OAuth2PermissionGrantDialog
 
         Title = "Add OAuth2Permission";
     }
-
-    //public ScopeDialog(string apiUri, ScopeEditModel existingScope)
-    //{
-    //    InitializeComponent();
-
-    //    PermissionScope = existingScope;
-    //    PermissionScope.ApiUriOriginal = apiUri;
-
-    //    Title = "Edit Scope";
-    //}
-
     private void ValidationChanged(object sender, ValidationStateChangedEventArgs e)
     {
         IsPrimaryButtonEnabled = e.ValidationState.IsValid;

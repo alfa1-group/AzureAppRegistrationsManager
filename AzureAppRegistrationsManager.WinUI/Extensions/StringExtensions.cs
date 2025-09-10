@@ -10,7 +10,7 @@ internal static class StringExtensions
             .ToList();
     }
 
-    internal static string JoinToString(this IEnumerable<string>? items)
+    internal static string JoinToString(this List<string>? items)
     {
         if (items == null || !items.Any())
         {

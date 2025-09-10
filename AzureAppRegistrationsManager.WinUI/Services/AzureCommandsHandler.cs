@@ -149,7 +149,7 @@ internal static class AzureCommandsHandler
         return application?.Owners?.Any(owner => string.Equals(owner.Id, userId, StringComparison.OrdinalIgnoreCase)) ?? false;
     }
 
-    internal static async Task UpdateWebRedirectUrisAsync(string appId, List<string> uris)
+    internal static async Task UpdateWebRedirectUrisAsync(string id, List<string> uris)
     {
         var request = new Application
         {
@@ -158,7 +158,7 @@ internal static class AzureCommandsHandler
                 RedirectUris = uris
             }
         };
-        await ExecuteAzRestPatchOnApplicationAsync(appId, request);
+        await ExecuteAzRestPatchOnApplicationAsync(id, request);
     }
 
     internal static async Task UpdateSpaRedirectUrisAsync(string appId, List<string> uris)
