@@ -133,7 +133,7 @@
 
                     <TabViewItem x:Name="ApiPermissions" Header="API Permissions" IsClosable="False">
                         <TabViewItem.IconSource>
-                            <SymbolIconSource Symbol="Permissions" />
+                            <SymbolIconSource Symbol="Setting" />
                         </TabViewItem.IconSource>
                         <TabViewItem.Content>
                             <features_apipermissions:ApiPermissionsUserControl AppRegInfo="{x:Bind AppRegInfo, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
