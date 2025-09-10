@@ -418,19 +418,40 @@ internal static class AzureCommandsHandler
             .GetAsync();
         var appRoleAssignments = appRoleAssignmentsResponse?.Value ?? [];
 
-        var referencedServicePrincipalIds = oauth2Grants.Select(g => g.ResourceId).OfType<string>().Distinct();
-        var enterpriseApplications = (await App.GraphClient.ServicePrincipals.GetAsync(q =>
+        var referencedServicePrincipalIds = oauth2Grants
+            .Select(g => g.ResourceId)
+            .OfType<string>()
+            .Distinct()
+            .ToArray();
+
+        var referencedEnterpriseApplications = new List<ServicePrincipal>();
+        foreach (var referencedServicePrincipalId in referencedServicePrincipalIds)
         {
-            q.QueryParameters.Filter = string.Join(" or ", referencedServicePrincipalIds.Select(id => $"id eq '{id}'"));
-            q.QueryParameters.Select = ["appId", "id", "displayName"];
-        }))?.Value ?? [];
+            var found = _allEnterpriseApplications.FirstOrDefault(sp => sp.Id == referencedServicePrincipalId);
+            if (found != null)
+            {
+                referencedEnterpriseApplications.Add(found);
+            }
+            else
+            {
+                var enterpriseApplication = await App.GraphClient.ServicePrincipals[referencedServicePrincipalId].GetAsync(q =>
+                {
+                    q.QueryParameters.Select = ["appId", "id", "displayName"];
+                });
+
+                if (enterpriseApplication != null)
+                {
+                    referencedEnterpriseApplications.Add(enterpriseApplication);
+                }
+            }
+        }
 
         var list = new List<ApiPermissionModel>();
         foreach (var oauth2Grant in oauth2Grants)
         {
             list.Add(new ApiPermissionModel
             {
-                ApplicationName = enterpriseApplications.FirstOrDefault(e => e.Id == oauth2Grant.ResourceId)?.DisplayName ?? oauth2Grant.ResourceId!,
+                ApplicationName = referencedEnterpriseApplications.FirstOrDefault(e => e.Id == oauth2Grant.ResourceId)?.DisplayName ?? oauth2Grant.ResourceId!,
                 Scope = oauth2Grant.Scope!.Trim(),
 
                 // Note: ConsentType is "AllPrincipals" or "Principal"
@@ -443,17 +464,21 @@ internal static class AzureCommandsHandler
         return list;
     }
 
+    private static List<ServicePrincipal> _allEnterpriseApplications = [];
+
     private static async Task UpdateAppRegInfoListWithServicePrincipalsAsync(List<AppRegInfo> appRegInfoList)
     {
         var enterpriseApplications = await App.GraphClient.ServicePrincipals.GetAsync(q =>
         {
-            q.QueryParameters.Select = ["appId", "id"];
+            q.QueryParameters.Select = ["appId", "id", "displayName"];
         });
 
         if (enterpriseApplications?.Value == null)
         {
             return;
         }
+
+        _allEnterpriseApplications = [];
 
         var enterpriseApplicationsPageIterator = PageIterator<ServicePrincipal, ServicePrincipalCollectionResponse>.CreatePageIterator(
             App.GraphClient,
@@ -464,6 +489,8 @@ internal static class AzureCommandsHandler
                 {
                     return false;
                 }
+
+                _allEnterpriseApplications.Add(sp);
 
                 var application = appRegInfoList.FirstOrDefault(a => a.AppId == sp.AppId);
                 application?.EnterpriseApplication = sp;
