@@ -10,6 +10,7 @@ namespace AzureAppRegistrationsManager.WinUI.Services;
 internal static class RequestResourceAccessHandler
 {
     private const string TenantIdClaimType = "tid";
+
     private static readonly string TenantId;
 
     static RequestResourceAccessHandler()

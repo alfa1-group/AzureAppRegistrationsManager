@@ -40,13 +40,6 @@
     <CsWinRTAotOptimizerEnabled>false</CsWinRTAotOptimizerEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Features\ApiPermissions\NotUsed\OAuth2PermissionGrantDialog.xaml.cs" />
-    <Compile Remove="Features\ApiPermissions\NotUsed\OAuth2PermissionGrantEditModel.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Features\ApiPermissions\NotUsed\OAuth2PermissionGrantDialog.xaml" />
-  </ItemGroup>
-  <ItemGroup>
     <Page Remove="Features\ApiPermissions\NotUsed\OAuth2PermissionGrantDialog.xaml" />
   </ItemGroup>
 
@@ -86,6 +79,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Features\ApiPermissions\NotUsed\OAuth2PermissionGrantDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <Page Update="Features\ApiPermissions\ApiPermissionsUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -101,10 +100,6 @@
     <Page Update="Features\Owners\OwnersUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\ApiPermissions\NotUsed\" />
   </ItemGroup>
 
   <!--

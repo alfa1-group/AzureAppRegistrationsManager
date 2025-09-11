@@ -21,7 +21,7 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         get => _appRegInfos;
         set
         {
-            if (value != _appRegInfos)
+            if (!Equals(value, _appRegInfos))
             {
                 _appRegInfos = value;
                 OnPropertyChanged();
