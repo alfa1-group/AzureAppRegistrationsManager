@@ -34,10 +34,6 @@
                         AcceptsReturn="True"
                         MinWidth="500"
                         Height="110"/>
-
-                    <!--<TextBox 
-                        Text="{x:Bind RequestResourceAccess.Scopes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, FallbackValue=''}"
-                        PlaceholderText="e.g. User.Read (space separated)"/>-->
                 </validation:ValidationFor>
 
             </StackPanel>

@@ -9,15 +9,27 @@
     mc:Ignorable="d">
 
     <StackPanel Padding="12" Spacing="12">
-        <Button
-            IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
-            HorizontalAlignment="Left"
-            Click="RequestResourceAccess_Click">
-            <StackPanel Orientation="Horizontal">
-                <SymbolIcon Symbol="Add"/>
-                <TextBlock Text="Request Resource Access"/>
-            </StackPanel>
-        </Button>
+        <StackPanel Orientation="Vertical" Spacing="4">
+            <Button
+                IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
+                HorizontalAlignment="Left"
+                Click="RequestResourceAccess_Click">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Add"/>
+                    <TextBlock Text="Request Resource Access"/>
+                </StackPanel>
+            </Button>
+
+            <Button
+                IsEnabled="{x:Bind CanEdit, Mode=OneWay}"
+                HorizontalAlignment="Left"
+                Click="AddPermission_Click">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Add"/>
+                    <TextBlock Text="Add Permission (admin only)"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
 
         <controls:DataGrid 
             AutoGenerateColumns="False"

@@ -1,6 +1,6 @@
 using WinUI.Validation;
 
-namespace AzureAppRegistrationsManager.WinUI.Features.ApiPermissions.NotUsed;
+namespace AzureAppRegistrationsManager.WinUI.Features.ApiPermissions.Admin;
 
 public sealed partial class OAuth2PermissionGrantDialog
 {

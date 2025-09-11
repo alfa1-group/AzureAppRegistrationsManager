@@ -39,9 +39,6 @@
     <!-- Fix CsWinRT1030 -->
     <CsWinRTAotOptimizerEnabled>false</CsWinRTAotOptimizerEnabled>
   </PropertyGroup>
-  <ItemGroup>
-    <Page Remove="Features\ApiPermissions\NotUsed\OAuth2PermissionGrantDialog.xaml" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -79,12 +76,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Features\ApiPermissions\NotUsed\OAuth2PermissionGrantDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
+    <Page Update="Features\ApiPermissions\Admin\OAuth2PermissionGrantDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Features\ApiPermissions\ApiPermissionsUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>

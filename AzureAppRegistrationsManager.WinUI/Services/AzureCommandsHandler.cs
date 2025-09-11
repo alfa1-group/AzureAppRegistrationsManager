@@ -395,7 +395,7 @@ internal static class AzureCommandsHandler
     /// <summary>
     /// Only possible to use this when you have admin privileges.
     /// </summary>
-    internal static async Task<OAuth2PermissionGrant?> AddDelegatedApiPermissionGrantAsync(string? _, OAuth2PermissionGrant permissionGrant)
+    internal static async Task<OAuth2PermissionGrant?> AddDelegatedApiPermissionGrantAsync(OAuth2PermissionGrant permissionGrant)
     {
         return await App.GraphClient.Oauth2PermissionGrants.PostAsync(permissionGrant);
     }
