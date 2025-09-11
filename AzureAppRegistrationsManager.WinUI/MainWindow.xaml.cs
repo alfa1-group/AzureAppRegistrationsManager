@@ -150,12 +150,22 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         selectedAppRegInfo.ApiPermissionModels = null;
         selectedAppRegInfo.Application = null;
         selectedAppRegInfo.ApplicationAsJson = string.Empty;
-        selectedAppRegInfo.Application = await AzureCommandsHandler.GetApplicationAsync(selectedAppRegInfo.ObjectId);
-        if (selectedAppRegInfo.Application != null)
+
+        var applicationTask = Task.Run(async () =>
         {
-            selectedAppRegInfo.ApplicationAsJson = JsonSerializer.Serialize(selectedAppRegInfo.Application, MyJsonContext.Default.Application);
-            selectedAppRegInfo.ApiPermissionModels = await AzureCommandsHandler.GetPermissionsAsync(selectedAppRegInfo.EnterpriseApplication?.Id);
-        }
+            var application = await AzureCommandsHandler.GetApplicationAsync(selectedAppRegInfo.ObjectId);
+            var applicationAsJson = application != null ? JsonSerializer.Serialize(application, MyJsonContext.Default.Application) : string.Empty;
+
+            return (application, applicationAsJson);
+        });
+
+        var apiPermissionModelsTask = AzureCommandsHandler.GetPermissionsAsync(selectedAppRegInfo.EnterpriseApplication?.Id);
+
+        await Task.WhenAll(applicationTask, apiPermissionModelsTask);
+
+        selectedAppRegInfo.Application = (await applicationTask).application;
+        selectedAppRegInfo.ApplicationAsJson = (await applicationTask).applicationAsJson;
+        selectedAppRegInfo.ApiPermissionModels = await apiPermissionModelsTask;
 
         RefreshAppProgress.IsActive = false;
 

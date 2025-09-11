@@ -1,4 +1,5 @@
-﻿using AzureAppRegistrationsManager.WinUI.Features.ApiPermissions;
+﻿using System.Diagnostics;
+using AzureAppRegistrationsManager.WinUI.Features.ApiPermissions;
 using AzureAppRegistrationsManager.WinUI.Models;
 using Microsoft.Graph;
 using Microsoft.Graph.Applications.Item.AddPassword;
@@ -9,46 +10,41 @@ namespace AzureAppRegistrationsManager.WinUI.Services;
 
 internal static class AzureCommandsHandler
 {
+    private static List<ServicePrincipal> _allEnterpriseApplications = [];
+
     internal static async Task<IReadOnlyList<AppRegInfo>> GetAllApplicationsAsync()
     {
-        var userId = await GetCurrentUserIdAsync();
+        var stopwatch = Stopwatch.StartNew();
 
-        var applications = await App.GraphClient.Applications.GetAsync(q =>
+        var appRegInfoListTask = Task.Run(async () =>
         {
-            q.QueryParameters.Select = ["appId", "displayName", "id", "owners"];
-            q.QueryParameters.Expand = ["owners($select=id)"];
+            var stopwatchOwnApplications = Stopwatch.StartNew();
+            var list = await GetAllApplicationsInternalAsync();
+            stopwatchOwnApplications.Stop();
+            Debug.WriteLine($"GetAllApplicationsInternalAsync took {stopwatchOwnApplications.ElapsedMilliseconds} ms and returned {list.Count} items.");
+
+            return list;
         });
 
-        if (applications?.Value == null)
+        var allEnterpriseApplicationsTask = Task.Run(async () =>
         {
-            return [];
-        }
+            var stopwatchEnterpriseApplications = Stopwatch.StartNew();
+            var list = await GetServicePrincipalsAsync();
+            stopwatchEnterpriseApplications.Stop();
+            Debug.WriteLine($"GetServicePrincipalsAsync took {stopwatchEnterpriseApplications.ElapsedMilliseconds} ms and returned {_allEnterpriseApplications.Count} items.");
 
-        var appRegInfoList = new List<AppRegInfo>();
+            return list;
+        });
 
-        var applicationsPageIterator = PageIterator<Application, ApplicationCollectionResponse>.CreatePageIterator(
-            App.GraphClient,
-            applications,
-            app =>
-            {
-                if (app?.AppId == null || app.Id == null || string.IsNullOrWhiteSpace(app.DisplayName))
-                {
-                    return false;
-                }
+        await Task.WhenAll(appRegInfoListTask, allEnterpriseApplicationsTask);
 
-                appRegInfoList.Add(new AppRegInfo
-                {
-                    AppId = app.AppId,
-                    DisplayName = app.DisplayName,
-                    ObjectId = app.Id,
-                    CanEdit = UserIsOwnerFromAppReg(app, userId)
-                });
-                return true;
-            });
+        var appRegInfoList = await appRegInfoListTask;
+        _allEnterpriseApplications = await allEnterpriseApplicationsTask;
 
-        await applicationsPageIterator.IterateAsync();
+        UpdateAppRegInfoListWithServicePrincipals(appRegInfoList);
 
-        await UpdateAppRegInfoListWithServicePrincipalsAsync(appRegInfoList);
+        stopwatch.Stop();
+        Debug.WriteLine($"GetOwnApplicationsAsync took {stopwatch.ElapsedMilliseconds} ms and returned {appRegInfoList.Count} items.");
 
         return appRegInfoList
             .OrderBy(app => app.DisplayName)
@@ -57,40 +53,37 @@ internal static class AzureCommandsHandler
 
     internal static async Task<IReadOnlyList<AppRegInfo>> GetOwnApplicationsAsync()
     {
-        var ownedObjects = await App.GraphClient.Me.OwnedObjects.GetAsync(q =>
+        var stopwatch = Stopwatch.StartNew();
+
+        var appRegInfoListTask = Task.Run(async () =>
         {
-            q.QueryParameters.Select = ["appId", "displayName", "id"];
+            var stopwatchOwnApplications = Stopwatch.StartNew();
+            var list = await GetOwnApplicationsInternalAsync();
+            stopwatchOwnApplications.Stop();
+            Debug.WriteLine($"GetOwnApplicationsInternalAsync took {stopwatchOwnApplications.ElapsedMilliseconds} ms and returned {list.Count} items.");
+
+            return list;
         });
 
-        if (ownedObjects?.Value == null)
+        var allEnterpriseApplicationsTask = Task.Run(async () =>
         {
-            return [];
-        }
+            var stopwatchEnterpriseApplications = Stopwatch.StartNew();
+            var list = await GetServicePrincipalsAsync();
+            stopwatchEnterpriseApplications.Stop();
+            Debug.WriteLine($"GetServicePrincipalsAsync took {stopwatchEnterpriseApplications.ElapsedMilliseconds} ms and returned {_allEnterpriseApplications.Count} items.");
 
-        var appRegInfoList = new List<AppRegInfo>();
+            return list;
+        });
 
-        var pageIterator = PageIterator<DirectoryObject, DirectoryObjectCollectionResponse>.CreatePageIterator(
-            App.GraphClient,
-            ownedObjects,
-            obj =>
-            {
-                if (obj is Application { AppId: not null, Id: not null } app && !string.IsNullOrWhiteSpace(app.DisplayName))
-                {
-                    appRegInfoList.Add(new AppRegInfo
-                    {
-                        AppId = app.AppId,
-                        DisplayName = app.DisplayName,
-                        ObjectId = app.Id!,
-                        CanEdit = true
-                    });
-                }
+        await Task.WhenAll(appRegInfoListTask, allEnterpriseApplicationsTask);
 
-                return true;
-            });
+        var appRegInfoList = await appRegInfoListTask;
+        _allEnterpriseApplications = await allEnterpriseApplicationsTask;
 
-        await pageIterator.IterateAsync();
+        UpdateAppRegInfoListWithServicePrincipals(appRegInfoList);
 
-        await UpdateAppRegInfoListWithServicePrincipalsAsync(appRegInfoList);
+        stopwatch.Stop();
+        Debug.WriteLine($"GetOwnApplicationsAsync took {stopwatch.ElapsedMilliseconds} ms and returned {appRegInfoList.Count} items.");
 
         return appRegInfoList
             .OrderBy(app => app.DisplayName)
@@ -476,9 +469,88 @@ internal static class AzureCommandsHandler
         return list;
     }
 
-    private static List<ServicePrincipal> _allEnterpriseApplications = [];
+    private static async Task<IReadOnlyList<AppRegInfo>> GetOwnApplicationsInternalAsync()
+    {
+        var ownedObjects = await App.GraphClient.Me.OwnedObjects.GetAsync(q =>
+        {
+            q.QueryParameters.Select = ["appId", "displayName", "id"];
+        });
 
-    private static async Task UpdateAppRegInfoListWithServicePrincipalsAsync(List<AppRegInfo> appRegInfoList)
+        if (ownedObjects?.Value == null)
+        {
+            return [];
+        }
+
+        var appRegInfoList = new List<AppRegInfo>();
+
+        var pageIterator = PageIterator<DirectoryObject, DirectoryObjectCollectionResponse>.CreatePageIterator(
+            App.GraphClient,
+            ownedObjects,
+            obj =>
+            {
+                if (obj is Application { AppId: not null, Id: not null } app &&
+                    !string.IsNullOrWhiteSpace(app.DisplayName))
+                {
+                    appRegInfoList.Add(new AppRegInfo
+                    {
+                        AppId = app.AppId,
+                        DisplayName = app.DisplayName,
+                        ObjectId = app.Id!,
+                        CanEdit = true
+                    });
+                }
+
+                return true;
+            });
+
+        await pageIterator.IterateAsync();
+
+        return appRegInfoList;
+    }
+
+    internal static async Task<IReadOnlyList<AppRegInfo>> GetAllApplicationsInternalAsync()
+    {
+        var userId = await GetCurrentUserIdAsync();
+
+        var applications = await App.GraphClient.Applications.GetAsync(q =>
+        {
+            q.QueryParameters.Select = ["appId", "displayName", "id", "owners"];
+            q.QueryParameters.Expand = ["owners($select=id)"];
+        });
+
+        if (applications?.Value == null)
+        {
+            return [];
+        }
+
+        var appRegInfoList = new List<AppRegInfo>();
+
+        var applicationsPageIterator = PageIterator<Application, ApplicationCollectionResponse>.CreatePageIterator(
+            App.GraphClient,
+            applications,
+            app =>
+            {
+                if (app?.AppId == null || app.Id == null || string.IsNullOrWhiteSpace(app.DisplayName))
+                {
+                    return false;
+                }
+
+                appRegInfoList.Add(new AppRegInfo
+                {
+                    AppId = app.AppId,
+                    DisplayName = app.DisplayName,
+                    ObjectId = app.Id,
+                    CanEdit = UserIsOwnerFromAppReg(app, userId)
+                });
+                return true;
+            });
+
+        await applicationsPageIterator.IterateAsync();
+
+        return appRegInfoList;
+    }
+
+    private static async Task<List<ServicePrincipal>> GetServicePrincipalsAsync()
     {
         var enterpriseApplications = await App.GraphClient.ServicePrincipals.GetAsync(q =>
         {
@@ -487,10 +559,10 @@ internal static class AzureCommandsHandler
 
         if (enterpriseApplications?.Value == null)
         {
-            return;
+            return [];
         }
 
-        _allEnterpriseApplications = [];
+        var allEnterpriseApplications = new List<ServicePrincipal>();
 
         var enterpriseApplicationsPageIterator = PageIterator<ServicePrincipal, ServicePrincipalCollectionResponse>.CreatePageIterator(
             App.GraphClient,
@@ -502,15 +574,22 @@ internal static class AzureCommandsHandler
                     return false;
                 }
 
-                _allEnterpriseApplications.Add(sp);
-
-                var application = appRegInfoList.FirstOrDefault(a => a.AppId == sp.AppId);
-                application?.EnterpriseApplication = sp;
-
+                allEnterpriseApplications.Add(sp);
                 return true;
             });
 
         await enterpriseApplicationsPageIterator.IterateAsync();
+
+        return allEnterpriseApplications;
+    }
+
+    private static void UpdateAppRegInfoListWithServicePrincipals(IReadOnlyList<AppRegInfo> appRegInfoList)
+    {
+        foreach (var enterpriseApplication in _allEnterpriseApplications)
+        {
+            var application = appRegInfoList.FirstOrDefault(a => a.AppId == enterpriseApplication.AppId);
+            application?.EnterpriseApplication = enterpriseApplication;
+        }
     }
 
     private static async Task ExecuteAzRestPatchOnApplicationAsync(string id, Application request)
