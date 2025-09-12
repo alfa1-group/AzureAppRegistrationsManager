@@ -2,7 +2,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace AzureAppRegistrationsManager.WinUI.Converters;
 
-internal partial class AllowedMemberTypesToDisplayConverter : IValueConverter
+internal class AllowedMemberTypesToDisplayConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

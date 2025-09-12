@@ -22,6 +22,11 @@ It provides a user-friendly interface for creating, updating, and managing app r
 ![authentication](./Resources/authentication.png)
 
 
+## API Permissions
+
+![expose](./Resources/api-permissions.png)
+
+
 ## Expose API
 
 ![expose](./Resources/expose.png)
