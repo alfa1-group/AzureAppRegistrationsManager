@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using AzureAppRegistrationsManager.WinUI.Extensions;
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.Graph.Models;
 
 internal static class AppRegExtensions
@@ -33,17 +34,6 @@ internal static class AppRegExtensions
             {
                 app.Spa ??= new SpaApplication();
                 app.Spa.RedirectUris = value.SplitToList();
-            }
-        }
-
-        [JsonIgnore]
-        public List<PermissionScope> Oauth2PermissionScopes
-        {
-            get => app?.Api?.Oauth2PermissionScopes ?? [];
-            set
-            {
-                app.Api ??= new ApiApplication();
-                app.Api.Oauth2PermissionScopes = value;
             }
         }
     }

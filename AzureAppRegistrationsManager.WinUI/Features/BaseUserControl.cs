@@ -108,7 +108,7 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
             return;
         }
 
-        var buttons = (textBox.Parent is Panel panel) ? panel.Children.OfType<Button>().ToList() : [];
+        var buttons = textBox.Parent is Panel panel ? panel.Children.OfType<Button>().ToList() : [];
 
         if (string.IsNullOrWhiteSpace(textBox.Text))
         {

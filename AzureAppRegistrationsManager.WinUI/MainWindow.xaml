@@ -7,6 +7,7 @@
     xmlns:converters="using:AzureAppRegistrationsManager.WinUI.Converters"
     xmlns:features_overview="using:AzureAppRegistrationsManager.WinUI.Features.Overview"
     xmlns:features_authentication="using:AzureAppRegistrationsManager.WinUI.Features.Authentication"
+    xmlns:features_apipermissions="using:AzureAppRegistrationsManager.WinUI.Features.ApiPermissions"
     xmlns:features_scope="using:AzureAppRegistrationsManager.WinUI.Features.Scope"
     xmlns:features_role="using:AzureAppRegistrationsManager.WinUI.Features.Role"
     xmlns:features_CertificatesAndSecrets="using:AzureAppRegistrationsManager.WinUI.Features.CertificatesAndSecrets"
@@ -86,7 +87,7 @@
                         <controls:DataGridTextColumn Header="Application (client) ID" Binding="{Binding AppId}" Width="SizeToCells"/>
                         <controls:DataGridTextColumn Header="Display Name" Binding="{Binding DisplayName}" Width="SizeToCells"/>
                         <controls:DataGridTextColumn Header="Object ID" Binding="{Binding ObjectId}" Width="SizeToCells"/>
-                        <controls:DataGridTextColumn Header="Enterprise Application Object ID" Binding="{Binding EnterpriseApplicationObjectId}" Width="SizeToCells"/>
+                        <controls:DataGridTextColumn Header="Enterprise Application Object ID" Binding="{Binding EnterpriseApplication.Id, FallbackValue=''}" Width="SizeToCells"/>
                         <controls:DataGridTextColumn Header="Editable?" Binding="{Binding CanEdit}" Width="90"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid >
@@ -127,6 +128,15 @@
                         </TabViewItem.IconSource>
                         <TabViewItem.Content>
                             <features_authentication:AuthenticationUserControl AppRegInfo="{x:Bind AppRegInfo, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
+                        </TabViewItem.Content>
+                    </TabViewItem>
+
+                    <TabViewItem x:Name="ApiPermissions" Header="API Permissions" IsClosable="False">
+                        <TabViewItem.IconSource>
+                            <SymbolIconSource Symbol="Setting" />
+                        </TabViewItem.IconSource>
+                        <TabViewItem.Content>
+                            <features_apipermissions:ApiPermissionsUserControl AppRegInfo="{x:Bind AppRegInfo, Mode=TwoWay}" CanEdit="{x:Bind CanEdit, Mode=OneWay}" />
                         </TabViewItem.Content>
                     </TabViewItem>
 

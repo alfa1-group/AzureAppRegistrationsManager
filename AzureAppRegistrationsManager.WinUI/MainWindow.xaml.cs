@@ -21,7 +21,7 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         get => _appRegInfos;
         set
         {
-            if (value != _appRegInfos)
+            if (!Equals(value, _appRegInfos))
             {
                 _appRegInfos = value;
                 OnPropertyChanged();
@@ -127,8 +127,7 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         {
             AppId = Loading,
             ObjectId = Loading,
-            DisplayName = Loading,
-            EnterpriseApplicationObjectId = Loading
+            DisplayName = Loading
         }};
 
         AppRegInfos = all ? await AzureCommandsHandler.GetAllApplicationsAsync() : await AzureCommandsHandler.GetOwnApplicationsAsync();
@@ -148,13 +147,25 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
 
         RefreshAppProgress.IsActive = true;
 
+        selectedAppRegInfo.ApiPermissionModels = null;
         selectedAppRegInfo.Application = null;
         selectedAppRegInfo.ApplicationAsJson = string.Empty;
-        selectedAppRegInfo.Application = await AzureCommandsHandler.GetApplicationAsync(selectedAppRegInfo.ObjectId);
-        if (selectedAppRegInfo.Application != null)
+
+        var applicationTask = Task.Run(async () =>
         {
-            selectedAppRegInfo.ApplicationAsJson = JsonSerializer.Serialize(selectedAppRegInfo.Application, MyJsonContext.Default.Application);
-        }
+            var application = await AzureCommandsHandler.GetApplicationAsync(selectedAppRegInfo.ObjectId);
+            var applicationAsJson = application != null ? JsonSerializer.Serialize(application, MyJsonContext.Default.Application) : string.Empty;
+
+            return (application, applicationAsJson);
+        });
+
+        var apiPermissionModelsTask = AzureCommandsHandler.GetPermissionsAsync(selectedAppRegInfo.EnterpriseApplication?.Id);
+
+        await Task.WhenAll(applicationTask, apiPermissionModelsTask);
+
+        selectedAppRegInfo.Application = (await applicationTask).application;
+        selectedAppRegInfo.ApplicationAsJson = (await applicationTask).applicationAsJson;
+        selectedAppRegInfo.ApiPermissionModels = await apiPermissionModelsTask;
 
         RefreshAppProgress.IsActive = false;
 

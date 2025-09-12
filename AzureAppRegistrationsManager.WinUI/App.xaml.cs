@@ -1,18 +1,13 @@
 using Azure.Identity;
 using Microsoft.Graph;
-using Microsoft.Kiota.Authentication.Azure;
-using Microsoft.Kiota.Http.HttpClientLibrary;
 using Microsoft.UI.Xaml;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace AzureAppRegistrationsManager.WinUI;
 
 public partial class App : Application
 {
-    public static readonly GraphServiceClient GraphClient = new(new DefaultAzureCredential());
-    // public static readonly GraphServiceClient GraphClient = Create();
+    public static readonly DefaultAzureCredential AzureCredential = new();
+    public static readonly GraphServiceClient GraphClient = new(AzureCredential);
 
     private Window? _window;
 
@@ -33,22 +28,5 @@ public partial class App : Application
     {
         _window = new MainWindow();
         _window.Activate();
-    }
-
-    private static GraphServiceClient Create()
-    {
-        // 1. Create your credential as before.
-        var credential = new DefaultAzureCredential();
-
-        // 2. Create the Kiota authentication provider, passing it the credential and scopes.
-        //    This is the crucial bridge between Azure.Identity and Kiota.
-        var authProvider = new AzureIdentityAuthenticationProvider(credential, ["https://graph.microsoft.com/.default"]);
-
-        // 3. Create the request adapter, which is the main engine for making calls.
-        //    Pass it the authentication provider.
-        var requestAdapter = new HttpClientRequestAdapter(authProvider);
-
-        // 4. Now, you can create the GraphServiceClient, passing it the fully assembled request adapter.
-        return new GraphServiceClient(requestAdapter);
     }
 }
