@@ -44,7 +44,7 @@ internal static class AzureCommandsHandler
         UpdateAppRegInfoListWithServicePrincipals(appRegInfoList);
 
         stopwatch.Stop();
-        Debug.WriteLine($"GetOwnApplicationsAsync took {stopwatch.ElapsedMilliseconds} ms and returned {appRegInfoList.Count} items.");
+        Debug.WriteLine($"GetAllApplicationsAsync took {stopwatch.ElapsedMilliseconds} ms and returned {appRegInfoList.Count} items.");
 
         return appRegInfoList
             .OrderBy(app => app.DisplayName)
