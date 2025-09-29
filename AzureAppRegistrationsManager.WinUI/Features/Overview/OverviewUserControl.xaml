@@ -29,7 +29,7 @@
         <StackPanel Orientation="Horizontal" Spacing="4">
             <TextBlock Text="Application (client) ID:" FontWeight="Bold" Width="200" />
             <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppRegInfo.Application.AppId, Mode=OneWay, FallbackValue=''}" />
-            <Button HorizontalAlignment="Left" Click="Copy_Click" IsEnabled="{x:Bind CanEdit, Mode=OneWay }">
+            <Button HorizontalAlignment="Left" Click="Copy_Click">
                 <StackPanel Orientation="Horizontal">
                     <SymbolIcon Symbol="Copy"/>
                 </StackPanel>
@@ -39,7 +39,7 @@
         <StackPanel Orientation="Horizontal" Spacing="4">
             <TextBlock Text="Object ID:" FontWeight="Bold" Width="200" />
             <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppRegInfo.Application.Id, Mode=OneWay, FallbackValue=''}" />
-            <Button HorizontalAlignment="Left" Click="Copy_Click" IsEnabled="{x:Bind CanEdit, Mode=OneWay }" >
+            <Button HorizontalAlignment="Left" Click="Copy_Click">
                 <StackPanel Orientation="Horizontal">
                     <SymbolIcon Symbol="Copy"/>
                 </StackPanel>
@@ -87,7 +87,7 @@
         <StackPanel Orientation="Horizontal" Spacing="4">
             <TextBlock Text="Service Principal ID:" FontWeight="Bold" Width="200" />
             <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppRegInfo.EnterpriseApplication.Id, Mode=OneWay, FallbackValue=''}" />
-            <Button HorizontalAlignment="Left" Click="Copy_Click" IsEnabled="{x:Bind CanEdit, Mode=OneWay }" >
+            <Button HorizontalAlignment="Left" Click="Copy_Click">
                 <StackPanel Orientation="Horizontal">
                     <SymbolIcon Symbol="Copy"/>
                 </StackPanel>
