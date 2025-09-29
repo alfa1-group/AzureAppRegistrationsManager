@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using AzureAppRegistrationsManager.WinUI.Models;
 using AzureAppRegistrationsManager.WinUI.Services;
+using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -59,6 +60,10 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
             }
         }
     }
+
+    // Track sorting state to toggle ascending/descending
+    private DataGridColumn? _sortedColumn;
+    private DataGridSortDirection _sortDirection = DataGridSortDirection.Ascending;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -170,6 +175,60 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         RefreshAppProgress.IsActive = false;
 
         AppRegInfo = selectedAppRegInfo;
+    }
+
+    private void dataGrid_Sorting(object sender, DataGridColumnEventArgs e)
+    {
+        if (AppRegInfos == null)
+        {
+            return;
+        }
+
+        // Toggle direction if same column clicked; otherwise reset to ascending
+        if (_sortedColumn == e.Column)
+        {
+            _sortDirection = _sortDirection == DataGridSortDirection.Ascending ? DataGridSortDirection.Descending : DataGridSortDirection.Ascending;
+        }
+        else
+        {
+            if (_sortedColumn != null && _sortedColumn != e.Column)
+            {
+                _sortedColumn.SortDirection = null;
+            }
+
+            _sortDirection = DataGridSortDirection.Ascending;
+            _sortedColumn = e.Column;
+        }
+
+        e.Column.SortDirection = _sortDirection;
+
+        var source = AppRegInfos;
+        IEnumerable<AppRegInfo> sorted = e.Column.Tag switch
+        {
+            nameof(AppRegInfo.AppId) => _sortDirection == DataGridSortDirection.Ascending
+                ? source.OrderBy(a => a.AppId)
+                : source.OrderByDescending(a => a.AppId),
+
+            nameof(AppRegInfo.ObjectId) => _sortDirection == DataGridSortDirection.Ascending
+                ? source.OrderBy(a => a.ObjectId)
+                : source.OrderByDescending(a => a.ObjectId),
+
+            "Enterprise Application Object ID" => _sortDirection == DataGridSortDirection.Ascending
+                ? source.OrderBy(a => a.EnterpriseApplication?.Id ?? string.Empty)
+                : source.OrderByDescending(a => a.EnterpriseApplication?.Id ?? string.Empty),
+
+            nameof(AppRegInfo.DisplayName) => _sortDirection == DataGridSortDirection.Ascending
+                ? source.OrderBy(a => a.DisplayName)
+                : source.OrderByDescending(a => a.DisplayName),
+
+            nameof(AppRegInfo.CanEdit) => _sortDirection == DataGridSortDirection.Ascending
+                ? source.OrderBy(a => a.CanEdit)
+                : source.OrderByDescending(a => a.CanEdit),
+
+            _ => source
+        };
+
+        AppRegInfos = sorted.ToList();
     }
 
     private void OnSave(object? sender, EventArgs e)

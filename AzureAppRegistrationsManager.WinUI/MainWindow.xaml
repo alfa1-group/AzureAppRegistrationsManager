@@ -80,15 +80,54 @@
                     AutoGenerateColumns="False"
                     CanUserSortColumns="True"
                     IsReadOnly="True"
+                    IsTapEnabled="True"
                     ItemsSource="{x:Bind AppRegInfos, Mode=OneWay}"
+                    SelectionMode="Single"
                     SelectionChanged="ApplicationsGrid_OnSelectionChanged"
-                    Margin="0,10,0,10" >
+                    Sorting="dataGrid_Sorting"
+                    Margin="0,10,0,10">
+
+                    <controls:DataGrid.Resources>
+                        <Style x:Key="IdColumnStyle" TargetType="TextBlock">
+                            <Setter Property="FontFamily" Value="Consolas" />
+                            <Setter Property="FontSize" Value="13" />
+                        </Style>
+                    </controls:DataGrid.Resources>
+
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Header="Application (client) ID" Binding="{Binding AppId}" Width="SizeToCells"/>
-                        <controls:DataGridTextColumn Header="Display Name" Binding="{Binding DisplayName}" Width="SizeToCells"/>
-                        <controls:DataGridTextColumn Header="Object ID" Binding="{Binding ObjectId}" Width="SizeToCells"/>
-                        <controls:DataGridTextColumn Header="Enterprise Application Object ID" Binding="{Binding EnterpriseApplication.Id, FallbackValue=''}" Width="SizeToCells"/>
-                        <controls:DataGridTextColumn Header="Editable?" Binding="{Binding CanEdit}" Width="90"/>
+                        <controls:DataGridTextColumn
+                            ElementStyle="{StaticResource IdColumnStyle}"
+                            Header="Application (client) ID"
+                            Binding="{Binding AppId}"
+                            Width="SizeToCells"
+                            CanUserSort="True"
+                            Tag="AppId" />
+                        <controls:DataGridTextColumn
+                            Header="Display Name"
+                            Binding="{Binding DisplayName}"
+                            Width="SizeToCells"
+                            CanUserSort="True"
+                            Tag="DisplayName" />
+                        <controls:DataGridTextColumn
+                            ElementStyle="{StaticResource IdColumnStyle}"
+                            Header="Object ID"
+                            Binding="{Binding ObjectId}"
+                            Width="SizeToCells"
+                            CanUserSort="True"
+                            Tag="ObjectId" />
+                        <controls:DataGridTextColumn
+                            ElementStyle="{StaticResource IdColumnStyle}"
+                            Header="Enterprise Application Object ID"
+                            Binding="{Binding EnterpriseApplication.Id, FallbackValue=''}"
+                            Width="SizeToCells"
+                            CanUserSort="True"
+                            Tag="Enterprise Application Object ID" />
+                        <controls:DataGridTextColumn
+                            Header="Editable?"
+                            Binding="{Binding CanEdit}"
+                            Width="90"
+                            CanUserSort="True"
+                            Tag="CanEdit" />
                     </controls:DataGrid.Columns>
                 </controls:DataGrid >
             </Grid>
