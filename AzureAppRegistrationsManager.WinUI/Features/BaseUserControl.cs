@@ -97,7 +97,7 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
         }
         finally
         {
-            controlsToDisable.ForEach(c => c.IsEnabled = true);
+            controlsToDisable.ForEach(c => c.IsEnabled = CanEdit);
         }
     }
 
@@ -122,7 +122,7 @@ public partial class BaseUserControl : UserControl, INotifyPropertyChanged
             textBox.ClearValue(BorderBrushProperty);
             textBox.ClearValue(BorderThicknessProperty);
 
-            buttons.ForEach(c => c.IsEnabled = true);
+            buttons.ForEach(c => c.IsEnabled = CanEdit);
         }
     }
 }
