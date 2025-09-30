@@ -12,10 +12,12 @@ using WinRT.Interop;
 
 namespace AzureAppRegistrationsManager.WinUI;
 
-public sealed partial class MainWindow : Window, INotifyPropertyChanged
+public sealed partial class MainWindow : INotifyPropertyChanged
 {
     private const string Loading = "loading...";
 
+
+    private IReadOnlyList<AppRegInfo> _appRegInfosBackup = [];
     private IReadOnlyList<AppRegInfo>? _appRegInfos;
     public IReadOnlyList<AppRegInfo>? AppRegInfos
     {
@@ -61,11 +63,67 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private string? _searchAppId;
+    public string? SearchAppId
+    {
+        get => _searchAppId;
+        set
+        {
+            if (value != _searchAppId)
+            {
+                _searchAppId = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    private string? _searchDisplayName;
+    public string? SearchDisplayName
+    {
+        get => _searchDisplayName;
+        set
+        {
+            if (value != _searchDisplayName)
+            {
+                _searchDisplayName = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    private string? _searchObjectId;
+    public string? SearchObjectId
+    {
+        get => _searchObjectId;
+        set
+        {
+            if (value != _searchObjectId)
+            {
+                _searchObjectId = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    private string? _searchEnterpriseApplicationId;
+    public string? SearchEnterpriseApplicationId
+    {
+        get => _searchEnterpriseApplicationId;
+        set
+        {
+            if (value != _searchEnterpriseApplicationId)
+            {
+                _searchEnterpriseApplicationId = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
     // Track sorting state to toggle ascending/descending
     private DataGridColumn? _sortedColumn;
     private DataGridSortDirection _sortDirection = DataGridSortDirection.Ascending;
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 
     public MainWindow()
     {
@@ -105,6 +163,47 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         await RefreshAppRegInfosAsync(false);
     }
 
+    private void SearchButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (AppRegInfos == null)
+        {
+            return;
+        }
+
+        IEnumerable<AppRegInfo> filtered = _appRegInfosBackup;
+        if (!string.IsNullOrEmpty(SearchAppId))
+        {
+            filtered = filtered.Where(a => a.AppId.Contains(SearchAppId));
+        }
+
+        if (!string.IsNullOrEmpty(SearchDisplayName))
+        {
+            filtered = filtered.Where(a => a.DisplayName.Contains(SearchDisplayName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrEmpty(SearchObjectId))
+        {
+            filtered = filtered.Where(a => a.ObjectId.Contains(SearchObjectId));
+        }
+
+        if (!string.IsNullOrEmpty(SearchEnterpriseApplicationId))
+        {
+            filtered = filtered.Where(a => (a.EnterpriseApplication?.Id ?? string.Empty).Contains(SearchEnterpriseApplicationId));
+        }
+
+        AppRegInfos = filtered.ToArray();
+    }
+
+    private void ClearSearchButton_Click(object sender, RoutedEventArgs e)
+    {
+        SearchAppId = string.Empty;
+        SearchDisplayName = string.Empty;
+        SearchObjectId = string.Empty;
+        SearchEnterpriseApplicationId = string.Empty;
+
+        AppRegInfos = _appRegInfosBackup;
+    }
+
     private async void RefreshAllButton_Click(object sender, RoutedEventArgs e)
     {
         await RefreshAppAsync(null);
@@ -136,6 +235,7 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         }};
 
         AppRegInfos = all ? await AzureCommandsHandler.GetAllApplicationsAsync() : await AzureCommandsHandler.GetOwnApplicationsAsync();
+        _appRegInfosBackup = AppRegInfos;
 
         RefreshProgress.IsActive = false;
         RefreshAllButton.IsEnabled = true;
@@ -228,7 +328,7 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
             _ => source
         };
 
-        AppRegInfos = sorted.ToList();
+        AppRegInfos = sorted.ToArray();
     }
 
     private void OnSave(object? sender, EventArgs e)
