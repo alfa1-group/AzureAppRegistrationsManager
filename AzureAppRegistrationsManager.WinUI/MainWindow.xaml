@@ -146,7 +146,7 @@
                         <controls:DataGridTextColumn
                             Header="Editable?"
                             Binding="{Binding CanEdit}"
-                            Width="80"
+                            Width="90"
                             CanUserSort="True"
                             Tag="CanEdit" />
                     </controls:DataGrid.Columns>

@@ -1,9 +1,11 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using AzureAppRegistrationsManager.WinUI.Features;
 using AzureAppRegistrationsManager.WinUI.Models;
 using AzureAppRegistrationsManager.WinUI.Services;
 using CommunityToolkit.WinUI.UI.Controls;
+using Microsoft.Graph.Models;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -18,29 +20,28 @@ public sealed partial class MainWindow : INotifyPropertyChanged
 
 
     private IReadOnlyList<AppRegInfo> _appRegInfosBackup = [];
-    private IReadOnlyList<AppRegInfo>? _appRegInfos;
+
     public IReadOnlyList<AppRegInfo>? AppRegInfos
     {
-        get => _appRegInfos;
+        get;
         set
         {
-            if (!Equals(value, _appRegInfos))
+            if (!Equals(value, field))
             {
-                _appRegInfos = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
     }
 
-    private AppRegInfo? _appRegInfo;
     public AppRegInfo? AppRegInfo
     {
-        get => _appRegInfo;
+        get;
         set
         {
-            if (value != _appRegInfo)
+            if (value != field)
             {
-                _appRegInfo = value;
+                field = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(CanEdit));
             }
@@ -49,15 +50,14 @@ public sealed partial class MainWindow : INotifyPropertyChanged
 
     public bool CanEdit => AppRegInfo?.CanEdit ?? false;
 
-    private string? _currentLoadedType;
     public string? CurrentLoadedType
     {
-        get => _currentLoadedType;
+        get;
         set
         {
-            if (value != _currentLoadedType)
+            if (value != field)
             {
-                _currentLoadedType = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
@@ -65,57 +65,53 @@ public sealed partial class MainWindow : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    private string? _searchAppId;
     public string? SearchAppId
     {
-        get => _searchAppId;
+        get;
         set
         {
-            if (value != _searchAppId)
+            if (value != field)
             {
-                _searchAppId = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
     }
 
-    private string? _searchDisplayName;
     public string? SearchDisplayName
     {
-        get => _searchDisplayName;
+        get;
         set
         {
-            if (value != _searchDisplayName)
+            if (value != field)
             {
-                _searchDisplayName = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
     }
 
-    private string? _searchObjectId;
     public string? SearchObjectId
     {
-        get => _searchObjectId;
+        get;
         set
         {
-            if (value != _searchObjectId)
+            if (value != field)
             {
-                _searchObjectId = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
     }
 
-    private string? _searchEnterpriseApplicationId;
     public string? SearchEnterpriseApplicationId
     {
-        get => _searchEnterpriseApplicationId;
+        get;
         set
         {
-            if (value != _searchEnterpriseApplicationId)
+            if (value != field)
             {
-                _searchEnterpriseApplicationId = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
@@ -223,23 +219,36 @@ public sealed partial class MainWindow : INotifyPropertyChanged
     {
         CurrentLoadedType = all ? "All Applications" : "Own Applications";
 
-        RefreshButton.IsEnabled = false;
-        RefreshAllButton.IsEnabled = false;
-        RefreshProgress.IsActive = true;
-
-        ApplicationsGrid.ItemsSource = new[] { new AppRegInfo
+        try
         {
-            AppId = Loading,
-            ObjectId = Loading,
-            DisplayName = Loading
-        }};
+            RefreshButton.IsEnabled = false;
+            RefreshAllButton.IsEnabled = false;
+            RefreshProgress.IsActive = true;
 
-        AppRegInfos = all ? await AzureCommandsHandler.GetAllApplicationsAsync() : await AzureCommandsHandler.GetOwnApplicationsAsync();
-        _appRegInfosBackup = AppRegInfos;
+            ApplicationsGrid.ItemsSource = new[] { new AppRegInfo
+            {
+                AppId = Loading,
+                ObjectId = Loading,
+                DisplayName = Loading,
+                EnterpriseApplication = new ServicePrincipal { Id = Loading }
+            }};
 
-        RefreshProgress.IsActive = false;
-        RefreshAllButton.IsEnabled = true;
-        RefreshButton.IsEnabled = true;
+            AppRegInfos = all ? await AzureCommandsHandler.GetAllApplicationsAsync() : await AzureCommandsHandler.GetOwnApplicationsAsync();
+            _appRegInfosBackup = AppRegInfos;
+        }
+        catch (Exception ex)
+        {
+            await new ErrorDialog(ex.Message)
+            {
+                XamlRoot = Content.XamlRoot
+            }.ShowAsync();
+        }
+        finally
+        {
+            RefreshProgress.IsActive = false;
+            RefreshAllButton.IsEnabled = true;
+            RefreshButton.IsEnabled = true;
+        }
     }
 
     private async Task RefreshAppAsync(AppRegInfo? selectedAppRegInfo)
@@ -250,31 +259,43 @@ public sealed partial class MainWindow : INotifyPropertyChanged
             return;
         }
 
-        RefreshAppProgress.IsActive = true;
-
-        selectedAppRegInfo.ApiPermissionModels = null;
-        selectedAppRegInfo.Application = null;
-        selectedAppRegInfo.ApplicationAsJson = string.Empty;
-
-        var applicationTask = Task.Run(async () =>
+        try
         {
-            var application = await AzureCommandsHandler.GetApplicationAsync(selectedAppRegInfo.ObjectId);
-            var applicationAsJson = application != null ? JsonSerializer.Serialize(application, MyJsonContext.Default.Application) : string.Empty;
+            RefreshAppProgress.IsActive = true;
 
-            return (application, applicationAsJson);
-        });
+            selectedAppRegInfo.ApiPermissionModels = null;
+            selectedAppRegInfo.Application = null;
+            selectedAppRegInfo.ApplicationAsJson = string.Empty;
 
-        var apiPermissionModelsTask = AzureCommandsHandler.GetPermissionsAsync(selectedAppRegInfo.EnterpriseApplication?.Id);
+            var applicationTask = Task.Run(async () =>
+            {
+                var application = await AzureCommandsHandler.GetApplicationAsync(selectedAppRegInfo.ObjectId);
+                var applicationAsJson = application != null ? JsonSerializer.Serialize(application, MyJsonContext.Default.Application) : string.Empty;
 
-        await Task.WhenAll(applicationTask, apiPermissionModelsTask);
+                return (application, applicationAsJson);
+            });
 
-        selectedAppRegInfo.Application = (await applicationTask).application;
-        selectedAppRegInfo.ApplicationAsJson = (await applicationTask).applicationAsJson;
-        selectedAppRegInfo.ApiPermissionModels = await apiPermissionModelsTask;
+            var apiPermissionModelsTask = AzureCommandsHandler.GetPermissionsAsync(selectedAppRegInfo.EnterpriseApplication?.Id);
 
-        RefreshAppProgress.IsActive = false;
+            await Task.WhenAll(applicationTask, apiPermissionModelsTask);
 
-        AppRegInfo = selectedAppRegInfo;
+            selectedAppRegInfo.Application = (await applicationTask).application;
+            selectedAppRegInfo.ApplicationAsJson = (await applicationTask).applicationAsJson;
+            selectedAppRegInfo.ApiPermissionModels = await apiPermissionModelsTask;
+
+            AppRegInfo = selectedAppRegInfo;
+        }
+        catch (Exception ex)
+        {
+            await new ErrorDialog(ex.Message)
+            {
+                XamlRoot = Content.XamlRoot
+            }.ShowAsync();
+        }
+        finally
+        {
+            RefreshAppProgress.IsActive = false;
+        }
     }
 
     private void ApplicationsGrid_Sorting(object sender, DataGridColumnEventArgs e)
