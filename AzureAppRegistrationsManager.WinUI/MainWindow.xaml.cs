@@ -177,7 +177,7 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         AppRegInfo = selectedAppRegInfo;
     }
 
-    private void dataGrid_Sorting(object sender, DataGridColumnEventArgs e)
+    private void ApplicationsGrid_Sorting(object sender, DataGridColumnEventArgs e)
     {
         if (AppRegInfos == null)
         {
