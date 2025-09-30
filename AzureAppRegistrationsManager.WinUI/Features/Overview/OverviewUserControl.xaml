@@ -8,6 +8,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
+    <base:BaseUserControl.Resources>
+        <!-- Reusable style using Consolas -->
+        <Style x:Key="GuidTextBoxStyle" TargetType="TextBox">
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+        </Style>
+    </base:BaseUserControl.Resources>
+
     <StackPanel Spacing="8" Margin="8">
         <StackPanel Orientation="Horizontal" Spacing="4">
             <TextBlock Text="Display Name: 🔺" FontWeight="Bold" Width="200"/>
@@ -28,7 +37,7 @@
 
         <StackPanel Orientation="Horizontal" Spacing="4">
             <TextBlock Text="Application (client) ID:" FontWeight="Bold" Width="200" />
-            <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppRegInfo.Application.AppId, Mode=OneWay, FallbackValue=''}" />
+            <TextBox Width="300" IsReadOnly="True" Style="{StaticResource GuidTextBoxStyle}" Text="{x:Bind AppRegInfo.Application.AppId, Mode=OneWay, FallbackValue=''}" />
             <Button HorizontalAlignment="Left" Click="Copy_Click">
                 <StackPanel Orientation="Horizontal">
                     <SymbolIcon Symbol="Copy"/>
@@ -38,7 +47,7 @@
 
         <StackPanel Orientation="Horizontal" Spacing="4">
             <TextBlock Text="Object ID:" FontWeight="Bold" Width="200" />
-            <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppRegInfo.Application.Id, Mode=OneWay, FallbackValue=''}" />
+            <TextBox Width="300" IsReadOnly="True" Style="{StaticResource GuidTextBoxStyle}" Text="{x:Bind AppRegInfo.Application.Id, Mode=OneWay, FallbackValue=''}" />
             <Button HorizontalAlignment="Left" Click="Copy_Click">
                 <StackPanel Orientation="Horizontal">
                     <SymbolIcon Symbol="Copy"/>
@@ -86,7 +95,7 @@
 
         <StackPanel Orientation="Horizontal" Spacing="4">
             <TextBlock Text="Service Principal ID:" FontWeight="Bold" Width="200" />
-            <TextBox Width="290" IsReadOnly="True" Text="{x:Bind AppRegInfo.EnterpriseApplication.Id, Mode=OneWay, FallbackValue=''}" />
+            <TextBox Width="300" IsReadOnly="True" Style="{StaticResource GuidTextBoxStyle}" Text="{x:Bind AppRegInfo.EnterpriseApplication.Id, Mode=OneWay, FallbackValue=''}" />
             <Button HorizontalAlignment="Left" Click="Copy_Click">
                 <StackPanel Orientation="Horizontal">
                     <SymbolIcon Symbol="Copy"/>

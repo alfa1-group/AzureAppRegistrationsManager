@@ -88,15 +88,15 @@
                     Margin="0,10,0,10">
 
                     <controls:DataGrid.Resources>
-                        <Style x:Key="IdColumnStyle" TargetType="TextBlock">
+                        <Style x:Key="GuidColumnStyle" TargetType="TextBlock">
                             <Setter Property="FontFamily" Value="Consolas" />
-                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="FontSize" Value="14" />
                         </Style>
                     </controls:DataGrid.Resources>
 
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn
-                            ElementStyle="{StaticResource IdColumnStyle}"
+                            ElementStyle="{StaticResource GuidColumnStyle}"
                             Header="Application (client) ID"
                             Binding="{Binding AppId}"
                             Width="SizeToCells"
@@ -109,14 +109,14 @@
                             CanUserSort="True"
                             Tag="DisplayName" />
                         <controls:DataGridTextColumn
-                            ElementStyle="{StaticResource IdColumnStyle}"
+                            ElementStyle="{StaticResource GuidColumnStyle}"
                             Header="Object ID"
                             Binding="{Binding ObjectId}"
                             Width="SizeToCells"
                             CanUserSort="True"
                             Tag="ObjectId" />
                         <controls:DataGridTextColumn
-                            ElementStyle="{StaticResource IdColumnStyle}"
+                            ElementStyle="{StaticResource GuidColumnStyle}"
                             Header="Enterprise Application Object ID"
                             Binding="{Binding EnterpriseApplication.Id, FallbackValue=''}"
                             Width="SizeToCells"
