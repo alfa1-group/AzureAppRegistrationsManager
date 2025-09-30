@@ -1,8 +1,11 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using AzureAppRegistrationsManager.WinUI.Features;
 using AzureAppRegistrationsManager.WinUI.Models;
 using AzureAppRegistrationsManager.WinUI.Services;
+using CommunityToolkit.WinUI.UI.Controls;
+using Microsoft.Graph.Models;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -11,33 +14,34 @@ using WinRT.Interop;
 
 namespace AzureAppRegistrationsManager.WinUI;
 
-public sealed partial class MainWindow : Window, INotifyPropertyChanged
+public sealed partial class MainWindow : INotifyPropertyChanged
 {
     private const string Loading = "loading...";
 
-    private IReadOnlyList<AppRegInfo>? _appRegInfos;
+
+    private IReadOnlyList<AppRegInfo> _appRegInfosBackup = [];
+
     public IReadOnlyList<AppRegInfo>? AppRegInfos
     {
-        get => _appRegInfos;
+        get;
         set
         {
-            if (!Equals(value, _appRegInfos))
+            if (!Equals(value, field))
             {
-                _appRegInfos = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
     }
 
-    private AppRegInfo? _appRegInfo;
     public AppRegInfo? AppRegInfo
     {
-        get => _appRegInfo;
+        get;
         set
         {
-            if (value != _appRegInfo)
+            if (value != field)
             {
-                _appRegInfo = value;
+                field = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(CanEdit));
             }
@@ -46,21 +50,76 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
 
     public bool CanEdit => AppRegInfo?.CanEdit ?? false;
 
-    private string? _currentLoadedType;
     public string? CurrentLoadedType
     {
-        get => _currentLoadedType;
+        get;
         set
         {
-            if (value != _currentLoadedType)
+            if (value != field)
             {
-                _currentLoadedType = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    public string? SearchAppId
+    {
+        get;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public string? SearchDisplayName
+    {
+        get;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public string? SearchObjectId
+    {
+        get;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public string? SearchEnterpriseApplicationId
+    {
+        get;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    // Track sorting state to toggle ascending/descending
+    private DataGridColumn? _sortedColumn;
+    private DataGridSortDirection _sortDirection = DataGridSortDirection.Ascending;
 
     public MainWindow()
     {
@@ -100,6 +159,47 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
         await RefreshAppRegInfosAsync(false);
     }
 
+    private void SearchButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (AppRegInfos == null)
+        {
+            return;
+        }
+
+        IEnumerable<AppRegInfo> filtered = _appRegInfosBackup;
+        if (!string.IsNullOrEmpty(SearchAppId))
+        {
+            filtered = filtered.Where(a => a.AppId.Contains(SearchAppId));
+        }
+
+        if (!string.IsNullOrEmpty(SearchDisplayName))
+        {
+            filtered = filtered.Where(a => a.DisplayName.Contains(SearchDisplayName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrEmpty(SearchObjectId))
+        {
+            filtered = filtered.Where(a => a.ObjectId.Contains(SearchObjectId));
+        }
+
+        if (!string.IsNullOrEmpty(SearchEnterpriseApplicationId))
+        {
+            filtered = filtered.Where(a => (a.EnterpriseApplication?.Id ?? string.Empty).Contains(SearchEnterpriseApplicationId));
+        }
+
+        AppRegInfos = filtered.ToArray();
+    }
+
+    private void ClearSearchButton_Click(object sender, RoutedEventArgs e)
+    {
+        SearchAppId = string.Empty;
+        SearchDisplayName = string.Empty;
+        SearchObjectId = string.Empty;
+        SearchEnterpriseApplicationId = string.Empty;
+
+        AppRegInfos = _appRegInfosBackup;
+    }
+
     private async void RefreshAllButton_Click(object sender, RoutedEventArgs e)
     {
         await RefreshAppAsync(null);
@@ -119,22 +219,36 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
     {
         CurrentLoadedType = all ? "All Applications" : "Own Applications";
 
-        RefreshButton.IsEnabled = false;
-        RefreshAllButton.IsEnabled = false;
-        RefreshProgress.IsActive = true;
-
-        ApplicationsGrid.ItemsSource = new[] { new AppRegInfo
+        try
         {
-            AppId = Loading,
-            ObjectId = Loading,
-            DisplayName = Loading
-        }};
+            RefreshButton.IsEnabled = false;
+            RefreshAllButton.IsEnabled = false;
+            RefreshProgress.IsActive = true;
 
-        AppRegInfos = all ? await AzureCommandsHandler.GetAllApplicationsAsync() : await AzureCommandsHandler.GetOwnApplicationsAsync();
+            ApplicationsGrid.ItemsSource = new[] { new AppRegInfo
+            {
+                AppId = Loading,
+                ObjectId = Loading,
+                DisplayName = Loading,
+                EnterpriseApplication = new ServicePrincipal { Id = Loading }
+            }};
 
-        RefreshProgress.IsActive = false;
-        RefreshAllButton.IsEnabled = true;
-        RefreshButton.IsEnabled = true;
+            AppRegInfos = all ? await AzureCommandsHandler.GetAllApplicationsAsync() : await AzureCommandsHandler.GetOwnApplicationsAsync();
+            _appRegInfosBackup = AppRegInfos;
+        }
+        catch (Exception ex)
+        {
+            await new ErrorDialog(ex.Message)
+            {
+                XamlRoot = Content.XamlRoot
+            }.ShowAsync();
+        }
+        finally
+        {
+            RefreshProgress.IsActive = false;
+            RefreshAllButton.IsEnabled = true;
+            RefreshButton.IsEnabled = true;
+        }
     }
 
     private async Task RefreshAppAsync(AppRegInfo? selectedAppRegInfo)
@@ -145,31 +259,97 @@ public sealed partial class MainWindow : Window, INotifyPropertyChanged
             return;
         }
 
-        RefreshAppProgress.IsActive = true;
-
-        selectedAppRegInfo.ApiPermissionModels = null;
-        selectedAppRegInfo.Application = null;
-        selectedAppRegInfo.ApplicationAsJson = string.Empty;
-
-        var applicationTask = Task.Run(async () =>
+        try
         {
-            var application = await AzureCommandsHandler.GetApplicationAsync(selectedAppRegInfo.ObjectId);
-            var applicationAsJson = application != null ? JsonSerializer.Serialize(application, MyJsonContext.Default.Application) : string.Empty;
+            RefreshAppProgress.IsActive = true;
 
-            return (application, applicationAsJson);
-        });
+            selectedAppRegInfo.ApiPermissionModels = null;
+            selectedAppRegInfo.Application = null;
+            selectedAppRegInfo.ApplicationAsJson = string.Empty;
 
-        var apiPermissionModelsTask = AzureCommandsHandler.GetPermissionsAsync(selectedAppRegInfo.EnterpriseApplication?.Id);
+            var applicationTask = Task.Run(async () =>
+            {
+                var application = await AzureCommandsHandler.GetApplicationAsync(selectedAppRegInfo.ObjectId);
+                var applicationAsJson = application != null ? JsonSerializer.Serialize(application, MyJsonContext.Default.Application) : string.Empty;
 
-        await Task.WhenAll(applicationTask, apiPermissionModelsTask);
+                return (application, applicationAsJson);
+            });
 
-        selectedAppRegInfo.Application = (await applicationTask).application;
-        selectedAppRegInfo.ApplicationAsJson = (await applicationTask).applicationAsJson;
-        selectedAppRegInfo.ApiPermissionModels = await apiPermissionModelsTask;
+            var apiPermissionModelsTask = AzureCommandsHandler.GetPermissionsAsync(selectedAppRegInfo.EnterpriseApplication?.Id);
 
-        RefreshAppProgress.IsActive = false;
+            await Task.WhenAll(applicationTask, apiPermissionModelsTask);
 
-        AppRegInfo = selectedAppRegInfo;
+            selectedAppRegInfo.Application = (await applicationTask).application;
+            selectedAppRegInfo.ApplicationAsJson = (await applicationTask).applicationAsJson;
+            selectedAppRegInfo.ApiPermissionModels = await apiPermissionModelsTask;
+
+            AppRegInfo = selectedAppRegInfo;
+        }
+        catch (Exception ex)
+        {
+            await new ErrorDialog(ex.Message)
+            {
+                XamlRoot = Content.XamlRoot
+            }.ShowAsync();
+        }
+        finally
+        {
+            RefreshAppProgress.IsActive = false;
+        }
+    }
+
+    private void ApplicationsGrid_Sorting(object sender, DataGridColumnEventArgs e)
+    {
+        if (AppRegInfos == null)
+        {
+            return;
+        }
+
+        // Toggle direction if same column clicked; otherwise reset to ascending
+        if (_sortedColumn == e.Column)
+        {
+            _sortDirection = _sortDirection == DataGridSortDirection.Ascending ? DataGridSortDirection.Descending : DataGridSortDirection.Ascending;
+        }
+        else
+        {
+            if (_sortedColumn != null && _sortedColumn != e.Column)
+            {
+                _sortedColumn.SortDirection = null;
+            }
+
+            _sortDirection = DataGridSortDirection.Ascending;
+            _sortedColumn = e.Column;
+        }
+
+        e.Column.SortDirection = _sortDirection;
+
+        var source = AppRegInfos;
+        IEnumerable<AppRegInfo> sorted = e.Column.Tag switch
+        {
+            nameof(AppRegInfo.AppId) => _sortDirection == DataGridSortDirection.Ascending
+                ? source.OrderBy(a => a.AppId)
+                : source.OrderByDescending(a => a.AppId),
+
+            nameof(AppRegInfo.ObjectId) => _sortDirection == DataGridSortDirection.Ascending
+                ? source.OrderBy(a => a.ObjectId)
+                : source.OrderByDescending(a => a.ObjectId),
+
+            "Enterprise Application Object ID" => _sortDirection == DataGridSortDirection.Ascending
+                ? source.OrderBy(a => a.EnterpriseApplication?.Id ?? string.Empty)
+                : source.OrderByDescending(a => a.EnterpriseApplication?.Id ?? string.Empty),
+
+            nameof(AppRegInfo.DisplayName) => _sortDirection == DataGridSortDirection.Ascending
+                ? source.OrderBy(a => a.DisplayName)
+                : source.OrderByDescending(a => a.DisplayName),
+
+            nameof(AppRegInfo.CanEdit) => _sortDirection == DataGridSortDirection.Ascending
+                ? source.OrderBy(a => a.CanEdit)
+                : source.OrderByDescending(a => a.CanEdit),
+
+            _ => source
+        };
+
+        AppRegInfos = sorted.ToArray();
     }
 
     private void OnSave(object? sender, EventArgs e)
